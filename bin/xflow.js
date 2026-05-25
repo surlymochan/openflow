@@ -51,6 +51,13 @@ import {
   buildWorkflowManifest,
   validateExecutionLogChain,
 } from '../src/core/workflow-integrity.js';
+import {
+  readProfile,
+  resolveEffectivePolicy,
+  validateTeamPolicy,
+  writeProfile,
+} from '../src/core/policy-overlay.js';
+import { writeWorkflowRecommendation } from '../src/core/intake-recommendation.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -90,6 +97,15 @@ async function main() {
       break;
     case 'goal':
       await handleGoal(subcommand, rest);
+      break;
+    case 'profile':
+      await handleProfile(subcommand, rest);
+      break;
+    case 'policy':
+      await handlePolicy(subcommand, rest);
+      break;
+    case 'intake':
+      await handleIntake(subcommand, rest);
       break;
     case 'score':
       await handleScore([subcommand, ...rest].filter(Boolean));
@@ -160,6 +176,136 @@ async function main() {
     default:
       console.error(`Unknown command: ${command}`);
       printHelp();
+      process.exit(1);
+  }
+}
+
+// ─── profile / policy / intake ───────────────────────────────────────────────
+
+async function handleProfile(sub, args) {
+  if (isHelpRequest(sub) || args.some(isHelpRequest)) {
+    printProfileHelp();
+    return;
+  }
+  const parsedArgs = parseCliArgs(args);
+  const projectRoot = parsedArgs.project_root || process.env.XFLOW_PROJECT_ROOT || process.cwd();
+  switch (sub) {
+    case 'show': {
+      const profile = readProfile(projectRoot);
+      const payload = { ok: true, project_root: projectRoot, profile };
+      if (parsedArgs.json) {
+        console.log(JSON.stringify(payload, null, 2));
+      } else {
+        console.log(`execution_mode: ${profile.execution_mode || 'personal'}`);
+        console.log(`workflow_tracks: personal=${profile.workflow_tracks?.personal || 'yolo|corps'}, team=${profile.workflow_tracks?.team || 'yolo|corps'}`);
+      }
+      break;
+    }
+    case 'set': {
+      const patch = {};
+      if (parsedArgs.execution_mode) patch.execution_mode = parsedArgs.execution_mode;
+      if (parsedArgs.notify_provider) patch.notify = { provider: parsedArgs.notify_provider };
+      if (parsedArgs.storage_provider) patch.storage = { provider: parsedArgs.storage_provider };
+      const profile = writeProfile(projectRoot, patch);
+      const payload = { ok: true, project_root: projectRoot, profile };
+      if (parsedArgs.json) {
+        console.log(JSON.stringify(payload, null, 2));
+      } else {
+        console.log(`✓ profile updated: execution_mode=${profile.execution_mode || 'personal'}`);
+      }
+      break;
+    }
+    default:
+      console.error(`Unknown profile subcommand: ${sub}`);
+      console.error('Available: show, set');
+      process.exit(1);
+  }
+}
+
+async function handlePolicy(sub, args) {
+  if (isHelpRequest(sub) || args.some(isHelpRequest)) {
+    printPolicyHelp();
+    return;
+  }
+  const parsedArgs = parseCliArgs(args);
+  const projectRoot = parsedArgs.project_root || process.env.XFLOW_PROJECT_ROOT || process.cwd();
+  switch (sub) {
+    case 'validate': {
+      const result = resolveEffectivePolicy({
+        projectRoot,
+        changeId: parsedArgs.change_id || process.env.CHANGE_ID || null,
+        executionMode: parsedArgs.execution_mode || null,
+      });
+      const validation = result.team_policy ? validateTeamPolicy(result.team_policy) : { ok: true, errors: [] };
+      const payload = { ...result, validation };
+      if (parsedArgs.json) {
+        console.log(JSON.stringify(payload, null, 2));
+      } else if (payload.ok) {
+        console.log(`✓ policy valid: execution_mode=${payload.policy.execution_mode}`);
+      } else {
+        console.error(`✗ policy invalid: ${payload.error?.message || 'unknown policy error'}`);
+      }
+      process.exit(payload.ok ? 0 : 1);
+      break;
+    }
+    default:
+      console.error(`Unknown policy subcommand: ${sub}`);
+      console.error('Available: validate');
+      process.exit(1);
+  }
+}
+
+async function handleIntake(sub, args) {
+  if (isHelpRequest(sub) || args.some(isHelpRequest)) {
+    printIntakeHelp();
+    return;
+  }
+  const parsedArgs = parseCliArgs(args);
+  const projectRoot = parsedArgs.project_root || process.env.XFLOW_PROJECT_ROOT || process.cwd();
+  switch (sub) {
+    case 'recommend': {
+      const changeId = parsedArgs.change_id || process.env.CHANGE_ID || deriveChangeIdFromBranch(currentBranch(projectRoot));
+      if (!changeId) {
+        console.error('Usage: xflow intake recommend --change-id <id> --title <title> [--description <text>]');
+        process.exit(1);
+      }
+      const policyResult = resolveEffectivePolicy({
+        projectRoot,
+        changeId,
+        executionMode: parsedArgs.execution_mode || null,
+      });
+      const recommendationInput = {
+        title: parsedArgs.title || '',
+        description: parsedArgs.description || '',
+        change_type: parsedArgs.change_type || parsedArgs.demand_type || '',
+        demand_type: parsedArgs.demand_type || '',
+        repo_count: parsedArgs.repo_count,
+        repositories: parsedArgs.repositories,
+        estimated_file_count: parsedArgs.estimated_file_count,
+      };
+      const result = writeWorkflowRecommendation({
+        projectRoot,
+        changeId,
+        input: recommendationInput,
+        effectivePolicy: policyResult.policy || policyResult.profile || {},
+      });
+      const payload = {
+        ok: true,
+        policy_ok: policyResult.ok,
+        policy_error: policyResult.error || null,
+        ...result,
+      };
+      if (parsedArgs.json) {
+        console.log(JSON.stringify(payload, null, 2));
+      } else {
+        console.log(`recommended_track: ${result.recommendation.recommended_track}`);
+        console.log(`workflow_recommendation_file: ${result.workflow_recommendation_file}`);
+      }
+      break;
+    }
+    default:
+      console.error(`Unknown intake subcommand: ${sub}`);
+      console.error('Available: recommend');
       process.exit(1);
   }
 }
@@ -627,6 +773,123 @@ const COMPARE_TARGETS = {
     ],
     next_proof: 'Use xflow launch dossier, xflow score, xflow workflow validate yolo/corps, and npm run release:pack; compare that machine evidence against the lighter Superpowers skill-driven operating model.',
   },
+  'super-assistant': {
+    target: 'super-assistant',
+    verdict: 'Super-Assistant is stronger as a broad enterprise harness with many concrete connectors; xflow is stronger after the policy-overlay integration because team constraints, intake routing, notifications, plugins, storage sync, and experience reuse are repo-local atoms with structured proof instead of a monolithic hook state machine.',
+    winner: {
+      overall: 'xflow',
+      basis: 'policy overlay on existing yolo/corps tracks, atomized enterprise integrations, structured gate failures, and repeatable local verification',
+      caveat: 'Super-Assistant still has broader concrete enterprise connector coverage; xflow intentionally absorbs those ideas as provider seams, not built-in secrets or workflow forks.',
+      confidence: 'high',
+    },
+    scorecard: {
+      scale: '0-100',
+      weights: {
+        workflow_runtime_authority: 15,
+        policy_overlay_and_team_constraints: 15,
+        adaptive_intake: 10,
+        enterprise_atomization: 15,
+        notification_gate_separation: 10,
+        experience_reuse: 10,
+        verification_and_packaging: 15,
+        portability_and_secret_boundary: 10,
+      },
+      overall: {
+        xflow: 95,
+        'super-assistant': 76,
+      },
+      dimensions: [
+        {
+          id: 'workflow_runtime_authority',
+          weight: 15,
+          xflow: 15,
+          'super-assistant': 10,
+          winner: 'xflow',
+          evidence_refs: ['workflows/yolo.yaml', 'workflows/corps.yaml', 'schemas/workflow.schema.json', 'atoms/registry.json', 'Super-Assistant harness-manifest.json and stage-completed hooks'],
+        },
+        {
+          id: 'policy_overlay_and_team_constraints',
+          weight: 15,
+          xflow: 15,
+          'super-assistant': 12,
+          winner: 'xflow',
+          evidence_refs: ['src/core/policy-overlay.js', '.xflow/profile.json', '.xflow/team-policy.json', 'test/policy-overlay.test.js', 'Super-Assistant lib/team_constraints.py'],
+        },
+        {
+          id: 'adaptive_intake',
+          weight: 10,
+          xflow: 10,
+          'super-assistant': 8,
+          winner: 'xflow',
+          evidence_refs: ['src/core/intake-recommendation.js', 'G5.intake.recommend', 'workflow_recommendation.json', 'Super-Assistant planner/adaptive routing references'],
+        },
+        {
+          id: 'enterprise_atomization',
+          weight: 15,
+          xflow: 14,
+          'super-assistant': 11,
+          winner: 'xflow',
+          evidence_refs: ['N1.notify.checkpoint', 'N2.plugin.run', 'N3.storage.sync', 'N4.experience.digest', 'src/core/atoms/*', 'Super-Assistant lib/plugin-extension/plugin_executor.py and lib/s3_sync'],
+        },
+        {
+          id: 'notification_gate_separation',
+          weight: 10,
+          xflow: 10,
+          'super-assistant': 6,
+          winner: 'xflow',
+          evidence_refs: ['src/core/atoms/notify/checkpoint.js approves_gate=false', 'P2.policy.gate structured failed_checks', 'Super-Assistant lib/checkpoint_manager.py'],
+        },
+        {
+          id: 'experience_reuse',
+          weight: 10,
+          xflow: 9,
+          'super-assistant': 8,
+          winner: 'xflow',
+          evidence_refs: ['src/core/atoms/experience/digest.js', 'experience_digest.json advisory=true', 'Super-Assistant lib/experience_index.py'],
+        },
+        {
+          id: 'verification_and_packaging',
+          weight: 15,
+          xflow: 14,
+          'super-assistant': 9,
+          winner: 'xflow',
+          evidence_refs: ['npm run verify', 'npm run drift:scan', 'xflow workflow validate yolo', 'xflow workflow validate corps', 'xflow score --json', 'Super-Assistant npm run check and unittest surfaces'],
+        },
+        {
+          id: 'portability_and_secret_boundary',
+          weight: 10,
+          xflow: 8,
+          'super-assistant': 5,
+          winner: 'xflow',
+          evidence_refs: ['file/mock providers only in first version', 'no DingTalk or S3 secrets in core', 'docs/super-assistant-comparison.md', 'Super-Assistant concrete DingTalk/S3 connector assumptions'],
+        },
+      ],
+    },
+    docs: ['docs/super-assistant-comparison.md', 'docs/competitive-benchmark.md', 'docs/integrations.md'],
+    xflow_edges: [
+      'personal/team execution mode is a policy overlay on yolo/corps instead of a workflow fork',
+      'policy_effective.json makes merged personal profile and team policy reviewable',
+      'workflow_recommendation.json turns demand profile into advisory track and gate input',
+      'notify.checkpoint proves notification only and never substitutes for human ack',
+      'plugin.run, storage.sync, and experience.digest are provider atoms with structured artifacts',
+      'team policy gate returns machine-readable failed_checks instead of relying on hook logs',
+    ],
+    target_edges: [
+      'broad enterprise harness with many agents, hooks, and concrete platform integrations',
+      'valuable team_constraints.py merge idea for coding/testing/review/deploy profiles',
+      'checkpoint manager, plugin executor, experience index, and S3 sync contain useful implementation patterns',
+      'good source of enterprise integration cases, but more coupled to harness state and platform-specific secrets',
+    ],
+    next_proof: 'Run xflow compare super-assistant --json, xflow policy validate --json, xflow intake recommend --change-id team-api-feature --title "team API feature" --description "touches API DB user data and CI" --repo-count 2 --json, xflow workflow validate yolo/corps, npm run verify, npm run drift:scan, and compare with Super-Assistant npm run check plus Python unittest output.',
+  },
+  superassistant: {
+    target: 'super-assistant',
+    alias_for: 'super-assistant',
+  },
+  'super-assitant': {
+    target: 'super-assistant',
+    alias_for: 'super-assistant',
+  },
   'codex-goal': {
     target: 'codex-goal',
     verdict: 'Codex native goal is better for thread-local intent and completion accounting; xflow goal is better when the objective must become repo-owned alignment evidence consumed by yolo, corps, Ralph, handoff, and takein.',
@@ -930,7 +1193,8 @@ function printAssessText(payload) {
 }
 
 function buildComparePayload(target) {
-  const payload = COMPARE_TARGETS[target];
+  const initial = COMPARE_TARGETS[target];
+  const payload = initial?.alias_for ? COMPARE_TARGETS[initial.alias_for] : initial;
   if (!payload) throw new Error(`Unknown compare target: ${target}`);
   const result = {
     ok: true,
@@ -959,6 +1223,7 @@ async function handleEvaluate(args) {
   const competitive = {
     codex_goal: buildComparePayload('codex-goal'),
     superpowers: buildComparePayload('superpowers'),
+    super_assistant: buildComparePayload('super-assistant'),
   };
   const withoutSelfEvaluate = (section) => ({
     ...section,
@@ -1020,6 +1285,7 @@ async function handleEvaluate(args) {
       'xflow release status --json',
       'xflow compare codex-goal --json',
       'xflow compare superpowers --json',
+      'xflow compare super-assistant --json',
       ...assess.proof_commands,
       'xflow adoption status --json',
       'xflow package status --json',
@@ -6586,6 +6852,7 @@ Options:
 function printCompareHelp() {
   console.log(`
 Usage: xflow compare <superpowers|codex-goal|openspec|gstack|spec-kit> [--json]
+       xflow compare super-assistant [--json]
 
 Show a compact evidence-backed comparison against a reference spec workflow
 or agent-methodology system and point to the local proof docs/operators should
@@ -6818,6 +7085,10 @@ Usage:
   xflow goal set "<goal>"        Write the project-level .xflow/GOAL.md anchor
   xflow goal show [--json]       Show the current project goal
   xflow goal audit [--json]      Audit goal consumption across the skill family
+  xflow profile show [--json]    Show personal/team execution profile
+  xflow profile set              Set execution mode or provider preferences
+  xflow policy validate          Validate effective policy overlay
+  xflow intake recommend         Recommend yolo/corps and gate overlays
   xflow evaluate [--json]        Show one-shot external evaluator brief
   xflow release status [--json]  Show release-owner publish status
   xflow assess [--json]          Show the public quality assessment
@@ -6833,6 +7104,7 @@ Usage:
   xflow objective [--json]       Audit the top-level product objective
   xflow compare codex-goal       Compare xflow goal against Codex native goal
   xflow compare superpowers      Compare xflow against Superpowers
+  xflow compare super-assistant  Compare xflow against Super-Assistant
   xflow compare openspec         Compare xflow against OpenSpec
   xflow compare gstack           Compare xflow against gstack
   xflow compare spec-kit         Compare xflow against spec-kit
@@ -6870,6 +7142,8 @@ Quick start:
   xflow quickstart
   xflow goal set "Ship the next verified change" --project-root .
   xflow spec start --title "修复示例" --change-type backend
+  xflow profile show --json
+  xflow intake recommend --title "修复示例" --change-id example --json
   xflow workflow run workflows/yolo.yaml --dry-run
   xflow workflow run workflows/yolo.yaml --title "修复示例" --change-type backend
     xflow qa capture --url http://127.0.0.1:3000 --platform-profile mobile_h5
@@ -6882,6 +7156,34 @@ Quick start (corps):
   xflow serve &
   xflow corps --title "产品示例" --change-type frontend --dry-run
   xflow corps --title "产品示例" --change-type frontend --change-id my-product
+`);
+}
+
+function printProfileHelp() {
+  console.log(`
+xflow profile — manage personal/team execution profile.
+
+Usage:
+  xflow profile show [--project-root .] [--json]
+  xflow profile set --execution-mode personal|team [--project-root .] [--json]
+`);
+}
+
+function printPolicyHelp() {
+  console.log(`
+xflow policy — validate policy overlay.
+
+Usage:
+  xflow policy validate [--project-root .] [--change-id <id>] [--execution-mode personal|team] [--json]
+`);
+}
+
+function printIntakeHelp() {
+  console.log(`
+xflow intake — recommend workflow track and gate overlays from a demand profile.
+
+Usage:
+  xflow intake recommend --change-id <id> --title <title> [--description <text>] [--repo-count <n>] [--json]
 `);
 }
 

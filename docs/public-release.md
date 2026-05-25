@@ -111,6 +111,7 @@ Record these in the release note or PR:
 - `docs/npm-publish-handoff.md` reviewed before real publish
 - `xflow score`
 - `xflow compare superpowers`
+- `xflow compare super-assistant`
 - `xflow compare openspec`
 - `xflow compare gstack`
 - `xflow compare spec-kit`
@@ -140,4 +141,5 @@ Record these in the release note or PR:
 - If `xflow compare spec-kit` points to missing docs, do not publish a superiority claim.
 - If `xflow compare gstack` cannot clearly explain where gstack is stronger, do not publish a fair comparison claim.
 - If `xflow compare superpowers` cannot explain where Superpowers is stronger, do not publish a fair comparison claim.
+- If `xflow compare super-assistant` cannot explain where Super-Assistant keeps stronger enterprise connector breadth, do not publish a fair comparison claim.
 - If the team adoption operating model is not linked from README or reviewer docs, do not promote the package for multi-person adoption.

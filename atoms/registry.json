@@ -621,6 +621,62 @@
       "description": "Walk specs/changes/<id>/ and phase-run artifactRefs, build evidence packet for gate",
       "requires_http": false
     },
+    "P1.policy.resolve": {
+      "track": "lite",
+      "type": "js",
+      "module": "src/core/atoms/policy/resolve.js",
+      "export": "policyResolve",
+      "description": "Resolve personal/team policy overlay and write policy_effective.json without forking yolo/corps",
+      "requires_http": false
+    },
+    "P2.policy.gate": {
+      "track": "lite",
+      "type": "js",
+      "module": "src/core/atoms/policy/gate.js",
+      "export": "policyGate",
+      "description": "Evaluate effective team policy against coverage, reviewer, and smoke evidence; write structured policy_gate.json",
+      "requires_http": false
+    },
+    "G5.intake.recommend": {
+      "track": "lite",
+      "type": "js",
+      "module": "src/core/atoms/intake/recommend.js",
+      "export": "intakeRecommend",
+      "description": "Build demand profile and workflow_recommendation.json for yolo/corps plus optional gate overlays",
+      "requires_http": false
+    },
+    "N1.notify.checkpoint": {
+      "track": "lite",
+      "type": "js",
+      "module": "src/core/atoms/notify/checkpoint.js",
+      "export": "notifyCheckpoint",
+      "description": "Send file/mock checkpoint notification evidence; does not approve human gates",
+      "requires_http": false
+    },
+    "N2.plugin.run": {
+      "track": "lite",
+      "type": "js",
+      "module": "src/core/atoms/plugin/run.js",
+      "export": "pluginRun",
+      "description": "Run or dry-run generic script/webhook plugin providers and write structured plugin result evidence",
+      "requires_http": false
+    },
+    "N3.storage.sync": {
+      "track": "lite",
+      "type": "js",
+      "module": "src/core/atoms/storage/sync.js",
+      "export": "storageSync",
+      "description": "Import/export file/mock shared storage artifacts under .xflow/storage and record sync evidence",
+      "requires_http": false
+    },
+    "N4.experience.digest": {
+      "track": "lite",
+      "type": "js",
+      "module": "src/core/atoms/experience/digest.js",
+      "export": "experienceDigest",
+      "description": "Summarize local/team experience entries into advisory experience_digest.json",
+      "requires_http": false
+    },
     "K1.artifacts.complete_check": {
       "track": "lite",
       "type": "python",

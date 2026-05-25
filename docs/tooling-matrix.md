@@ -17,6 +17,7 @@ xflow demo launch
 xflow launch dossier
 xflow compare codex-goal
 xflow compare superpowers
+xflow compare super-assistant
 xflow compare gstack
 xflow init --project-root .
 xflow goal set "Ship the next verified change" --project-root .

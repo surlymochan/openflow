@@ -11,6 +11,7 @@ This benchmark is intentionally stricter than a marketing comparison. A category
 ## Reference Systems
 
 - Superpowers: strong skill distribution, agent behavior shaping, and test-driven coding guidance.
+- Super-Assistant: broad enterprise harness with team constraints, checkpoint notifications, plugin execution, experience indexing, and S3-backed sync.
 - OpenSpec: strong spec-driven workflow, low-friction command surface, and cross-tool positioning.
 - gstack: strong role-specialist command surface, browser QA, and host-native release rituals for Codex / Claude Code.
 - spec-kit: strong specification-driven development lifecycle, broad public extension surface, and ecosystem credibility.
@@ -25,7 +26,7 @@ This benchmark is intentionally stricter than a marketing comparison. A category
 | Verification rigor | Drift checks, tests, gates, and sync checks catch regressions before release. | `npm test`, `npm run drift:scan`, `npm run skill:diff`, deterministic gates | Strong |
 | TDD / code quality push | Red runs before implementation, green runs after implementation, and changed tests are checked for quality anti-patterns. | `I6a.tdd.run`, `I6b.tdd.proof_validate`, `I6c.tdd.quality_review`, `test/tdd-proof.test.js`, `verify_proof.json` | Strong |
 | Operator onboarding | First commands explain the human loop, initialize a project, and report whether the local install is ready. | `xflow quickstart`, `xflow guide`, `xflow init`, `xflow doctor`, `npm run doctor` | Strong |
-| One-shot evaluation | External evaluators can see quality score, Codex goal / Superpowers positioning, plus OpenSpec / gstack comparisons, launch blockers, release-owner status, claim boundaries, next actions, and first-run path from one command family. | `xflow evaluate`, `xflow evaluate --json`, `xflow release status`, `xflow release status --json`, `xflow compare codex-goal --json`, `xflow compare superpowers --json`, `xflow compare openspec --json`, `xflow compare gstack --json`, `xflow assess --json`, `xflow launch audit --json`, `xflow launch claims --json`, `xflow launch copy --json` | Strong |
+| One-shot evaluation | External evaluators can see quality score, Codex goal / Superpowers / Super-Assistant positioning, plus OpenSpec / gstack comparisons, launch blockers, release-owner status, claim boundaries, next actions, and first-run path from one command family. | `xflow evaluate`, `xflow evaluate --json`, `xflow release status`, `xflow release status --json`, `xflow compare codex-goal --json`, `xflow compare superpowers --json`, `xflow compare super-assistant --json`, `xflow compare openspec --json`, `xflow compare gstack --json`, `xflow assess --json`, `xflow launch audit --json`, `xflow launch claims --json`, `xflow launch copy --json` | Strong |
 | Spec durability | Plans, proposal artifacts, workflow deltas, AHA, and handoff survive thread changes. | `specs/changes/*`, `specs/workflow.md`, `AHA.md`, `HANDOFF.md` | Strong |
 | Cross-tool portability | Skills and workflows can be installed without personal machine assumptions. | `docs/compatibility.md`, `.as-xflow/config.json`, skillhub sync wrapper, installed skill diff | Strong |
 | Public product clarity | New users can understand the system without reading implementation internals. | README badges, `xflow quickstart`, `xflow guide`, `xflow evaluate`, `xflow assess`, `xflow demo launch`, `xflow launch dossier`, `xflow launch claims`, `xflow launch copy`, `xflow launch audit`, `xflow adoption status`, `xflow adoption trial`, `xflow package status`, `xflow package preflight`, `xflow package audit`, `xflow score`, `docs/quality-assessment.md`, `docs/launch-demo.md`, `docs/examples-gallery.md`, `docs/adoption/README.md`, `docs/methodology.md`, `docs/public-benchmark.md`, `RELEASE_NOTES.md`, `docs/fixtures/tracker-item.json`, this benchmark | Strong |
@@ -41,6 +42,12 @@ Against Superpowers, xflow should not claim behavior-guidance superiority.
 Superpowers remains stronger as lightweight behavior discipline; xflow's
 stronger claim is repo-local workflow evidence, cross-tool state, and launch
 gates.
+
+Against Super-Assistant, xflow should not claim broader concrete enterprise
+connector inventory. Super-Assistant remains a useful reference for DingTalk,
+plugin, checkpoint, experience, and S3 patterns. xflow's stronger claim is
+absorbing those patterns as a policy overlay and thin atoms, keeping workflow
+authority in local YAML, gates, and proof artifacts.
 
 Against gstack, xflow should not claim better role choreography or browser
 rituals. The stronger xflow claim is repo-owned workflow truth: checked-in YAML,
@@ -86,6 +93,7 @@ xflow corps --explain --json
 xflow compare codex-goal
 xflow compare gstack
 xflow compare superpowers
+xflow compare super-assistant
 xflow compare openspec
 xflow compare spec-kit
 xflow adapter import-file --input docs/fixtures/tracker-item.json --json

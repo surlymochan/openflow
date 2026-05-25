@@ -27,6 +27,7 @@ xflow spec delta --change-id release-proof-adapter
 xflow compare codex-goal
 xflow compare gstack
 xflow compare superpowers
+xflow compare super-assistant
 xflow compare openspec
 xflow compare spec-kit
 xflow score
@@ -53,6 +54,7 @@ xflow launch audit --pre-publish --strict --json
 | TDD quality pressure | `I6a.tdd.run`, `I6b.tdd.proof_validate`, `I6c.tdd.quality_review`, and `test/tdd-proof.test.js`. |
 | gstack comparison | `docs/gstack-comparison.md` and `xflow compare gstack --json`. |
 | Superpowers comparison | `docs/superpowers-comparison.md` and `xflow compare superpowers --json`. |
+| Super-Assistant comparison | `docs/super-assistant-comparison.md` and `xflow compare super-assistant --json`. |
 | OpenSpec migration | `xflow spec openspec-map`, `docs/openspec-migration.md`, and `xflow spec delta`. |
 | Spec authoring flow | `xflow spec start`, `docs/openspec-migration.md`, and generated `specs/changes/<id>/` artifacts. |
 | spec-kit comparison | `docs/spec-kit-benchmark.md`, `docs/integrations.md`, and `xflow compare spec-kit --json`. |

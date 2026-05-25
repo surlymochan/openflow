@@ -99,7 +99,7 @@ Red proof must fail before implementation. Green proof must pass after implement
 | Surface | OpenFlow Position |
 | --- | --- |
 | Goal alignment | Project-level `.xflow/GOAL.md` that yolo, corps, Ralph, handoff, and takein consume |
-| One-shot evaluation | `xflow evaluate` combines quality score, Codex goal / Superpowers comparison, ordinary and splash launch blockers, release-owner status, claim boundaries, next actions, and first-run path |
+| One-shot evaluation | `xflow evaluate` combines quality score, Codex goal / Superpowers / Super-Assistant comparison, ordinary and splash launch blockers, release-owner status, claim boundaries, next actions, and first-run path |
 | Quality assessment | `xflow assess` gives a public scorecard for goal, yolo, corps, and the skill family |
 | Launch demo | `xflow demo launch` shows goal -> yolo and goal -> corps proof paths |
 | Launch audit | `xflow launch audit` separates ready engine and adoption evidence from missing registry proof |
@@ -119,7 +119,7 @@ Red proof must fail before implementation. Green proof must pass after implement
 | Team handoff | `HANDOFF.md`, `AHA.md`, reviewer guide |
 | Team adoption | Role model, CI boundary, PR acceptance, release ownership |
 | Cross-tool use | Plain CLI and skill docs for Codex, Claude Code, Cursor, OpenCode, Gemini |
-| Competitive proof | `xflow compare codex-goal`, `xflow compare superpowers`, `xflow compare openspec`, `xflow compare gstack`, `xflow compare spec-kit`, benchmark docs |
+| Competitive proof | `xflow compare codex-goal`, `xflow compare superpowers`, `xflow compare super-assistant`, `xflow compare openspec`, `xflow compare gstack`, `xflow compare spec-kit`, benchmark docs |
 | Adoption proof | Minimal clean project runs in CI, plus public adoption-record templates |
 
 ## Docs
@@ -136,6 +136,7 @@ Red proof must fail before implementation. Green proof must pass after implement
 - [Launch dossier](docs/launch-dossier.md)
 - [Corps operator guide](docs/corps-operator-guide.md)
 - [Superpowers comparison](docs/superpowers-comparison.md)
+- [Super-Assistant comparison](docs/super-assistant-comparison.md)
 - [Adoption evidence template](docs/adoption/README.md)
 - [Maintainer adoption record](docs/adoption/openflow-release-hardening.md)
 - [xflow Goal vs Codex native goal](docs/goal-vs-codex.md)

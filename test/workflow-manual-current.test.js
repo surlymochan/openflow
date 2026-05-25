@@ -11,8 +11,10 @@ describe('workflow manual and handoff currentness', () => {
     const atomCount = Object.keys(registry.atoms).length;
     const manual = readFileSync(resolve(REPO_ROOT, 'docs', 'workflow-manual.md'), 'utf8');
 
-    assert.equal(atomCount, 76);
-    assert.match(manual, /76 atoms/);
+    assert.equal(atomCount, 83);
+    assert.match(manual, /83 atoms/);
+    assert.doesNotMatch(manual, /82 atoms/);
+    assert.doesNotMatch(manual, /76 atoms/);
     assert.doesNotMatch(manual, /65 atoms/);
     assert.doesNotMatch(manual, /64 atoms/);
     assert.doesNotMatch(manual, /63 atoms/);

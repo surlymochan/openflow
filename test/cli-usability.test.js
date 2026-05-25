@@ -2413,6 +2413,8 @@ phases:
     assert.ok(payload.competitive.codex_goal.boundary.not_for.some((item) => item.includes('replacing plan.md')));
     assert.equal(payload.competitive.superpowers.target, 'superpowers');
     assert.ok(payload.competitive.superpowers.target_edges.some((edge) => edge.includes('behavioral guidance')));
+    assert.equal(payload.competitive.super_assistant.target, 'super-assistant');
+    assert.ok(payload.competitive.super_assistant.target_edges.some((edge) => edge.includes('enterprise harness')));
     assert.ok(payload.quickstart.source_checkout.commands.includes('npm run release:pack'));
     assert.ok(payload.quickstart.release_owner_gates.commands.includes('xflow release status --json'));
     assert.ok(payload.quickstart.release_owner_gates.commands.includes('xflow adoption trial --name <team-or-project> --source <tracker-or-pr> --track yolo'));
@@ -2425,6 +2427,7 @@ phases:
     assert.ok(payload.proof_commands.includes('xflow release status --json'));
     assert.ok(payload.proof_commands.includes('xflow compare codex-goal --json'));
     assert.ok(payload.proof_commands.includes('xflow compare superpowers --json'));
+    assert.ok(payload.proof_commands.includes('xflow compare super-assistant --json'));
     assert.ok(payload.proof_commands.includes('xflow adoption status --json'));
     assert.ok(payload.proof_commands.includes('xflow package status --json'));
     assert.ok(payload.proof_commands.includes('xflow adoption trial --name <team-or-project> --source <tracker-or-pr> --track yolo --json'));
@@ -4317,6 +4320,24 @@ Repository names were sanitized.
     assert.ok(superpowersPayload.scorecard.dimensions.some((dimension) => dimension.id === 'workflow_execution' && dimension.evidence_refs.includes('workflows/corps.yaml')));
     assert.ok(superpowersPayload.target_edges.some((edge) => edge.includes('behavioral guidance')));
     assert.ok(superpowersPayload.xflow_edges.some((edge) => edge.includes('xflow coach')));
+
+    result = spawnSync('node', ['bin/xflow.js', 'compare', 'super-assistant', '--json'], {
+      cwd: REPO_ROOT,
+      encoding: 'utf8',
+      timeout: 3000,
+    });
+
+    assert.equal(result.status, 0, result.stderr || result.stdout || String(result.error));
+    const superAssistantPayload = JSON.parse(result.stdout);
+    assert.equal(superAssistantPayload.ok, true);
+    assert.equal(superAssistantPayload.target, 'super-assistant');
+    assert.equal(superAssistantPayload.winner.overall, 'xflow');
+    assert.equal(superAssistantPayload.scorecard.overall.xflow, 95);
+    assert.equal(superAssistantPayload.scorecard.overall['super-assistant'], 76);
+    assert.ok(superAssistantPayload.scorecard.dimensions.some((dimension) => dimension.id === 'policy_overlay_and_team_constraints' && dimension.winner === 'xflow'));
+    assert.ok(superAssistantPayload.scorecard.dimensions.some((dimension) => dimension.id === 'notification_gate_separation' && dimension.evidence_refs.some((ref) => ref.includes('approves_gate=false'))));
+    assert.ok(superAssistantPayload.xflow_edges.some((edge) => edge.includes('policy_effective.json')));
+    assert.ok(superAssistantPayload.target_edges.some((edge) => edge.includes('team_constraints.py')));
 
     result = spawnSync('node', ['bin/xflow.js', 'compare', 'codex-goal', '--json'], {
       cwd: REPO_ROOT,

@@ -55,6 +55,7 @@ describe('local release checklist', () => {
       'docs/integrations.md',
       'docs/goal-vs-codex.md',
       'docs/superpowers-comparison.md',
+      'docs/super-assistant-comparison.md',
       'docs/adoption/README.md',
       'docs/adoption/openflow-release-hardening.md',
       'docs/spec-kit-benchmark.md',
