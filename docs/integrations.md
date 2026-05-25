@@ -15,6 +15,7 @@ openflow keeps integrations thin: external systems may supply issues, docs, CI, 
 | CI Guard / Release Gate | `npm run release:pack`, `npm run publish:check`, `xflow adoption validate --json`, `xflow package preflight --check-registry --check-auth --json`, and `xflow package audit --check-registry --json` | Block public claims until local proof, package proof, registry proof, and real adoption evidence are green. | Implemented |
 | gstack | `xflow compare gstack` and `docs/gstack-comparison.md` | Keep the comparison fair: gstack wins role-specialist host commands and browser QA; xflow wins repo-owned workflow truth, proof, and launch gates. | Implemented |
 | Superpowers | `xflow compare superpowers` and `docs/superpowers-comparison.md` | Keep the comparison fair: Superpowers wins lightweight behavior guidance; xflow wins repo-local workflow evidence and launch gates. | Implemented |
+| Super-Assistant | `xflow compare super-assistant` and `docs/super-assistant-comparison.md` | Keep the comparison fair: Super-Assistant wins raw enterprise connector breadth; xflow wins policy-overlay runtime, atomized provider seams, and structured proof. | Implemented |
 | OpenSpec | `xflow spec openspec-map` | Map OpenSpec projects into xflow without moving files. | Implemented |
 | spec-kit | `xflow compare spec-kit` and `docs/spec-kit-benchmark.md` | Keep a repeatable benchmark path against spec-kit-style delivery. | Implemented |
 

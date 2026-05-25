@@ -64,6 +64,7 @@ xflow evaluate
 xflow evaluate --json
 xflow compare codex-goal --json
 xflow compare superpowers --json
+xflow compare super-assistant --json
 xflow compare gstack --json
 xflow demo launch
 xflow demo launch --json

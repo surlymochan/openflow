@@ -93,6 +93,7 @@ xflow package preflight --check-registry --check-auth --json
 xflow launch audit --pre-publish --strict --json
 xflow package audit --check-registry --json
 xflow compare superpowers
+xflow compare super-assistant
 xflow compare openspec
 xflow compare gstack
 xflow compare spec-kit

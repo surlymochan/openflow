@@ -45,6 +45,7 @@ specs/changes/<change-id>/spec_delta_review.md
 
 ```bash
 xflow compare superpowers
+xflow compare super-assistant
 xflow compare codex-goal
 xflow compare openspec
 xflow compare gstack

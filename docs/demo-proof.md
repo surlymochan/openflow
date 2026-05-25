@@ -74,6 +74,7 @@ xflow score
 xflow goal audit --json
 xflow corps --explain --json
 xflow compare superpowers
+xflow compare super-assistant
 xflow compare openspec
 xflow compare gstack
 xflow compare spec-kit

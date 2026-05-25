@@ -48,6 +48,7 @@ describe('competitive readiness benchmark', () => {
       'docs/openspec-migration.md',
       'docs/spec-kit-benchmark.md',
       'docs/superpowers-comparison.md',
+      'docs/super-assistant-comparison.md',
       'docs/public-release.md',
       'docs/public-benchmark.md',
       'docs/npm-publish-handoff.md',
@@ -94,7 +95,7 @@ describe('competitive readiness benchmark', () => {
       'Cross-tool portability',
       'Goal alignment',
       'One-shot evaluation',
-      'Codex goal / Superpowers positioning',
+      'Codex goal / Superpowers / Super-Assistant positioning',
       'xflow goal set',
       'xflow goal show --json',
       'xflow goal audit --json',
@@ -132,6 +133,7 @@ describe('competitive readiness benchmark', () => {
       'xflow compare openspec',
       'xflow compare spec-kit',
       'xflow compare superpowers',
+      'xflow compare super-assistant',
       'xflow adapter import-file',
       'npm run release:pack',
       'npm run publish:check',
@@ -143,6 +145,8 @@ describe('competitive readiness benchmark', () => {
 
     assert.match(benchmark, /Superpowers/);
     assert.match(benchmark, /xflow compare superpowers/);
+    assert.match(benchmark, /Super-Assistant/);
+    assert.match(benchmark, /xflow compare super-assistant/);
     assert.match(benchmark, /OpenSpec/);
     assert.match(benchmark, /spec-kit/);
     assert.match(benchmark, /gstack/);
@@ -205,6 +209,29 @@ describe('competitive readiness benchmark', () => {
       'evidence_refs',
       'workflows/corps.yaml',
       'xflow compare superpowers --json',
+    ]) {
+      assert.match(comparison, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    }
+  });
+
+  test('Super-Assistant comparison protects policy-overlay absorption boundary', () => {
+    const comparison = readFileSync(resolve(REPO_ROOT, 'docs', 'super-assistant-comparison.md'), 'utf8');
+
+    for (const phrase of [
+      '95/100',
+      '76/100',
+      'Policy overlay and team constraints',
+      'Enterprise atomization',
+      'Notification / gate separation',
+      'xflow compare super-assistant --json',
+      'xflow policy validate --json',
+      'xflow intake recommend',
+      'notify.checkpoint',
+      'approves_gate=false',
+      'plugin.run',
+      'storage.sync',
+      'experience.digest',
+      'notification is not approval',
     ]) {
       assert.match(comparison, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
     }
@@ -470,6 +497,7 @@ describe('competitive readiness benchmark', () => {
       'xflow compare openspec',
       'xflow compare spec-kit',
       'xflow compare superpowers',
+      'xflow compare super-assistant',
     ]) {
       assert.match(demoProof, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
     }
@@ -536,6 +564,7 @@ describe('competitive readiness benchmark', () => {
       'Confluence',
       'CI Guard',
       'Superpowers',
+      'Super-Assistant',
       'OpenSpec',
       'spec-kit',
     ]) {
@@ -558,6 +587,7 @@ describe('competitive readiness benchmark', () => {
       'xflow adoption trial',
       'xflow compare codex-goal',
       'xflow compare superpowers',
+      'xflow compare super-assistant',
       'xflow compare openspec',
       'xflow compare spec-kit',
       'npm run publish:check',
@@ -614,6 +644,7 @@ describe('competitive readiness benchmark', () => {
       'xflow compare openspec',
       'xflow compare spec-kit',
       'xflow compare superpowers',
+      'xflow compare super-assistant',
       'xflow adapter import-file',
       'npm run publish:check',
       'spec_delta_review.json',
