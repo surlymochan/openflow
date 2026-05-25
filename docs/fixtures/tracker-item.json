@@ -1,0 +1,7 @@
+{
+  "id": "release-proof-adapter",
+  "source": "tracker-file",
+  "title": "Prove public release readiness with xflow adapter import",
+  "body": "Use this sample tracker item to demonstrate adapter import and artifact generation without relying on the deleted examples directory.",
+  "labels": ["adapter", "public-benchmark", "release"]
+}

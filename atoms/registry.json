@@ -1,0 +1,676 @@
+{
+  "_comment": "Canonical atom registry. Every atom has exactly ONE implementation. track=lite atoms must not import heavy modules.",
+  "atoms": {
+    "A1.issue.create_or_patch": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/a1_issue_create_or_patch.py",
+      "description": "Create or patch a GitHub issue, return issue number and URL",
+      "input_schema": {
+        "repo": "string",
+        "change_id": "string",
+        "title": "string",
+        "body_file": "string?",
+        "issue_number": "integer?"
+      }
+    },
+    "A2.branch.create_and_link": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/a2_branch_create_and_link.py",
+      "description": "Create branch named after issue, push, and link back to issue via comment",
+      "input_schema": {
+        "repo": "string",
+        "change_id": "string",
+        "issue_number": "integer",
+        "base_branch": "string?"
+      }
+    },
+    "A3.repo.doctor": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/a3_repo_doctor.py",
+      "description": "Validate repo/remote/issue/branch/project consistency, emit JSON verdict",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string"
+      }
+    },
+    "A4.project.set_status": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/a4_project_set_status.py",
+      "description": "Move GitHub Project item to a named status column (In Progress / Done)",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string",
+        "target_status": "string"
+      }
+    },
+    "A5.archive.commit_push_close": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/a5_archive_commit_push_close.py",
+      "description": "Stage artifacts, create commit, push branch, close issue, mark project Done",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string",
+        "commit_message": "string?"
+      }
+    },
+    "A6.pr.create": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/a6_pr_create.py",
+      "description": "Open a PR from the issue branch against base, return PR URL",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string",
+        "base_branch": "string?"
+      }
+    },
+    "B1.change.scaffold": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/b1_change_scaffold.py",
+      "description": "Initialize specs/changes/<change_id>/ with proposal/plan/tasks/status.json",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string",
+        "title": "string",
+        "change_type": "string"
+      }
+    },
+    "B2.status.read": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/b2_status_read.py",
+      "description": "Read and return the parsed status.json for a change",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string"
+      }
+    },
+    "B2b.status.write": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/b2b_status_write.py",
+      "description": "Merge fields into status.json, preserving history arrays",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string",
+        "fields": "object"
+      }
+    },
+    "B3.status.transition": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/b3_status_transition.py",
+      "description": "Assert and record a stage or status transition with history entry",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string",
+        "to_stage": "string?",
+        "to_status": "string?",
+        "reason": "string?"
+      }
+    },
+    "B4.handoff.scaffold_or_refresh": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/b4_handoff_scaffold_or_refresh.py",
+      "description": "Create or refresh root HANDOFF.md with required Context Pack sections",
+      "input_schema": {
+        "project_root": "string",
+        "title": "string?"
+      }
+    },
+    "B5.aha.append": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/b5_aha_append.py",
+      "description": "Append a structured AHA entry to root AHA.md",
+      "input_schema": {
+        "project_root": "string",
+        "title": "string",
+        "insight": "string",
+        "why": "string",
+        "action": "string",
+        "evidence": "string[]?"
+      }
+    },
+    "B6.takein.digest": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/b6_takein_digest.py",
+      "description": "Extract compact digest from HANDOFF.md and AHA.md for session rehydration",
+      "input_schema": {
+        "project_root": "string"
+      }
+    },
+    "B6b.lookback.digest": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/b6b_lookback_digest.py",
+      "description": "List lookback sources (HANDOFF.md, AHA.md, DESIGN.md, recent plans)",
+      "input_schema": {
+        "project_root": "string"
+      }
+    },
+    "B7.change_mission.bind": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/b7_change_mission_bind.py",
+      "description": "Write change_id <-> mission_id binding row to .as-xflow/bindings.json",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string",
+        "mission_id": "string?",
+        "direction": "string?"
+      }
+    },
+    "C1.mem": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/c1_mem.py",
+      "description": "Opaque personal/global memory atom — all subcommands passed through verbatim",
+      "input_schema": {
+        "subcommand": "string",
+        "args": "string[]?"
+      }
+    },
+    "E6.gate.local_precheck": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/e6_gate_local_precheck.py",
+      "description": "Deterministic preflight gate: artifact presence + status.json consistency + doctor. Single source of truth for lite gate logic.",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string",
+        "phase": "string"
+      }
+    },
+    "H1.design.lite_gate": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/h1_design_lite_gate.py",
+      "description": "Check DESIGN.md presence and required sections (Reference Anchors, Beauty Contract, Layout Premise). Deterministic.",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string",
+        "require_full_contract": "boolean?"
+      }
+    },
+    "I6a.tdd.run": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/i6a_tdd_run.py",
+      "description": "Run test command, capture raw result, and enforce phase expectation for TDD proof",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string",
+        "test_command": "string",
+        "phase": "string?",
+        "expect": "pass|fail?"
+      }
+    },
+    "I6b.tdd.proof_validate": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/i6b_tdd_proof_validate.py",
+      "description": "Validate tdd proof schema and semantics: red fails, green/refactor passes",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string",
+        "phase": "string?"
+      }
+    },
+    "I6c.tdd.quality_review": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/i6c_tdd_quality_review.py",
+      "description": "Review TDD changed-test quality and reject code changes without meaningful test changes",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string",
+        "diff_ref": "string?"
+      }
+    },
+    "J4a.spec_consistency.structural": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/j4a_spec_consistency_structural.py",
+      "description": "Deterministic structural consistency check: diff proposal sections vs plan tasks vs specs/* vs AHA.md keyword anchors",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string"
+      }
+    },
+    "J4b.spec_delta.review": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/j4b_spec_delta_review.py",
+      "description": "Generate deterministic reviewer-facing spec delta review for proposal, plan, tasks, and merge spec snippets",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string"
+      }
+    },
+    "J4c.openspec.migration_map": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/j4c_openspec_migration_map.py",
+      "description": "Read OpenSpec folders and generate a safe as-xflow migration mapping report",
+      "input_schema": {
+        "project_root": "string",
+        "openspec_root": "string?"
+      }
+    },
+    "K6.aha.merge": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/k6_aha_merge.py",
+      "description": "Merge durable insights from change workspace into root AHA.md (idempotent, dated)",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string"
+      }
+    },
+    "D1.mission.create": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/mission/create.js",
+      "export": "missionCreate",
+      "description": "Create mission in state.sqlite with goal/workspace/repo/intake_snapshot",
+      "requires_http": false
+    },
+    "D2.mission.list": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/mission/list.js",
+      "export": "missionList",
+      "description": "List missions from state",
+      "requires_http": false
+    },
+    "D2b.mission.show": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/mission/show.js",
+      "export": "missionShow",
+      "description": "Show mission detail including phase-runs and gate decisions",
+      "requires_http": false
+    },
+    "D3a.phase_run.start": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/phase-run/start.js",
+      "export": "phaseRunStart",
+      "requires_http": false
+    },
+    "D3b.phase_run.persist": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/phase-run/persist.js",
+      "export": "phaseRunPersist",
+      "requires_http": false
+    },
+    "D3c.phase_run.complete": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/phase-run/complete.js",
+      "export": "phaseRunComplete",
+      "requires_http": false
+    },
+    "D3d.phase_run.fail": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/phase-run/fail.js",
+      "export": "phaseRunFail",
+      "requires_http": false
+    },
+    "D4.event.ingest": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/event/ingest.js",
+      "export": "eventIngest",
+      "requires_http": false
+    },
+    "D5.intervention.create": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/intervention/create.js",
+      "export": "interventionCreate",
+      "requires_http": false
+    },
+    "E1.workflow.state_load": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/workflow/state-load.js",
+      "export": "workflowStateLoad",
+      "requires_http": false
+    },
+    "E2.workflow.guard": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/workflow/guard.js",
+      "export": "workflowGuard",
+      "description": "Mint gate token, run command, validate artifact, advance state. Uses E6 for structural checks.",
+      "requires_http": false
+    },
+    "E3.gate.workbench": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/gate/workbench.js",
+      "export": "gateWorkbench",
+      "requires_http": false
+    },
+    "E4.gate.payload_from_phase_run": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/gate/payload-from-phase-run.js",
+      "export": "gatePayloadFromPhaseRun",
+      "requires_http": false
+    },
+    "E5.artifact.verify": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/gate/artifact-verify.js",
+      "export": "artifactVerify",
+      "requires_http": false
+    },
+    "E7.workflow.advance": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/workflow/advance.js",
+      "export": "workflowAdvance",
+      "description": "Advance workflow cursor to next phase after gate passes. Split from E2 for retry support.",
+      "requires_http": false
+    },
+    "F1.memory_item.manage": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/memory/manage.js",
+      "export": "memoryItemManage",
+      "requires_http": false
+    },
+    "F2.memory.mount": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/memory/mount.js",
+      "export": "memoryMount",
+      "requires_http": false
+    },
+    "G1.intake.preview_or_refine": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/intake/preview-or-refine.js",
+      "export": "intakePreviewOrRefine"
+    },
+    "G2.intake.classify": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/intake/classify.js",
+      "export": "intakeClassify",
+      "requires_http": false
+    },
+    "G3.research.same_category": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/intake/research-same-category.js",
+      "export": "researchSameCategory",
+      "requires_http": false
+    },
+    "G4.design_skill.select": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/intake/design-skill-select.js",
+      "export": "designSkillSelect",
+      "requires_http": false
+    },
+    "H2.design.contract_freeze": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/design/contract-freeze.js",
+      "export": "designContractFreeze",
+      "requires_http": false
+    },
+    "H2b.design.competitor_reconstruction_review": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/design/competitor-reconstruction-review.js",
+      "export": "competitorReconstructionReview",
+      "requires_http": false
+    },
+    "H2d.design.reference_surface_lock": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/design/reference-surface-lock.js",
+      "export": "referenceSurfaceLock",
+      "requires_http": false
+    },
+    "H2e.design.reconstruction_pack": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/design/reconstruction-pack.js",
+      "export": "reconstructionPack",
+      "requires_http": false
+    },
+    "H2f.design.generation_contract": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/design/generation-contract.js",
+      "export": "generationContract",
+      "requires_http": false
+    },
+    "H2c.design.competitor_contract_validate": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/gate/competitor-contract-validate.js",
+      "export": "competitorContractValidate",
+      "requires_http": false
+    },
+    "H3a.visual.direction_synthesis": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/visual/direction-synthesis.js",
+      "export": "visualDirectionSynthesis",
+      "requires_http": false
+    },
+    "H3b.visual.layout_competition": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/visual/layout-competition.js",
+      "export": "visualLayoutCompetition",
+      "requires_http": false
+    },
+    "H3c.visual.design_selection": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/visual/design-selection.js",
+      "export": "visualDesignSelection",
+      "requires_http": false
+    },
+    "H4a.pencil.draft": {
+      "track": "heavy",
+      "type": "agent_invoke",
+      "module": "src/core/atoms/agent-invoke.js",
+      "prompt_template": "prompts/pencil-draft.md",
+      "expected_artifact": "specs/changes/${change_id}/pencil_output.pen",
+      "agent_config": { "adapter": "auto", "require_real_runtime": true, "model": "claude-sonnet-4-6", "timeout_ms": 900000 },
+      "stub_config": {
+        "write_pen": true
+      }
+    },
+    "H4b.pencil.refine": {
+      "track": "heavy",
+      "type": "agent_invoke",
+      "module": "src/core/atoms/agent-invoke.js",
+      "prompt_template": "prompts/pencil-refine.md",
+      "expected_artifact": "specs/changes/${change_id}/pencil_output.pen",
+      "agent_config": { "adapter": "auto", "require_real_runtime": true, "model": "claude-sonnet-4-6", "timeout_ms": 900000 },
+      "stub_config": {
+        "write_pen": true
+      }
+    },
+    "H4c.pencil.accept": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/pencil/accept.js",
+      "export": "pencilAccept",
+      "requires_http": false
+    },
+    "H5.visual.review": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/visual/review.js",
+      "export": "visualReview",
+      "requires_http": false
+    },
+    "H5b.visual.review.aggregate": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/visual/review-aggregate.js",
+      "export": "visualReviewAggregate",
+      "description": "Aggregate parallel visual review and benchmark worker outputs into a single llm_design_review artifact"
+    },
+    "H6.visual.benchmark": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/visual/benchmark.js",
+      "export": "visualBenchmark",
+      "description": "Execute the deterministic reference-backed visual benchmark and persist visual_benchmark.json"
+    },
+    "H6b.visual.benchmark_validate": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/gate/visual-benchmark-validate.js",
+      "export": "visualBenchmarkValidate",
+      "requires_http": false
+    },
+    "H6c.visual.benchmark_repair_plan": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/visual/benchmark-repair-plan.js",
+      "export": "benchmarkRepairPlan",
+      "requires_http": false
+    },
+    "H6d.visual.aesthetic_review": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/visual/aesthetic-review.js",
+      "export": "visualAestheticReview",
+      "requires_http": false,
+      "description": "Gate high-aesthetic UI readiness across aesthetic contract, image-reference strategy, Pencil boundary, and benchmark proof"
+    },
+    "I1.team.run": {
+      "track": "heavy",
+      "type": "agent_invoke",
+      "module": "src/core/atoms/agent-invoke.js",
+      "prompt_template": "prompts/phase-execution.md",
+      "expected_artifact": "specs/changes/${change_id}/execution.json",
+      "agent_config": { "adapter": "auto" }
+    },
+    "I1b.team.run.structured": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/team-run.js",
+      "export": "teamRun",
+      "requires_http": false
+    },
+    "I2.phase_run.dispatch": {
+      "track": "heavy",
+      "type": "agent_invoke",
+      "module": "src/core/atoms/agent-invoke.js",
+      "prompt_template": "prompts/phase-artifact.md",
+      "expected_artifact": "specs/changes/${change_id}/execute.json",
+      "agent_config": { "adapter": "auto" },
+      "stub_config": {
+        "use_phase_artifact": false,
+        "summary": "Phase-run dispatch completed and execution evidence was recorded."
+      }
+    },
+    "I4.patch.challenge": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/patch-challenge.js",
+      "export": "patchChallenge"
+    },
+    "I5.codex.app_bridge": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/agent_team/atoms/codex-app-bridge.js",
+      "export": "codexAppBridge",
+      "requires_http": false
+    },
+    "J1.tests.run": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/j1_tests_run.py",
+      "description": "Run planned verification commands, capture pass/fail proof",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string",
+        "commands": "string[]"
+      }
+    },
+    "J5.gate.evidence_collect": {
+      "track": "heavy",
+      "type": "js",
+      "module": "src/core/atoms/gate/evidence-collect.js",
+      "export": "gateEvidenceCollect",
+      "description": "Walk specs/changes/<id>/ and phase-run artifactRefs, build evidence packet for gate",
+      "requires_http": false
+    },
+    "K1.artifacts.complete_check": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/k1_artifacts_complete_check.py",
+      "description": "Verify proposal/plan/tasks/status.json (and design.md if frontend) exist and are non-empty",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string"
+      }
+    },
+    "K2.merge_snippets.apply": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/k2_merge_snippets_apply.py",
+      "description": "Standalone merge-snippets-only helper: append merge-*.md snippets from change workspace into root specs/* files",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string"
+      }
+    },
+    "K3.handoff.refresh": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/k3_handoff_refresh.py",
+      "description": "Refresh root HANDOFF.md to reflect completed change state",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string"
+      }
+    },
+    "K4.mem.lesson_persist": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/k4_mem_lesson_persist.py",
+      "description": "Persist durable lesson from change to cli-use-memory (via C1.mem lesson:project)",
+      "input_schema": {
+        "project_root": "string",
+        "lesson": "string",
+        "context": "string?"
+      }
+    },
+    "K5.archive.publish": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/k5_archive_publish.py",
+      "description": "Standalone terminal status helper: mark status archived; not the workflow archive publisher",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string"
+      }
+    }
+  }
+}

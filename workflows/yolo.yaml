@@ -1,0 +1,229 @@
+name: yolo
+version: 1
+description: >
+  Lightweight delivery workflow for backend, docs, infra, and small UI changes.
+  Does not require an HTTP server. GitHub CLI (gh) required.
+  All gate checks route through E6.gate.local_precheck (yolo_gate.py) — single source of truth.
+track: lite
+requires:
+  agentos_bin: true
+  agentos_http: false
+  gh: true
+  pencil: false
+
+phases:
+  - id: change-init
+    label: "01 · Change init"
+    catalog_ref: 1
+    required: true
+    atoms:
+      - id: B1.change.scaffold
+        with: { change_type: "${input.change_type}", title: "${input.title}" }
+      - id: B2b.status.write
+        with:
+          fields:
+            current_stage: "change-init"
+            status: "draft"
+            archival_status: "not_ready"
+      - id: B7.change_mission.bind
+        with: { direction: "change_to_mission" }
+    artifacts:
+      - { path: "specs/changes/${change_id}/status.json", optional: false }
+      - { path: "specs/changes/${change_id}/proposal.md", optional: true }
+    gate:
+      type: deterministic
+      atom: E6.gate.local_precheck
+      with: { phase: "pre-openissue" }
+      on_fail: stop
+
+  - id: brainstorm
+    label: "03 · Brainstorm"
+    catalog_ref: 3
+    required: true
+    atoms:
+      - id: B3.status.transition
+        with: { to_stage: "brainstorm" }
+    gate:
+      type: human
+      on_fail: stop
+
+  - id: design-check-lite
+    label: "09 · Design check (lite)"
+    catalog_ref: 9
+    required: false
+    condition:
+      input_field: change_type
+      equals: frontend
+    atoms:
+      - id: H1.design.lite_gate
+        with: { require_full_contract: false }
+      - id: B3.status.transition
+        with: { to_stage: "design-check" }
+    artifacts:
+      - { path: "DESIGN.md", optional: true }
+    gate:
+      type: deterministic
+      atom: H1.design.lite_gate
+      with: { require_full_contract: false }
+      on_fail: stop
+
+  - id: proposal
+    label: "06 · Proposal freeze"
+    catalog_ref: 6
+    required: true
+    atoms:
+      - id: B3.status.transition
+        with: { to_stage: "proposal-freeze" }
+    artifacts:
+      - { path: "specs/changes/${change_id}/proposal.md", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
+  - id: proposal-consistency-check
+    label: "07 · Proposal consistency check"
+    catalog_ref: 7
+    required: true
+    atoms:
+      - id: J4a.spec_consistency.structural
+      - id: B3.status.transition
+        with: { to_stage: "proposal-consistency-check" }
+    gate:
+      type: deterministic
+      atom: J4a.spec_consistency.structural
+      on_fail: stop
+
+  - id: plan
+    label: "18 · Plan"
+    catalog_ref: 18
+    required: true
+    atoms:
+      - id: B3.status.transition
+        with: { to_stage: "plan" }
+    artifacts:
+      - { path: "specs/changes/${change_id}/plan.md", optional: false }
+      - { path: "specs/changes/${change_id}/tasks.md", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
+  - id: openissue
+    label: "19 · Open issue + branch"
+    catalog_ref: 19
+    required: true
+    atoms:
+      - id: A1.issue.create_or_patch
+        with: { repo: "owner/internal-tracker" }
+      - id: A2.branch.create_and_link
+      - id: B2b.status.write
+        with:
+          fields:
+            current_stage: "openissue"
+            status: "active"
+    artifacts:
+      - { path: "specs/changes/${change_id}/status.json", optional: false }
+    gate:
+      type: deterministic
+      atom: E6.gate.local_precheck
+      with: { phase: "post-openissue" }
+      on_fail: stop
+
+  - id: set-in-progress
+    label: "20 · Set issue in progress"
+    catalog_ref: 20
+    required: true
+    atoms:
+      - id: A4.project.set_status
+        with: { target_status: "In Progress" }
+      - id: A3.repo.doctor
+    gate:
+      type: deterministic
+      atom: E6.gate.local_precheck
+      with: { phase: "pre-exec" }
+      on_fail: stop
+
+  - id: tdd-red
+    label: "21a · TDD red"
+    catalog_ref: 21
+    required: true
+    atoms:
+      - id: I6a.tdd.run
+        with: { phase: "red", test_command: "${input.tdd_red_command}", expect: "fail" }
+      - id: I6b.tdd.proof_validate
+        with: { phase: "red" }
+      - id: B3.status.transition
+        with: { to_stage: "tdd" }
+    artifacts:
+      - { path: "specs/changes/${change_id}/tdd/red-0.json", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
+  - id: execute
+    label: "22 · Execute"
+    catalog_ref: 22
+    required: true
+    atoms:
+      - id: B3.status.transition
+        with: { to_stage: "execute" }
+    gate:
+      type: human
+      on_fail: stop
+
+  - id: tdd-green
+    label: "21b · TDD green + quality"
+    catalog_ref: 21
+    required: true
+    atoms:
+      - id: I6a.tdd.run
+        with: { phase: "green", test_command: "${input.tdd_green_command}", expect: "pass" }
+      - id: I6b.tdd.proof_validate
+        with: { phase: "green" }
+      - id: I6c.tdd.quality_review
+    artifacts:
+      - { path: "specs/changes/${change_id}/tdd/green-0.json", optional: false }
+      - { path: "specs/changes/${change_id}/tdd/quality-0.json", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
+  - id: verify-consistency
+    label: "23 · Verify consistency"
+    catalog_ref: 23
+    required: true
+    atoms:
+      - id: J1.tests.run
+      - id: J4a.spec_consistency.structural
+      - id: J4b.spec_delta.review
+      - id: B3.status.transition
+        with: { to_stage: "verify" }
+      - id: B2b.status.write
+        with:
+          fields:
+            verification_status: "running"
+    gate:
+      type: deterministic
+      atom: J4a.spec_consistency.structural
+      on_fail: stop
+
+  - id: archive
+    label: "27 · Archive"
+    catalog_ref: 27
+    required: true
+    atoms:
+      - id: K1.artifacts.complete_check
+      - id: K6.aha.merge
+      - id: K3.handoff.refresh
+      - id: K4.mem.lesson_persist
+        with: { lesson: "${input.lesson_summary}" }
+      - id: A5.archive.commit_push_close
+        with: { push: true, close_issue: true }
+      - id: A6.pr.create
+    artifacts:
+      - { path: "specs/changes/${change_id}/status.json", optional: false }
+      - { path: "specs/changes/${change_id}/spec_delta_review.json", optional: false }
+    gate:
+      type: deterministic
+      atom: E6.gate.local_precheck
+      with: { phase: "pre-archive" }
+      on_fail: stop

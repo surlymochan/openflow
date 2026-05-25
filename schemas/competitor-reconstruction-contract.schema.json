@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://as-xflow/schemas/competitor-reconstruction-contract.schema.json",
+  "title": "Competitor Reconstruction Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "competitor_product",
+    "target_surfaces",
+    "primary_reference_surface",
+    "supporting_reference_surfaces",
+    "required_modules",
+    "primary_journeys",
+    "business_logic_invariants",
+    "decomposition_requirements"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "const": "frozen"
+    },
+    "competitor_product": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_surfaces": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "primary_reference_surface": {
+      "type": "string",
+      "minLength": 1
+    },
+    "supporting_reference_surfaces": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "required_modules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "primary_journeys": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "business_logic_invariants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "decomposition_requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surface_map_required",
+        "layout_map_required",
+        "component_inventory_required",
+        "state_inventory_required",
+        "visual_token_map_required",
+        "reference_intermediate_model_required"
+      ],
+      "properties": {
+        "surface_map_required": { "type": "boolean" },
+        "layout_map_required": { "type": "boolean" },
+        "component_inventory_required": { "type": "boolean" },
+        "state_inventory_required": { "type": "boolean" },
+        "visual_token_map_required": { "type": "boolean" },
+        "reference_intermediate_model_required": { "type": "boolean" }
+      }
+    }
+  }
+}

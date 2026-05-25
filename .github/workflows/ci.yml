@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify
+        run: npm test
+
+      - name: Drift Scan
+        run: npm run drift:scan
+
+      - name: Package Readiness
+        run: npm run pack:check
+
+      - name: Minimal External Adoption Example
+        run: |
+          npm install -g .
+          project_root="$(mktemp -d)"
+          cd "$project_root"
+          cat > package.json <<'JSON'
+          {
+            "name": "xflow-adoption-smoke",
+            "version": "0.0.0",
+            "private": true
+          }
+          JSON
+          xflow guide
+          xflow init --project-root .
+          xflow doctor --project-root .
+          xflow workflow validate yolo --project-root .

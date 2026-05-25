@@ -1,0 +1,56 @@
+{
+  "name": "openflow",
+  "version": "0.1.0",
+  "description": "Open agent delivery workflow runtime: atoms + workflow definitions + xflow CLI",
+  "type": "module",
+  "main": "src/index.js",
+  "license": "MIT",
+  "files": [
+    "README.md",
+    "RELEASE_NOTES.md",
+    "atoms/",
+    "bin/",
+    "docs/",
+    "!docs/adoption/evidence/**",
+    "!docs/adoption/trial-packets/**",
+    "!docs/benchmark-evidence/**",
+    "prompts/",
+    "schemas/",
+    "scripts/",
+    "specs/README.md",
+    "specs/architecture.md",
+    "specs/product.md",
+    "specs/workflow.md",
+    "src/",
+    "workflows/",
+    "xflow/",
+    "!**/__pycache__/**",
+    "!**/*.pyc"
+  ],
+  "scripts": {
+    "start": "node bin/xflow.js serve",
+    "test": "node scripts/run-tests.mjs",
+    "drift:scan": "node --test test/workflow-drift-scan.test.js",
+    "doctor": "node bin/xflow.js doctor",
+    "verify": "npm test",
+    "skill:sync": "sh xflow/scripts/sync_installed_xflow_skill.sh",
+    "skill:diff": "sh xflow/scripts/check_installed_xflow_skill_sync.sh",
+    "pack:check": "npm pack --dry-run",
+    "publish:check": "npm run release:pack && npm publish --dry-run --access public",
+    "release:local": "npm run verify && npm run drift:scan && npm run skill:sync && npm run skill:diff",
+    "release:pack": "npm run verify && npm run drift:scan && npm run skill:diff && npm run pack:check",
+    "workflow:yolo": "node bin/xflow.js workflow run workflows/yolo.yaml",
+    "workflow:corps": "node bin/xflow.js corps",
+    "atom:list": "node bin/xflow.js atom list"
+  },
+  "bin": {
+    "xflow": "bin/xflow.js"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.59.1"
+  }
+}

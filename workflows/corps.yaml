@@ -1,0 +1,475 @@
+name: corps
+version: 1
+description: >
+  Heavy multi-agent delivery workflow for complex user-facing products.
+  Requires as-xflow HTTP server, GitHub CLI, and Pencil.
+  Full 28-phase pipeline covering research → decomposition → design loop → execution → gate_final → archive.
+track: heavy
+parallel:
+  max_agents: 3
+  policy: weighted
+requires:
+  agentos_bin: true
+  agentos_http: true
+  gh: true
+  pencil: true
+
+phases:
+  - id: change-init
+    label: "01 · Change init"
+    catalog_ref: 1
+    required: true
+    atoms:
+      - id: B1.change.scaffold
+        with: { change_type: "${input.change_type}", title: "${input.title}" }
+      - id: D1.mission.create
+        with: { goal: "${input.title}", workspace: "${input.workspace}" }
+      - id: B7.change_mission.bind
+        with: { direction: "change_to_mission" }
+      - id: B2b.status.write
+        with:
+          fields:
+            current_stage: "change-init"
+            status: "draft"
+            archival_status: "not_ready"
+    artifacts:
+      - { path: "specs/changes/${change_id}/status.json", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
+  - id: explore
+    label: "02 · Explore"
+    catalog_ref: 2
+    required: true
+    atoms:
+      - id: G3.research.same_category
+      - id: G2.intake.classify
+      - id: D3a.phase_run.start
+        with: { phase: "explore" }
+      - id: I1b.team.run.structured
+        with: { phase: "explore" }
+      - id: D3c.phase_run.complete
+    artifacts:
+      - { path: "specs/changes/${change_id}/explore.json", optional: false }
+    gate:
+      type: llm-judge
+      on_fail: stop
+
+  - id: brainstorm
+    label: "03 · Brainstorm"
+    catalog_ref: 3
+    required: true
+    atoms:
+      - id: D3a.phase_run.start
+        with: { phase: "brainstorm" }
+      - id: I1b.team.run.structured
+        with: { phase: "brainstorm" }
+      - id: D3c.phase_run.complete
+    artifacts:
+      - { path: "specs/changes/${change_id}/brainstorm.json", optional: false }
+    gate:
+      type: llm-judge
+      on_fail: stop
+
+  - id: risk_review
+    label: "04 · Risk review"
+    catalog_ref: 4
+    required: true
+    atoms:
+      - id: D3a.phase_run.start
+        with: { phase: "risk_review" }
+      - id: I1b.team.run.structured
+        with: { phase: "risk_review" }
+      - id: D3c.phase_run.complete
+    artifacts:
+      - { path: "specs/changes/${change_id}/risk_review.json", optional: false }
+    gate:
+      type: llm-judge
+      on_fail: stop
+
+  - id: clarify
+    label: "05 · Clarify"
+    catalog_ref: 5
+    required: true
+    atoms:
+      - id: D3a.phase_run.start
+        with: { phase: "clarify" }
+      - id: I1b.team.run.structured
+        with: { phase: "clarify" }
+      - id: D3c.phase_run.complete
+    artifacts:
+      - { path: "specs/changes/${change_id}/clarify.json", optional: false }
+    gate:
+      type: human
+      on_fail: stop
+
+  - id: proposal
+    label: "06 · Proposal"
+    catalog_ref: 6
+    required: true
+    atoms:
+      - id: D3a.phase_run.start
+        with: { phase: "proposal" }
+      - id: I1b.team.run.structured
+        with: { phase: "proposal" }
+      - id: J5.gate.evidence_collect
+      - id: E4.gate.payload_from_phase_run
+      - id: D3c.phase_run.complete
+      - id: B3.status.transition
+        with: { to_stage: "proposal-freeze" }
+    artifacts:
+      - { path: "specs/changes/${change_id}/proposal.md", optional: false }
+      - { path: "specs/changes/${change_id}/proposal.json", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
+  - id: proposal-consistency-check
+    label: "07 · Proposal consistency check"
+    catalog_ref: 7
+    required: true
+    atoms:
+      - id: J4a.spec_consistency.structural
+    gate:
+      type: deterministic
+      atom: J4a.spec_consistency.structural
+      on_fail: stop
+
+  - id: design_contract_freeze
+    label: "08 · Design contract freeze"
+    catalog_ref: 8
+    required: true
+    atoms:
+      - id: G4.design_skill.select
+      - id: H2.design.contract_freeze
+    artifacts:
+      - { path: "specs/changes/${change_id}/design_contract.json", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
+  - id: competitor_reconstruction_review
+    label: "09 · Competitor reconstruction review"
+    catalog_ref: 9
+    required: true
+    atoms:
+      - id: H2b.design.competitor_reconstruction_review
+      - id: H2d.design.reference_surface_lock
+      - id: H2e.design.reconstruction_pack
+      - id: H2f.design.generation_contract
+    artifacts:
+      - { path: "specs/changes/${change_id}/competitor_reconstruction_review.json", optional: false }
+      - { path: "specs/changes/${change_id}/reference_surface_lock.json", optional: false }
+      - { path: "specs/changes/${change_id}/reconstruction_pack.json", optional: false }
+      - { path: "specs/changes/${change_id}/generation_contract.json", optional: false }
+      - { path: "specs/changes/${change_id}/design_system_pack.json", optional: false }
+    gate:
+      type: deterministic
+      atom: H2c.design.competitor_contract_validate
+      on_fail: stop
+
+  - id: visual_direction_synthesis
+    label: "10 · Visual direction synthesis"
+    catalog_ref: 10
+    required: true
+    atoms:
+      - id: H3a.visual.direction_synthesis
+    artifacts:
+      - { path: "specs/changes/${change_id}/visual_direction_synthesis.json", optional: false }
+      - { path: "specs/changes/${change_id}/image_reference_set.json", optional: false }
+    gate:
+      type: llm-judge
+      on_fail: stop
+
+  - id: layout_competition
+    label: "11 · Layout competition"
+    catalog_ref: 11
+    required: true
+    atoms:
+      - id: H3b.visual.layout_competition
+    artifacts:
+      - { path: "specs/changes/${change_id}/layout_competition.json", optional: false }
+    gate:
+      type: llm-judge
+      on_fail: stop
+
+  - id: design_selection
+    label: "12 · Design selection"
+    catalog_ref: 12
+    required: true
+    atoms:
+      - id: H3c.visual.design_selection
+    artifacts:
+      - { path: "specs/changes/${change_id}/design_selection.json", optional: false }
+    gate:
+      type: human
+      on_fail: stop
+
+  - id: ux_design_brief
+    label: "13 · UX design brief"
+    catalog_ref: 13
+    required: true
+    atoms:
+      - id: D3a.phase_run.start
+        with: { phase: "ux_design_brief" }
+      - id: I1b.team.run.structured
+        with: { phase: "ux_design_brief" }
+      - id: D3c.phase_run.complete
+    artifacts:
+      - { path: "specs/changes/${change_id}/ux_design_brief.json", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
+  - id: pencil_draft
+    label: "14 · Pencil draft"
+    catalog_ref: 14
+    required: true
+    atoms:
+      - id: H4a.pencil.draft
+    artifacts:
+      - { path: "specs/changes/${change_id}/pencil_output.pen", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
+  - id: llm_design_review
+    label: "15 · LLM design review"
+    catalog_ref: 15
+    required: true
+    atoms:
+      - id: H5.visual.review
+        parallel_group: visual_review
+        parallel_weight: 2
+      - id: H6.visual.benchmark
+        parallel_group: visual_review
+        parallel_weight: 1
+      - id: H5b.visual.review.aggregate
+    artifacts:
+      - { path: "specs/changes/${change_id}/llm_design_review.json", optional: false }
+    gate:
+      type: deterministic
+      atom: H6b.visual.benchmark_validate
+      with: { mode: "advisory" }
+      on_fail: stop
+
+  - id: pencil_refine
+    label: "16 · Pencil refine"
+    catalog_ref: 16
+    required: true
+    atoms:
+      - id: H6c.visual.benchmark_repair_plan
+      - id: H4b.pencil.refine
+    artifacts:
+      - { path: "specs/changes/${change_id}/benchmark_repair_plan.json", optional: false }
+      - { path: "specs/changes/${change_id}/pencil_output.pen", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
+  - id: llm_design_recheck
+    label: "17 · LLM design recheck"
+    catalog_ref: 17
+    required: true
+    atoms:
+      - id: H5.visual.review
+        parallel_group: visual_review
+        parallel_weight: 2
+      - id: H6.visual.benchmark
+        parallel_group: visual_review
+        parallel_weight: 1
+      - id: H5b.visual.review.aggregate
+      - id: H6d.visual.aesthetic_review
+    artifacts:
+      - { path: "specs/changes/${change_id}/llm_design_review.json", optional: false }
+      - { path: "specs/changes/${change_id}/aesthetic_review.json", optional: false }
+    gate:
+      type: deterministic
+      atom: H6b.visual.benchmark_validate
+      on_fail: stop
+
+  - id: design_accept
+    label: "18 · Design accept"
+    catalog_ref: 18
+    required: true
+    atoms:
+      - id: H4c.pencil.accept
+    artifacts:
+      - { path: "specs/changes/${change_id}/design_accept.json", optional: false }
+      - { path: "specs/changes/${change_id}/pencil_output.attestation.json", optional: false }
+    gate:
+      type: human
+      on_fail: stop
+
+  - id: plan
+    label: "19 · Plan"
+    catalog_ref: 19
+    required: true
+    atoms:
+      - id: D3a.phase_run.start
+        with: { phase: "plan" }
+      - id: I1b.team.run.structured
+        with: { phase: "plan" }
+      - id: E4.gate.payload_from_phase_run
+      - id: D3c.phase_run.complete
+    artifacts:
+      - { path: "specs/changes/${change_id}/plan.json", optional: false }
+      - { path: "specs/changes/${change_id}/plan.md", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
+  - id: openissue
+    label: "20 · Open issue + branch"
+    catalog_ref: 20
+    required: true
+    atoms:
+      - id: A1.issue.create_or_patch
+        with:
+          repo: "${input.target_repo}"
+          title: "${input.issue_title}"
+          body: "${input.issue_body}"
+          change_type: "${input.change_type}"
+      - id: A2.branch.create_and_link
+      - id: B2b.status.write
+        with:
+          fields:
+            current_stage: "openissue"
+            status: "active"
+    gate:
+      type: deterministic
+      atom: E6.gate.local_precheck
+      with: { phase: "post-openissue" }
+      on_fail: stop
+
+  - id: set-in-progress
+    label: "21 · Set issue in progress"
+    catalog_ref: 21
+    required: true
+    atoms:
+      - id: A4.project.set_status
+        with: { target_status: "In Progress" }
+      - id: A3.repo.doctor
+    gate:
+      type: deterministic
+      atom: E6.gate.local_precheck
+      with: { phase: "pre-exec" }
+      on_fail: stop
+
+  - id: tdd-red
+    label: "22a · TDD red"
+    catalog_ref: 22
+    required: true
+    atoms:
+      - id: I6a.tdd.run
+        with: { phase: "red", test_command: "${input.tdd_red_command}", expect: "fail" }
+      - id: I6b.tdd.proof_validate
+        with: { phase: "red" }
+    artifacts:
+      - { path: "specs/changes/${change_id}/tdd/red-0.json", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
+  - id: execute
+    label: "23 · Execute"
+    catalog_ref: 23
+    required: true
+    atoms:
+      - id: I2.phase_run.dispatch
+        with: { phase: "execute" }
+      - id: I4.patch.challenge
+    artifacts:
+      - { path: "specs/changes/${change_id}/execute.json", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
+  - id: tdd-green
+    label: "22b · TDD green + quality"
+    catalog_ref: 22
+    required: true
+    atoms:
+      - id: I6a.tdd.run
+        with: { phase: "green", test_command: "${input.tdd_green_command}", expect: "pass" }
+      - id: I6b.tdd.proof_validate
+        with: { phase: "green" }
+      - id: I6c.tdd.quality_review
+    artifacts:
+      - { path: "specs/changes/${change_id}/tdd/green-0.json", optional: false }
+      - { path: "specs/changes/${change_id}/tdd/quality-0.json", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
+  - id: review
+    label: "24 · Review"
+    catalog_ref: 24
+    required: true
+    atoms:
+      - id: I4.patch.challenge
+        with: { mode: "review" }
+      - id: J5.gate.evidence_collect
+    artifacts:
+      - { path: "specs/changes/${change_id}/review.json", optional: false }
+    gate:
+      type: llm-judge
+      on_fail: stop
+
+  - id: qa
+    label: "25 · QA"
+    catalog_ref: 25
+    required: true
+    atoms:
+      - id: J1.tests.run
+      - id: J4b.spec_delta.review
+      - id: H5.visual.review
+        with: { mode: "qa" }
+      - id: E5.artifact.verify
+      - id: B3.status.transition
+        with: { to_stage: "verify" }
+      - id: B2b.status.write
+        with:
+          fields:
+            verification_status: "passed"
+            design_aligned: "yes"
+      - id: J5.gate.evidence_collect
+    artifacts:
+      - { path: "specs/changes/${change_id}/qa_acceptance.json", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
+  - id: gate_final
+    label: "27 · Final gate"
+    catalog_ref: 27
+    required: true
+    atoms:
+      - id: J5.gate.evidence_collect
+      - id: E3.gate.workbench
+      - id: K1.artifacts.complete_check
+    artifacts:
+      - { path: "specs/changes/${change_id}/gate_final.json", optional: false }
+    gate:
+      type: human
+      on_fail: stop
+
+  - id: archive
+    label: "28 · Archive"
+    catalog_ref: 27
+    required: true
+    atoms:
+      - id: K1.artifacts.complete_check
+      - id: K6.aha.merge
+      - id: K3.handoff.refresh
+      - id: K4.mem.lesson_persist
+        with: { lesson: "${input.lesson_summary}" }
+      - id: A5.archive.commit_push_close
+        with: { push: true, close_issue: true }
+      - id: A6.pr.create
+    gate:
+      type: deterministic
+      atom: E6.gate.local_precheck
+      with: { phase: "pre-archive" }
+      on_fail: stop

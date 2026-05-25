@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://as-xflow/schemas/llm-design-review-aggregate.schema.json",
+  "title": "LLM Design Review Aggregate",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "version",
+    "phase",
+    "summary",
+    "benchmark_summary",
+    "worker_runs",
+    "aggregated_at"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "phase": {
+      "type": "string",
+      "const": "llm_design_review"
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "benchmark_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scenario_count",
+        "passed_count",
+        "needs_follow_up_count",
+        "statuses"
+      ],
+      "properties": {
+        "scenario_count": { "type": "integer", "minimum": 0 },
+        "passed_count": { "type": "integer", "minimum": 0 },
+        "needs_follow_up_count": { "type": "integer", "minimum": 0 },
+        "statuses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "status"],
+            "properties": {
+              "id": { "type": ["string", "null"] },
+              "status": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "worker_runs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["visual_review", "visual_benchmark"],
+      "properties": {
+        "visual_review": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["artifact_file"],
+          "properties": {
+            "artifact_file": { "type": "string", "minLength": 1 }
+          }
+        },
+        "visual_benchmark": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["artifact_file"],
+          "properties": {
+            "artifact_file": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "aggregated_at": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

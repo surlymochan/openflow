@@ -1,0 +1,13 @@
+.claude/
+.as-xflow/
+.DS_Store
+test/
+tmp/
+**/__pycache__/**
+**/*.pyc
+*.log
+specs/changes/
+docs/adoption/evidence/
+docs/adoption/trial-packets/
+docs/benchmark-evidence/
+gitleaks-*-report.json

@@ -1,0 +1,45 @@
+{
+  "workspace": "test/fixtures/ticktick-pixel-h5/app",
+  "target_repo": "owner/internal-tracker",
+  "competitor_product": "TickTick desktop",
+  "required_modules": [
+    "calendar",
+    "list"
+  ],
+  "target_surfaces": [
+    "desktop_month_list_split"
+  ],
+  "primary_reference_surface": "desktop_month_list_split",
+  "primary_journeys": [
+    "capture_to_inbox",
+    "task_visible_in_list",
+    "scheduled_task_visible_in_calendar"
+  ],
+  "business_logic_invariants": [
+    "Inbox and no-date tasks must stay unscheduled until the user explicitly places them on the calendar.",
+    "The main experience must preserve a TickTick-style calendar-on-left and task-list-on-right desktop split.",
+    "Scheduling must remain visible on the calendar surface instead of becoming invisible automation."
+  ],
+  "capture_url": "http://127.0.0.1:4176/test/fixtures/ticktick-pixel-h5/app/index.html",
+  "reference_image": "output/references/ticktick-show-with-task.png",
+  "viewport_variants_json": [
+    {
+      "id": "desktop-month-list-split",
+      "viewport": {
+        "width": 992,
+        "height": 664
+      },
+      "reference_image": "output/references/ticktick-show-with-task.png"
+    }
+  ],
+  "layout_contract": {
+    "expected_columns": 2,
+    "required_panels": [
+      "calendar",
+      "list"
+    ],
+    "min_main_width": 560
+  },
+  "tdd_red_command": "node -e \"process.exit(1)\"",
+  "tdd_green_command": "node --test test/ticktick-pixel-h5.test.js"
+}

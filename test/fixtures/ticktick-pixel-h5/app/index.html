@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TickTick Pixel H5</title>
+    <meta
+      name="description"
+      content="A TickTick-aligned H5 workbench for monthly scheduling and task list management."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell" data-ticktick-root>
+      <section class="calendar-pane" data-panel="calendar" aria-label="Month schedule">
+        <header class="calendar-toolbar">
+          <div class="toolbar-cluster">
+            <button type="button" class="icon-button">＋</button>
+            <button type="button" class="toolbar-pill">Month <span>⌄</span></button>
+            <button type="button" class="icon-button">‹</button>
+            <button type="button" class="toolbar-pill strong">Today</button>
+            <button type="button" class="icon-button">›</button>
+            <button type="button" class="icon-button ghost">···</button>
+          </div>
+        </header>
+
+        <div class="calendar-head">
+          <span class="week-label">W15</span>
+          <span>Thu</span>
+          <span>Fri</span>
+          <span>Sat</span>
+          <span>Sun</span>
+        </div>
+
+        <div class="calendar-grid" data-calendar-grid></div>
+      </section>
+
+      <aside class="list-pane" data-panel="list" aria-label="Task list workspace">
+        <header class="list-toolbar">
+          <div class="list-title-group">
+            <button type="button" class="icon-button ghost">☰</button>
+            <h1>Work</h1>
+          </div>
+          <div class="toolbar-cluster dense">
+            <button type="button" class="icon-button ghost">⇅</button>
+            <button type="button" class="icon-button ghost">···</button>
+          </div>
+        </header>
+
+        <form class="quick-entry" id="capture-form" autocomplete="off">
+          <span class="quick-plus">＋</span>
+          <input
+            id="quick-capture"
+            name="quick-capture"
+            type="text"
+            placeholder="Add task to “Content”"
+            aria-label="Quick capture"
+          />
+        </form>
+
+        <section class="task-group">
+          <header class="task-group-head">
+            <span>Today, Fri</span>
+            <strong data-count="today">2</strong>
+          </header>
+          <div class="task-list" data-today-list></div>
+        </section>
+
+        <section class="task-group">
+          <header class="task-group-head">
+            <span>No Date</span>
+            <strong data-count="inbox">1</strong>
+          </header>
+          <div class="task-list" data-inbox-list></div>
+        </section>
+      </aside>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

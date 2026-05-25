@@ -1,0 +1,12 @@
+node_modules/
+.as-xflow/
+tmp/
+*.pyc
+__pycache__/
+*.log
+.DS_Store
+specs/changes/
+docs/adoption/evidence/
+docs/adoption/trial-packets/
+docs/benchmark-evidence/
+gitleaks-*-report.json
