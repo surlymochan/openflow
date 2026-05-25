@@ -1302,6 +1302,6 @@ export default async function startServer(options = {}) {
   await new Promise((resolve) => server.listen(port, host, resolve));
   const address = server.address();
   const boundPort = typeof address === 'object' && address ? address.port : port;
-  console.log(`as-xflow server listening on http://${host}:${boundPort}`);
+  console.log(`openflow server listening on http://${host}:${boundPort}`);
   return server;
 }

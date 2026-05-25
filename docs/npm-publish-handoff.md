@@ -8,11 +8,11 @@ distribution state.
 
 ## Current Verified State
 
-- Package: `as-xflow@0.1.0`
+- Package: `openflow@0.1.0`
 - Registry name status: available in `xflow package preflight --check-registry --check-auth --json`
 - Current machine auth: blocked by `npm whoami` with `ENEEDAUTH`
 - Adoption gate: `xflow adoption validate --json` passes with
-  `docs/adoption/as-xflow-release-hardening.md`
+  `docs/adoption/openflow-release-hardening.md`
 - Splash gate: `xflow release status --json` still reports
   `third_party_adoption` alongside `published_package`; use
   `xflow adoption brief --name <third-party-project> --source <public-pr-or-external-repo> --track yolo`
@@ -22,7 +22,7 @@ distribution state.
 - Launch gate: `xflow launch audit --strict --json` still lists only
   `published_package`
 
-Do not claim public installability until the registry reports `as-xflow@0.1.0`.
+Do not claim public installability until the registry reports `openflow@0.1.0`.
 
 ## Auth Recovery
 
@@ -38,7 +38,7 @@ The preflight must report:
 - `ok: true`
 - `registry_status: "available"` for a first publish
 - a non-empty `npm_identity`
-- no `registry already contains as-xflow@0.1.0` issue
+- no `registry already contains openflow@0.1.0` issue
 - `next_actions` containing `run_pre_publish_gate` as the next release-owner
   command
 
@@ -70,7 +70,7 @@ returns the expected name and version.
 ## Stop Conditions
 
 - `npm whoami` fails: restore npm auth first.
-- Registry already contains `as-xflow@0.1.0`: do not republish; bump version or
+- Registry already contains `openflow@0.1.0`: do not republish; bump version or
   verify ownership before continuing.
 - `xflow package preflight --check-registry --check-auth --json` fails: follow
   its `next_actions` before retrying or publishing.

@@ -9,7 +9,7 @@ const REPO_ROOT = process.cwd();
 
 describe('doctor branch/worktree readiness', () => {
   test('run_doctor_checks reports branch-worktree-ready when checkout matches the linked branch', () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-doctor-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-doctor-'));
     try {
       const changeRoot = resolve(projectRoot, 'specs', 'changes', 'chg-doctor-ready');
       mkdirSync(changeRoot, { recursive: true });
@@ -21,7 +21,7 @@ describe('doctor branch/worktree readiness', () => {
         issue_repo: 'example/repo-private',
         issue_number: 17,
         branch_name: 'codex/doctor-ready',
-        checkout_path: '/tmp/as-xflow-doctor-ready',
+        checkout_path: '/tmp/openflow-doctor-ready',
         code_repo: 'example/code-repo',
       }, null, 2), 'utf8');
 

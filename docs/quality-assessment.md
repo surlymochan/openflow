@@ -1,10 +1,10 @@
-# as-xflow Quality Assessment
+# openflow Quality Assessment
 
 Date: 2026-05-23
 
 ## Verdict
 
-`as-xflow` is strong enough to present as a serious open-source agent delivery
+`openflow` is strong enough to present as a serious open-source agent delivery
 runtime today. The core engine is no longer the weak point: yolo and corps both
 have executable workflow data, verification gates, and release checks.
 
@@ -51,7 +51,7 @@ xflow goal = project alignment evidence
 | `xflow:goal` | A | `.xflow/GOAL.md`, `xflow goal set`, `xflow goal show --json`, `xflow goal audit --json`, `docs/goal-vs-codex.md` | Real examples where goal alignment changed review or handoff quality |
 | `xflow:yolo` | A | YAML workflow, split TDD proof, quality review, archive order, drift tests | Tiny public bugfix demo from red proof to archive |
 | `xflow:corps` | A | Governed corps entry, `xflow corps --explain`, `corps_proof.json`, visual benchmark gates, no-stub witnesses | Real product/UI adoption walkthrough backed by corps proof |
-| Skill family | A- | `xflow quickstart`, `xflow guide`, `xflow assess`, `xflow score`, tooling matrix, skill sync/diff, `docs/adoption/as-xflow-release-hardening.md` | Public npm publish plus third-party adoption evidence |
+| Skill family | A- | `xflow quickstart`, `xflow guide`, `xflow assess`, `xflow score`, tooling matrix, skill sync/diff, `docs/adoption/openflow-release-hardening.md` | Public npm publish plus third-party adoption evidence |
 
 ## Public Proof Path
 

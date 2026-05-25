@@ -8,7 +8,7 @@ import { workflowStateLoad } from '../src/core/atoms/workflow/state-load.js';
 import { workflowAdvance } from '../src/core/atoms/workflow/advance.js';
 
 function makeProjectRoot() {
-  const root = mkdtempSync(join(tmpdir(), 'as-xflow-workflow-'));
+  const root = mkdtempSync(join(tmpdir(), 'openflow-workflow-'));
   mkdirSync(resolve(root, '.as-xflow'), { recursive: true });
   return root;
 }

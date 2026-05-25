@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://as-xflow/schemas/competitor-reconstruction-contract.schema.json",
+  "$id": "https://openflow/schemas/competitor-reconstruction-contract.schema.json",
   "title": "Competitor Reconstruction Contract",
   "type": "object",
   "additionalProperties": false,

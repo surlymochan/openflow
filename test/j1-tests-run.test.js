@@ -9,7 +9,7 @@ const REPO_ROOT = process.cwd();
 
 describe('J1 tests runner', () => {
   test('falls back to tdd_green_command from change contract when plan has no bash block', () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-j1-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-j1-'));
     try {
       const changeRoot = resolve(projectRoot, 'specs', 'changes', 'chg-j1-contract');
       mkdirSync(changeRoot, { recursive: true });
@@ -39,7 +39,7 @@ describe('J1 tests runner', () => {
   });
 
   test('does not leak its orchestration CHANGE_ID into verification commands', () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-j1-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-j1-'));
     try {
       const changeRoot = resolve(projectRoot, 'specs', 'changes', 'chg-j1-env');
       mkdirSync(changeRoot, { recursive: true });

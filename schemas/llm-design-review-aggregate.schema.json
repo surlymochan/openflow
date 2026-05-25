@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://as-xflow/schemas/llm-design-review-aggregate.schema.json",
+  "$id": "https://openflow/schemas/llm-design-review-aggregate.schema.json",
   "title": "LLM Design Review Aggregate",
   "type": "object",
   "additionalProperties": true,

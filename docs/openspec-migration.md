@@ -1,8 +1,8 @@
 # OpenSpec Migration Guide
 
-Use this guide when moving an OpenSpec-style project into as-xflow, or when explaining how the two systems map.
+Use this guide when moving an OpenSpec-style project into openflow, or when explaining how the two systems map.
 
-OpenSpec is strongest as a lightweight spec-driven development surface. as-xflow keeps that spec discipline, then adds executable workflow gates, TDD proof, test-quality review, archive ordering, handoff, and release checks.
+OpenSpec is strongest as a lightweight spec-driven development surface. openflow keeps that spec discipline, then adds executable workflow gates, TDD proof, test-quality review, archive ordering, handoff, and release checks.
 
 ## Safe Mapping Command
 
@@ -32,7 +32,7 @@ The report maps:
 
 ## Command Mapping
 
-| OpenSpec | as-xflow |
+| OpenSpec | openflow |
 | --- | --- |
 | `openspec init` | `xflow init --project-root .` |
 | `/opsx:new <change>` | `xflow spec quick "<title>"` or `xflow spec start --title "<title>" --change-type <type>` |
@@ -43,7 +43,7 @@ The report maps:
 
 ## Folder Mapping
 
-| OpenSpec Path | as-xflow Path | Notes |
+| OpenSpec Path | openflow Path | Notes |
 | --- | --- | --- |
 | `openspec/specs/` | `specs/` | Durable root specs. Keep stable, reviewed, and human-readable. |
 | `openspec/changes/<id>/proposal.md` | `specs/changes/<id>/proposal.md` | Preserved as change intent. |
@@ -96,7 +96,7 @@ The review summarizes:
 
 ## Why This Beats A Pure OpenSpec Flow
 
-OpenSpec is excellent at making intent explicit before implementation. as-xflow keeps that benefit and adds:
+OpenSpec is excellent at making intent explicit before implementation. openflow keeps that benefit and adds:
 
 - executable workflow validation
 - deterministic spec delta review artifacts

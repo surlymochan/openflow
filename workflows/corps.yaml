@@ -2,7 +2,7 @@ name: corps
 version: 1
 description: >
   Heavy multi-agent delivery workflow for complex user-facing products.
-  Requires as-xflow HTTP server, GitHub CLI, and Pencil.
+  Requires openflow HTTP server, GitHub CLI, and Pencil.
   Full 28-phase pipeline covering research → decomposition → design loop → execution → gate_final → archive.
 track: heavy
 parallel:

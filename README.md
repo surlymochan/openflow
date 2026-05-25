@@ -7,7 +7,7 @@
 
 Executable delivery workflow for AI coding agents.
 
-OpenFlow is the public extraction of the `as-xflow` workflow runtime. It turns
+OpenFlow is the public extraction of the `openflow` workflow runtime. It turns
 agent work from "follow this prose process" into a local workflow runtime with
 YAML phases, deterministic atoms, TDD proof gates, handoff state, archive
 discipline, and packageable CLI commands.
@@ -131,17 +131,13 @@ Red proof must fail before implementation. Green proof must pass after implement
 - [Demo proof](docs/demo-proof.md)
 - [Examples gallery](docs/examples-gallery.md)
 - [Public benchmark](docs/public-benchmark.md)
-- [Public superiority audit (2026-05-24)](docs/public-superiority-audit-2026-05-24.md)
-- [Public comparative report (2026-05-24)](docs/public-comparative-report-2026-05-24.md)
-- [Third-party benchmark protocol (2026-05-24)](docs/third-party-benchmark-protocol-2026-05-24.md)
-- [Third-party benchmark artifact: OpenSpecification trial](docs/third-party-benchmark-openspec-2026-05-24.md)
 - [Quality assessment](docs/quality-assessment.md)
 - [Launch demo](docs/launch-demo.md)
 - [Launch dossier](docs/launch-dossier.md)
 - [Corps operator guide](docs/corps-operator-guide.md)
 - [Superpowers comparison](docs/superpowers-comparison.md)
 - [Adoption evidence template](docs/adoption/README.md)
-- [Maintainer adoption record](docs/adoption/as-xflow-release-hardening.md)
+- [Maintainer adoption record](docs/adoption/openflow-release-hardening.md)
 - [xflow Goal vs Codex native goal](docs/goal-vs-codex.md)
 - [Walkthrough](docs/walkthrough.md)
 - [OpenSpec migration](docs/openspec-migration.md)

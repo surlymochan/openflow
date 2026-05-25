@@ -93,7 +93,7 @@ done
 
 describe('xflow skill sync wrapper', () => {
   test('syncs xflow from this repo while preserving extra-source managed skills', () => {
-    const tempRoot = mkdtempSync(join(tmpdir(), 'as-xflow-skill-sync-'));
+    const tempRoot = mkdtempSync(join(tmpdir(), 'openflow-skill-sync-'));
     try {
       const targetRoot = resolve(tempRoot, 'installed-skills');
       const extraRoot = resolve(tempRoot, 'extra-skills');
@@ -136,7 +136,7 @@ describe('xflow skill sync wrapper', () => {
   });
 
   test('sync reads skill defaults from project-local xflow config', () => {
-    const tempRoot = mkdtempSync(join(tmpdir(), 'as-xflow-skill-sync-config-'));
+    const tempRoot = mkdtempSync(join(tmpdir(), 'openflow-skill-sync-config-'));
     const configDir = resolve(REPO_ROOT, '.as-xflow');
     const configPath = resolve(configDir, 'config.json');
     const originalConfig = existsSync(configPath) ? readFileSync(configPath, 'utf8') : null;
@@ -184,7 +184,7 @@ describe('xflow skill sync wrapper', () => {
   });
 
   test('sync defaults to codex installed skill root and keeps xmem aligned to the same target', () => {
-    const tempRoot = mkdtempSync(join(tmpdir(), 'as-xflow-skill-sync-auto-'));
+    const tempRoot = mkdtempSync(join(tmpdir(), 'openflow-skill-sync-auto-'));
     const configDir = resolve(REPO_ROOT, '.as-xflow');
     const configPath = resolve(configDir, 'config.json');
     const originalConfig = existsSync(configPath) ? readFileSync(configPath, 'utf8') : null;
@@ -241,7 +241,7 @@ describe('xflow skill sync wrapper', () => {
   });
 
   test('sync removes generated Python cache artifacts from the installed xflow skill', () => {
-    const tempRoot = mkdtempSync(join(tmpdir(), 'as-xflow-skill-sync-pycache-'));
+    const tempRoot = mkdtempSync(join(tmpdir(), 'openflow-skill-sync-pycache-'));
     const repoCacheDir = resolve(REPO_ROOT, 'xflow', 'scripts', '__pycache__');
     try {
       const targetRoot = resolve(tempRoot, 'installed-skills');
@@ -276,7 +276,7 @@ describe('xflow skill sync wrapper', () => {
   });
 
   test('skill diff defaults to the codex installed xflow target', () => {
-    const tempRoot = mkdtempSync(join(tmpdir(), 'as-xflow-skill-diff-default-'));
+    const tempRoot = mkdtempSync(join(tmpdir(), 'openflow-skill-diff-default-'));
     try {
       const fakeHome = resolve(tempRoot, 'home');
       const codexRoot = resolve(fakeHome, '.codex', 'skills');

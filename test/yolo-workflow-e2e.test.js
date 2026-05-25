@@ -26,7 +26,7 @@ const REPO_ROOT = process.cwd();
 const CHANGE_ID = 'chg-yolo-e2e-1';
 
 function makeProjectRoot() {
-  const root = mkdtempSync(join(tmpdir(), 'as-xflow-yolo-e2e-'));
+  const root = mkdtempSync(join(tmpdir(), 'openflow-yolo-e2e-'));
   mkdirSync(resolve(root, '.as-xflow'), { recursive: true });
   return root;
 }

@@ -7,14 +7,14 @@ This walkthrough is the public demo script for evaluating xflow without reading 
 Global package path after publish:
 
 ```bash
-npm install -g as-xflow
+npm install -g openflow
 ```
 
 Source checkout path:
 
 ```bash
-git clone <repo-url> as-xflow
-cd as-xflow
+git clone <repo-url> openflow
+cd openflow
 npm install
 ```
 

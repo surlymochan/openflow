@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { visualBenchmarkValidate } from '../src/core/atoms/gate/visual-benchmark-validate.js';
 
 function makeProjectRoot() {
-  const root = mkdtempSync(join(tmpdir(), 'as-xflow-visual-benchmark-'));
+  const root = mkdtempSync(join(tmpdir(), 'openflow-visual-benchmark-'));
   mkdirSync(resolve(root, 'specs', 'changes', 'chg-visual-benchmark'), { recursive: true });
   return root;
 }

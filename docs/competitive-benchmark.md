@@ -1,12 +1,12 @@
-# as-xflow Competitive Benchmark
+# openflow Competitive Benchmark
 
 Date: 2026-04-19
 
 ## Goal
 
-Make `as-xflow` stronger than adjacent agent workflow systems in every dimension that matters for serious delivery work: planning, execution, verification, portability, team handoff, and operator confidence.
+Make `openflow` stronger than adjacent agent workflow systems in every dimension that matters for serious delivery work: planning, execution, verification, portability, team handoff, and operator confidence.
 
-This benchmark is intentionally stricter than a marketing comparison. A category is only considered won when `as-xflow` has a named project surface, a command or artifact operators can use, and local tests or drift scans that protect it.
+This benchmark is intentionally stricter than a marketing comparison. A category is only considered won when `openflow` has a named project surface, a command or artifact operators can use, and local tests or drift scans that protect it.
 
 ## Reference Systems
 
@@ -17,7 +17,7 @@ This benchmark is intentionally stricter than a marketing comparison. A category
 
 ## Score Dimensions
 
-| Dimension | Win Condition | Current as-xflow Surface | Current Status |
+| Dimension | Win Condition | Current openflow Surface | Current Status |
 | --- | --- | --- | --- |
 | Local delivery closure | One command family can move from plan through archive with verification evidence. | `xflow:plan`, `xflow:yolo`, `xflow:corps`, `workflows/*.yaml`, archive atoms | Strong |
 | Goal alignment | Project direction survives across threads, tools, handoffs, and workflow tracks. | `xflow goal set`, `xflow goal audit`, `xflow compare codex-goal`, `xflow:goal`, `.xflow/GOAL.md`, `docs/goal-vs-codex.md`, yolo/corps/Ralph goal-alignment rules | Strong |
@@ -35,7 +35,7 @@ This benchmark is intentionally stricter than a marketing comparison. A category
 
 ## Current Judgment
 
-`as-xflow` now beats reference systems on executable workflow depth, local delivery closure, archive discipline, observable heavy-track control, first-run commands, split red/green TDD proof semantics, TDD test-quality review, deterministic requirements-level spec delta review, OpenSpec migration mapping, public release checks, real adapter seams, examples gallery, public benchmark proof, methodology guidance, and reviewer-facing collaboration guidance.
+`openflow` now beats reference systems on executable workflow depth, local delivery closure, archive discipline, observable heavy-track control, first-run commands, split red/green TDD proof semantics, TDD test-quality review, deterministic requirements-level spec delta review, OpenSpec migration mapping, public release checks, real adapter seams, examples gallery, public benchmark proof, methodology guidance, and reviewer-facing collaboration guidance.
 
 Against Superpowers, xflow should not claim behavior-guidance superiority.
 Superpowers remains stronger as lightweight behavior discipline; xflow's

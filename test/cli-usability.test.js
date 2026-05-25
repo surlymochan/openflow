@@ -12,7 +12,7 @@ import { buildWorkflowManifest } from '../src/core/workflow-integrity.js';
 const REPO_ROOT = process.cwd();
 
 function makeProjectRoot() {
-  const root = mkdtempSync(join(tmpdir(), 'as-xflow-cli-'));
+  const root = mkdtempSync(join(tmpdir(), 'openflow-cli-'));
   mkdirSync(resolve(root, '.as-xflow'), { recursive: true });
   return root;
 }
@@ -2403,7 +2403,7 @@ phases:
     assert.equal(payload.splash_launch.package_evidence.ok, false);
     assert.ok(payload.claims.allowed.includes('project_goal_beats_thread_goal'));
     assert.ok(payload.claims.blocked.includes('published_package'));
-    assert.ok(payload.claims.forbidden_phrases.includes('as-xflow is publicly installable from npm'));
+    assert.ok(payload.claims.forbidden_phrases.includes('openflow is publicly installable from npm'));
     assert.ok(payload.splash_claims.allowed.includes('project_goal_beats_thread_goal'));
     assert.ok(payload.splash_claims.blocked.includes('published_package'));
     assert.ok(payload.splash_claims.forbidden_phrases.includes('splash launch complete'));
@@ -2552,7 +2552,7 @@ phases:
     });
 
     assert.equal(result.status, 0, result.stderr || result.stdout || String(result.error));
-    assert.match(result.stdout, /as-xflow public launch demo/);
+    assert.match(result.stdout, /openflow public launch demo/);
     assert.match(result.stdout, /Goal to yolo/);
     assert.match(result.stdout, /Goal to corps proof/);
 
@@ -2632,7 +2632,7 @@ phases:
     assert.equal(payload.competitive_score.score, 100);
     assert.equal(payload.adoption_evidence.ok, true);
     assert.equal(payload.adoption_evidence.record_count, 1);
-    assert.equal(payload.adoption_evidence.records[0].path, 'docs/adoption/as-xflow-release-hardening.md');
+    assert.equal(payload.adoption_evidence.records[0].path, 'docs/adoption/openflow-release-hardening.md');
     assert.equal(payload.adoption_evidence.third_party_ok, false);
     assert.equal(payload.adoption_evidence.records[0].scope, 'maintainer_dogfood');
     assert.equal(payload.goal_evidence.ok, true);
@@ -2769,11 +2769,11 @@ phases:
     });
 
     assert.equal(result.status, 0, result.stderr || result.stdout || String(result.error));
-    assert.match(result.stdout, /as-xflow Launch Copy/);
+    assert.match(result.stdout, /openflow Launch Copy/);
     assert.match(result.stdout, /Safe Evaluation Command/);
     assert.match(result.stdout, /Forbidden Until Unblocked/);
-    assert.match(result.stdout, /git clone <repo-url> as-xflow/);
-    assert.match(result.stdout, /npm install -g as-xflow works now/);
+    assert.match(result.stdout, /git clone <repo-url> openflow/);
+    assert.match(result.stdout, /npm install -g openflow works now/);
 
     result = spawnSync('node', ['bin/xflow.js', 'launch', 'copy', '--json'], {
       cwd: REPO_ROOT,
@@ -2786,10 +2786,10 @@ phases:
     assert.equal(payload.ok, true);
     assert.equal(payload.launch_ready, false);
     assert.match(payload.headline, /executable workflow evidence/);
-    assert.match(payload.install_command, /git clone <repo-url> as-xflow/);
+    assert.match(payload.install_command, /git clone <repo-url> openflow/);
     assert.ok(payload.proof_points.some((item) => item.id === 'project_goal_beats_thread_goal'));
     assert.ok(payload.hold_until_evidence.some((item) => item.id === 'published_package'));
-    assert.ok(payload.forbidden_phrases.includes('npm install -g as-xflow works now'));
+    assert.ok(payload.forbidden_phrases.includes('npm install -g openflow works now'));
     assert.ok(payload.evidence_commands.includes('xflow evaluate --json'));
     assert.ok(payload.evidence_commands.includes('xflow launch claims --json'));
     assert.ok(payload.evidence_commands.includes('xflow launch copy --json'));
@@ -2817,7 +2817,7 @@ phases:
     assert.equal(result.status, 1, result.stderr || result.stdout || String(result.error));
     const strictPayload = JSON.parse(result.stdout);
     assert.equal(strictPayload.launch_ready, false);
-    assert.ok(strictPayload.forbidden_phrases.includes('as-xflow is publicly installable from npm'));
+    assert.ok(strictPayload.forbidden_phrases.includes('openflow is publicly installable from npm'));
   });
 
   test('launch dossier summarizes score, goal comparison, demo paths, and blockers', () => {
@@ -2844,7 +2844,7 @@ phases:
       assert.equal(payload.splash_audit.launch_ready, false);
       assert.equal(payload.splash_audit.splash, true);
       assert.ok(payload.splash_audit.missing_surfaces.some((item) => item.id === 'third_party_adoption'));
-      assert.match(payload.dossier, /as-xflow Launch Dossier/);
+      assert.match(payload.dossier, /openflow Launch Dossier/);
       assert.match(payload.dossier, /Codex native goal comparison/);
       assert.match(payload.dossier, /xflow:goal/);
       assert.match(payload.dossier, /xflow goal audit --json/);
@@ -2890,7 +2890,7 @@ phases:
 
       assert.equal(result.status, 0, result.stderr || result.stdout || String(result.error));
       assert.match(result.stdout, /Usage: xflow launch/);
-      assert.doesNotMatch(result.stdout, /as-xflow Launch Dossier/);
+      assert.doesNotMatch(result.stdout, /openflow Launch Dossier/);
     } finally {
       cleanupProjectRoot(projectRoot);
     }
@@ -2899,7 +2899,7 @@ phases:
   test('launch audit removes adoption and package gaps when evidence validates', () => {
     const projectRoot = makeProjectRoot();
     try {
-      writeFileSync(resolve(projectRoot, 'package.json'), JSON.stringify({ name: 'as-xflow', version: '0.1.0' }, null, 2));
+      writeFileSync(resolve(projectRoot, 'package.json'), JSON.stringify({ name: 'openflow', version: '0.1.0' }, null, 2));
       mkdirSync(resolve(projectRoot, '.xflow'), { recursive: true });
       writeFileSync(resolve(projectRoot, '.xflow', 'GOAL.md'), `# xflow Goal
 
@@ -3053,7 +3053,7 @@ Repository names were sanitized.
         '--project-root',
         projectRoot,
         '--registry-json',
-        '{"name":"as-xflow","version":"0.1.0"}',
+        '{"name":"openflow","version":"0.1.0"}',
         '--json',
       ], {
         cwd: REPO_ROOT,
@@ -3078,7 +3078,7 @@ Repository names were sanitized.
         '--project-root',
         projectRoot,
         '--registry-json',
-        '{"name":"as-xflow","version":"0.1.0"}',
+        '{"name":"openflow","version":"0.1.0"}',
         '--splash',
         '--strict',
         '--json',
@@ -3103,7 +3103,7 @@ Repository names were sanitized.
         '--project-root',
         projectRoot,
         '--registry-json',
-        '{"name":"as-xflow","version":"0.1.0"}',
+        '{"name":"openflow","version":"0.1.0"}',
         '--strict',
         '--json',
       ], {
@@ -3125,7 +3125,7 @@ Repository names were sanitized.
   test('package audit validates captured npm registry evidence', () => {
     const projectRoot = makeProjectRoot();
     try {
-      writeFileSync(resolve(projectRoot, 'package.json'), JSON.stringify({ name: 'as-xflow', version: '0.1.0' }, null, 2));
+      writeFileSync(resolve(projectRoot, 'package.json'), JSON.stringify({ name: 'openflow', version: '0.1.0' }, null, 2));
 
       let result = spawnSync('node', ['bin/xflow.js', 'package', 'audit', '--project-root', projectRoot, '--json'], {
         cwd: REPO_ROOT,
@@ -3168,7 +3168,7 @@ Repository names were sanitized.
         '--project-root',
         projectRoot,
         '--registry-json',
-        '{"name":"as-xflow","version":"0.1.0"}',
+        '{"name":"openflow","version":"0.1.0"}',
         '--json',
       ], {
         cwd: REPO_ROOT,
@@ -3179,7 +3179,7 @@ Repository names were sanitized.
       assert.equal(result.status, 0, result.stderr || result.stdout || String(result.error));
       payload = JSON.parse(result.stdout);
       assert.equal(payload.ok, true);
-      assert.equal(payload.package_name, 'as-xflow');
+      assert.equal(payload.package_name, 'openflow');
       assert.equal(payload.registry_version, '0.1.0');
       assert.deepEqual(payload.next_actions, []);
     } finally {
@@ -3190,7 +3190,7 @@ Repository names were sanitized.
   test('package preflight checks npm identity and package-name availability without publishing', () => {
     const projectRoot = makeProjectRoot();
     try {
-      writeFileSync(resolve(projectRoot, 'package.json'), JSON.stringify({ name: 'as-xflow', version: '0.1.0' }, null, 2));
+      writeFileSync(resolve(projectRoot, 'package.json'), JSON.stringify({ name: 'openflow', version: '0.1.0' }, null, 2));
 
       let result = spawnSync('node', [
         'bin/xflow.js',
@@ -3247,7 +3247,7 @@ Repository names were sanitized.
         '--project-root',
         projectRoot,
         '--registry-json',
-        '{"name":"as-xflow","version":"0.1.0"}',
+        '{"name":"openflow","version":"0.1.0"}',
         '--whoami',
         'codex',
         '--json',
@@ -3259,7 +3259,7 @@ Repository names were sanitized.
 
       assert.equal(result.status, 1, result.stderr || result.stdout || String(result.error));
       payload = JSON.parse(result.stdout);
-      assert.ok(payload.issues.some((issue) => issue.includes('already contains as-xflow@0.1.0')));
+      assert.ok(payload.issues.some((issue) => issue.includes('already contains openflow@0.1.0')));
       assert.ok(payload.next_actions.some((action) => action.id === 'verify_package_ownership'));
       assert.ok(payload.next_actions.some((action) => action.id === 'choose_release_version'));
     } finally {
@@ -3270,7 +3270,7 @@ Repository names were sanitized.
   test('package status summarizes publish and install readiness without failing', () => {
     const projectRoot = makeProjectRoot();
     try {
-      writeFileSync(resolve(projectRoot, 'package.json'), JSON.stringify({ name: 'as-xflow', version: '0.1.0' }, null, 2));
+      writeFileSync(resolve(projectRoot, 'package.json'), JSON.stringify({ name: 'openflow', version: '0.1.0' }, null, 2));
 
       let result = spawnSync('node', [
         'bin/xflow.js',
@@ -3328,7 +3328,7 @@ Repository names were sanitized.
         '--project-root',
         projectRoot,
         '--registry-json',
-        '{"name":"as-xflow","version":"0.1.0"}',
+        '{"name":"openflow","version":"0.1.0"}',
         '--json',
       ], {
         cwd: REPO_ROOT,

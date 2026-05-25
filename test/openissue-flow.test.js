@@ -37,7 +37,7 @@ module.hydrate_change_docs(
 
 describe('openissue flow hydration', () => {
   test('resolves issue repo from project-local xflow config when repo arg is absent', () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-openissue-config-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-openissue-config-'));
     try {
       mkdirSync(resolve(projectRoot, '.as-xflow'), { recursive: true });
       writeFileSync(resolve(projectRoot, '.as-xflow', 'config.json'), JSON.stringify({
@@ -79,7 +79,7 @@ print(module.resolve_issue_repo(Args()))
   });
 
   test('preserves authored proposal and plan content', () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-openissue-preserve-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-openissue-preserve-'));
     try {
       const changeRoot = resolve(projectRoot, 'specs', 'changes', 'chg-preserve');
       mkdirSync(changeRoot, { recursive: true });
@@ -127,7 +127,7 @@ print(module.resolve_issue_repo(Args()))
   });
 
   test('hydrates untouched scaffold placeholders', () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-openissue-placeholder-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-openissue-placeholder-'));
     try {
       const changeRoot = resolve(projectRoot, 'specs', 'changes', 'chg-placeholder');
       mkdirSync(changeRoot, { recursive: true });

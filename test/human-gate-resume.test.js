@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 
 function makeProjectRoot() {
-  const root = mkdtempSync(join(tmpdir(), 'as-xflow-human-'));
+  const root = mkdtempSync(join(tmpdir(), 'openflow-human-'));
   mkdirSync(resolve(root, '.as-xflow'), { recursive: true });
   return root;
 }

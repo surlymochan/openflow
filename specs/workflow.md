@@ -1,6 +1,6 @@
 # Canonical Phase Catalog
 
-This is the single source of truth for all workflow phases in as-xflow.
+This is the single source of truth for all workflow phases in openflow.
 
 Both `workflows/yolo.yaml` and `workflows/corps.yaml` are **subsets** of this catalog.
 No workflow may define a phase not listed here. Phase IDs here are authoritative.
@@ -21,8 +21,8 @@ No workflow may define a phase not listed here. Phase IDs here are authoritative
   durable delta in `merge-workflow.md` with an explicit capability section.
 - `set-in-progress` and `execute` should only run once `doctor` reports
   `branch-worktree-ready` for the linked branch and checkout.
-- For `as-xflow`, phase `openissue` files the issue into the explicitly configured tracker repo, not the current code repo.
-- For `as-xflow`, `openissue` issue title/body must be Chinese.
+- For `openflow`, phase `openissue` files the issue into the explicitly configured tracker repo, not the current code repo.
+- For `openflow`, `openissue` issue title/body must be Chinese.
 
 ---
 
@@ -65,7 +65,7 @@ No workflow may define a phase not listed here. Phase IDs here are authoritative
 
 | # | ID | Source | Description |
 |---|----|--------|-------------|
-| 19 | `openissue` | yolo | `workspace-private` 中文 issue + code-branch linkage + project context discovery |
+| 19 | `openissue` | yolo | Configured GitHub issue routing + code-branch linkage + project context discovery |
 | 20 | `set-in-progress` | yolo | Move linked issue/project item to In Progress |
 
 ### Execution
@@ -207,7 +207,7 @@ Archived: 2026-04-16T16:54:59Z
 Source: `specs/changes/skill-sync-wrapper-handoff-verify/merge-workflow.md`
 Archived: 2026-04-16T17:14:18Z
 
-- `xflow/scripts/sync_installed_xflow_skill.sh` is the repo-owned safe entrypoint for refreshing the installed `xflow` skill from as-xflow. It invokes the shared skillhub sync with as-xflow as `SKILLHUB` and as-skillhub `skills/` as an extra source so prune can still resolve unrelated managed skills.
+- `xflow/scripts/sync_installed_xflow_skill.sh` is the repo-owned safe entrypoint for refreshing the installed `xflow` skill from openflow. It invokes the shared skillhub sync with openflow as `SKILLHUB` and as-skillhub `skills/` as an extra source so prune can still resolve unrelated managed skills.
 - `K3.handoff.refresh` now updates a managed `## Latest Verified Commands` block from `specs/changes/<change-id>/verify_proof.json`, replacing stale manual command claims while preserving the rest of `HANDOFF.md`.
 - `J1.tests.run` removes its orchestration-layer `CHANGE_ID` from child verification commands. Verification commands that intentionally need a change id should set it explicitly in the command itself.
 
@@ -257,7 +257,7 @@ Archived: 2026-04-16T17:55:20Z
 Source: `specs/changes/takein-skill-drift-currentness/merge-workflow.md`
 Archived: 2026-04-16T18:03:00Z
 
-- `xflow:takein` treats `npm run drift:scan` as a lightweight repo-state preflight when the project exposes that script; for as-xflow it is required before substantial implementation in a new thread.
+- `xflow:takein` treats `npm run drift:scan` as a lightweight repo-state preflight when the project exposes that script; for openflow it is required before substantial implementation in a new thread.
 - Active xflow skill docs are part of the workflow currentness surface. The drift scan checks that the primary skill docs reflect the current registry atom count instead of stale catalog totals.
 
 

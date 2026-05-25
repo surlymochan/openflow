@@ -11,7 +11,7 @@ import { gateWorkbench } from '../src/core/atoms/gate/workbench.js';
 import { readStore } from '../src/core/state-store.js';
 
 function makeProjectRoot() {
-  const root = mkdtempSync(join(tmpdir(), 'as-xflow-control-'));
+  const root = mkdtempSync(join(tmpdir(), 'openflow-control-'));
   mkdirSync(resolve(root, '.as-xflow'), { recursive: true });
   mkdirSync(resolve(root, 'specs', 'changes', 'chg-control-1', 'evidence'), { recursive: true });
   return root;

@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process';
 
 const REPO_ROOT = process.cwd();
 
-function makeProjectRoot(prefix = 'as-xflow-spec-') {
+function makeProjectRoot(prefix = 'openflow-spec-') {
   return mkdtempSync(join(tmpdir(), prefix));
 }
 

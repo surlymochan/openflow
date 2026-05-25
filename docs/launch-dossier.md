@@ -1,4 +1,4 @@
-# as-xflow Launch Dossier
+# openflow Launch Dossier
 
 Generated: 2026-05-25T11:02:51.205Z
 Mode: post_publish
@@ -101,16 +101,16 @@ Evidence:
 
 - **published_package**: Public npm package ownership confirmed and package published from a green dry run.
   Why it matters: A launch story is incomplete while users cannot install the advertised package name.
-  Acceptable evidence: npm view as-xflow name version --json returns this package; npm publish --access public completed for the intended version
+  Acceptable evidence: npm view openflow name version --json returns this package; npm publish --access public completed for the intended version
 
 ## Missing Before Splash Launch
 
 - **third_party_adoption**: At least one adoption artifact comes from a third-party project, public PR, external repository, or named external team beyond maintainer dogfooding.
-  Why it matters: An industry-splash claim needs ecosystem evidence, not only a maintainer hardening run inside as-xflow.
+  Why it matters: An industry-splash claim needs ecosystem evidence, not only a maintainer hardening run inside openflow.
   Acceptable evidence: docs/adoption/<third-party-project>.md with a public PR, external repository, or named external team source; xflow adoption validate --splash --json passes; xflow launch audit --splash --strict --json passes
 - **published_package**: Public npm package ownership confirmed and package published from a green dry run.
   Why it matters: A launch story is incomplete while users cannot install the advertised package name.
-  Acceptable evidence: npm view as-xflow name version --json returns this package; npm publish --access public completed for the intended version
+  Acceptable evidence: npm view openflow name version --json returns this package; npm publish --access public completed for the intended version
 
 ## Current Evidence Snapshot
 

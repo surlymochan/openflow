@@ -1,12 +1,12 @@
-# as-xflow Install And Upgrade
+# openflow Install And Upgrade
 
 This document defines the public install and upgrade story for source checkouts and npm-style global installs.
 
 ## Source Checkout
 
 ```bash
-git clone <repo-url> as-xflow
-cd as-xflow
+git clone <repo-url> openflow
+cd openflow
 npm install
 npm run doctor
 ```
@@ -16,7 +16,7 @@ Use source checkout mode when developing xflow itself or when testing workflow c
 ## Global CLI
 
 ```bash
-npm install -g as-xflow
+npm install -g openflow
 xflow doctor
 ```
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-J4c.openspec.migration_map - Map an OpenSpec project to as-xflow surfaces.
+J4c.openspec.migration_map - Map an OpenSpec project to openflow surfaces.
 
 This atom is intentionally read-only. It reports how `openspec/specs` and
 `openspec/changes` would map into `specs/` and `specs/changes/` without copying

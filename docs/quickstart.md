@@ -1,13 +1,13 @@
-# as-xflow Quickstart
+# openflow Quickstart
 
 Use this path when you want a project to adopt xflow without reading the implementation first.
 
 ## 0. See The Delivery Loop
 
-Use the published package path when `as-xflow` is available from npm:
+Use the published package path when `openflow` is available from npm:
 
 ```bash
-npm install -g as-xflow
+npm install -g openflow
 xflow quickstart
 xflow guide
 xflow evaluate
@@ -20,8 +20,8 @@ xflow launch dossier
 Use source checkout mode before npm publication:
 
 ```bash
-git clone <repo-url> as-xflow
-cd as-xflow
+git clone <repo-url> openflow
+cd openflow
 npm install
 npm run release:pack
 node bin/xflow.js quickstart

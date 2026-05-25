@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://as-xflow/schemas/visual-benchmark.schema.json",
+  "$id": "https://openflow/schemas/visual-benchmark.schema.json",
   "title": "Visual Benchmark Artifact",
   "type": "object",
   "additionalProperties": false,

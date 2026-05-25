@@ -56,7 +56,7 @@ describe('local release checklist', () => {
       'docs/goal-vs-codex.md',
       'docs/superpowers-comparison.md',
       'docs/adoption/README.md',
-      'docs/adoption/as-xflow-release-hardening.md',
+      'docs/adoption/openflow-release-hardening.md',
       'docs/spec-kit-benchmark.md',
       'docs/walkthrough.md',
       'docs/openspec-migration.md',
@@ -89,7 +89,7 @@ describe('local release checklist', () => {
     const script = resolve(REPO_ROOT, 'xflow', 'scripts', 'check_installed_xflow_skill_sync.sh');
     assert.equal(existsSync(script), true);
 
-    const tempRoot = mkdtempSync(resolve(tmpdir(), 'as-xflow-skill-diff-'));
+    const tempRoot = mkdtempSync(resolve(tmpdir(), 'openflow-skill-diff-'));
     try {
       const source = resolve(tempRoot, 'source-xflow');
       const target = resolve(tempRoot, 'target-xflow');

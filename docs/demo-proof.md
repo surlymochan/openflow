@@ -1,4 +1,4 @@
-# as-xflow Demo Proof
+# openflow Demo Proof
 
 This page defines what an external evaluator should run before trusting xflow claims.
 
@@ -7,7 +7,7 @@ This page defines what an external evaluator should run before trusting xflow cl
 From an empty temporary project:
 
 ```bash
-npm install -g as-xflow
+npm install -g openflow
 xflow demo clean
 xflow guide
 xflow assess
@@ -34,7 +34,7 @@ same init/goal/doctor/yolo validation smoke, and cleans up automatically.
 
 ## Source Checkout Release Proof
 
-From the as-xflow repository:
+From the openflow repository:
 
 ```bash
 npm run release:pack

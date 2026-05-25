@@ -8,7 +8,7 @@ import { workflowStateLoad } from '../src/core/atoms/workflow/state-load.js';
 import { workflowGuard } from '../src/core/atoms/workflow/guard.js';
 
 function makeProjectRoot() {
-  const root = mkdtempSync(join(tmpdir(), 'as-xflow-guard-'));
+  const root = mkdtempSync(join(tmpdir(), 'openflow-guard-'));
   mkdirSync(resolve(root, '.as-xflow'), { recursive: true });
   mkdirSync(resolve(root, 'specs', 'changes', 'chg-guard-1'), { recursive: true });
   return root;

@@ -1,6 +1,6 @@
 # xflow
 
-Project-facing skill family for `as-xflow`, an executable delivery workflow runtime for AI coding agents.
+Project-facing skill family for `openflow`, an executable delivery workflow runtime for AI coding agents.
 
 Start here:
 

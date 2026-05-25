@@ -2,7 +2,6 @@
 import argparse
 import json
 import os
-import re
 import subprocess
 import sys
 from pathlib import Path
@@ -34,9 +33,8 @@ from common import (  # noqa: E402
 )
 
 
-DEFAULT_ISSUE_REPO = os.environ.get("XFLOW_DEFAULT_ISSUE_REPO", "owner/internal-tracker")
-WORKSPACE_ROOT = Path.home() / "Documents/workspace"
-_CJK_RE = re.compile(r"[\u3400-\u9fff]")
+DEFAULT_ISSUE_REPO = os.environ.get("XFLOW_DEFAULT_ISSUE_REPO", "").strip()
+PLACEHOLDER_ISSUE_REPO = "owner/internal-tracker"
 
 
 def parse_args() -> argparse.Namespace:
@@ -75,18 +73,19 @@ def configured_issue_repo(project_root: str | Path) -> str | None:
     return None
 
 
-def resolve_issue_repo(args: argparse.Namespace) -> str:
-    return args.repo or configured_issue_repo(args.project_root) or DEFAULT_ISSUE_REPO
+def resolve_issue_repo(args: argparse.Namespace, checkout_path: Path | None = None) -> str:
+    repo = args.repo or configured_issue_repo(args.project_root) or DEFAULT_ISSUE_REPO
+    if repo:
+        return repo
+    if checkout_path is not None:
+        return get_checkout_repo(checkout_path)
+    raise SystemExit("Issue repo is required. Pass --repo, set .as-xflow/config.json issue_routing.repo, or run from a GitHub checkout.")
 
 
 def load_issue_body(args: argparse.Namespace) -> str | None:
     if args.body_file:
         return Path(args.body_file).expanduser().read_text(encoding="utf-8")
     return args.body
-
-
-def contains_cjk(text: str | None) -> bool:
-    return bool(text and _CJK_RE.search(text))
 
 
 def parse_repo_from_remote_url(remote_url: str) -> str | None:
@@ -134,16 +133,15 @@ def get_checkout_default_branch(checkout_path: Path) -> str:
     return current_branch or "main"
 
 
-def enforce_as_xflow_openissue_contract(repo: str, title: str | None, body: str | None, checkout_path: Path) -> None:
-    if repo != DEFAULT_ISSUE_REPO:
-        raise SystemExit(f"as-xflow openissue must file into {DEFAULT_ISSUE_REPO}, not {repo!r}.")
-    if not contains_cjk(title):
-        raise SystemExit("as-xflow openissue requires a Chinese issue title containing CJK characters.")
-    if not contains_cjk(body):
-        raise SystemExit("as-xflow openissue requires a Chinese issue body containing CJK characters.")
-    resolved_checkout = checkout_path.expanduser().resolve()
-    if not resolved_checkout.is_relative_to(WORKSPACE_ROOT):
-        raise SystemExit(f"as-xflow code checkout must live under {WORKSPACE_ROOT}, got {resolved_checkout}.")
+def enforce_openflow_openissue_contract(repo: str, title: str | None, body: str | None, checkout_path: Path) -> None:
+    if repo == PLACEHOLDER_ISSUE_REPO:
+        raise SystemExit("Configure a real issue repo with --repo or .as-xflow/config.json issue_routing.repo before running openissue.")
+    if not title:
+        raise SystemExit("OpenFlow openissue requires a non-empty issue title.")
+    if not body:
+        raise SystemExit("OpenFlow openissue requires a non-empty issue body. Pass --body or --body-file.")
+    if not checkout_path.exists():
+        raise SystemExit(f"Checkout path does not exist: {checkout_path}")
 
 
 def extract_section(body: str, headings: list[str]) -> str:
@@ -361,7 +359,6 @@ def ensure_linked_branch(issue_repo: str, issue_number: int, branch_name: str, b
 
 def main() -> int:
     args = parse_args()
-    issue_repo = resolve_issue_repo(args)
     scaffold_change_workspace(args)
     status_path, status = load_status(args.project_root, args.change_id)
     assert_stage_transition_allowed(status.get("current_stage"), "plan", current_status=status.get("status"))
@@ -369,7 +366,8 @@ def main() -> int:
 
     issue_body = load_issue_body(args)
     checkout_path = resolve_code_checkout(args.checkout_path, args.project_root)
-    enforce_as_xflow_openissue_contract(issue_repo, args.title, issue_body, checkout_path)
+    issue_repo = resolve_issue_repo(args, checkout_path)
+    enforce_openflow_openissue_contract(issue_repo, args.title, issue_body, checkout_path)
     issue = create_or_update_issue(issue_repo, args.title, issue_body, args.issue_number)
     issue_number = int(issue["number"])
     issue_url = str(issue["url"])
@@ -391,7 +389,6 @@ def main() -> int:
     status["branch_name"] = branch_result["branch_name"]
     status["base_branch"] = branch_result["base_branch"]
     status["checkout_path"] = str(checkout_path)
-    status["issue_language"] = "zh-CN"
     status["next_action"] = "Continue with xflow:yolo or xflow:corps from the frozen plan."
     status["issue_prepared_at"] = now_iso()
     if discovered_project:

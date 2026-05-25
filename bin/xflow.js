@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * xflow — as-xflow unified CLI
+ * xflow — openflow unified CLI
  *
  * Commands:
  *   workflow run <yaml>          Execute a workflow (or dry-run with --dry-run)
@@ -794,7 +794,7 @@ const QUALITY_ASSESSMENT = {
     'docs/goal-vs-codex.md',
     'docs/competitive-benchmark.md',
     'docs/public-benchmark.md',
-    'docs/adoption/as-xflow-release-hardening.md',
+    'docs/adoption/openflow-release-hardening.md',
   ],
 };
 
@@ -1185,7 +1185,7 @@ async function handleRelease(sub, args) {
 }
 
 const LAUNCH_DEMO = {
-  title: 'as-xflow public launch demo',
+  title: 'openflow public launch demo',
   promise: 'Show that xflow turns a project goal into verified yolo or corps delivery evidence.',
   docs: ['docs/launch-demo.md', 'docs/demo-proof.md', 'docs/quality-assessment.md'],
   paths: [
@@ -1288,12 +1288,12 @@ async function handleCleanDemo(args) {
   }
 
   const parsedArgs = parseCliArgs(args);
-  const projectRoot = resolve(parsedArgs.project_root || mkdtempSync(resolve(tmpdir(), 'as-xflow-clean-')));
+  const projectRoot = resolve(parsedArgs.project_root || mkdtempSync(resolve(tmpdir(), 'openflow-clean-')));
   const shouldCleanup = !parsedArgs.project_root && !parsedArgs.keep;
   mkdirSync(projectRoot, { recursive: true });
   const packagePath = resolve(projectRoot, 'package.json');
   if (!existsSync(packagePath)) {
-    writeFileSync(packagePath, JSON.stringify({ name: 'as-xflow-clean-smoke', version: '0.0.0', private: true }, null, 2));
+    writeFileSync(packagePath, JSON.stringify({ name: 'openflow-clean-smoke', version: '0.0.0', private: true }, null, 2));
   }
 
   const cli = resolve(ROOT, 'bin', 'xflow.js');
@@ -1449,7 +1449,7 @@ const LAUNCH_MISSING_SURFACES = {
   third_party_adoption: {
     id: 'third_party_adoption',
     requirement: 'At least one adoption artifact comes from a third-party project, public PR, external repository, or named external team beyond maintainer dogfooding.',
-    why_it_matters: 'An industry-splash claim needs ecosystem evidence, not only a maintainer hardening run inside as-xflow.',
+    why_it_matters: 'An industry-splash claim needs ecosystem evidence, not only a maintainer hardening run inside openflow.',
     acceptable_evidence: [
       'docs/adoption/<third-party-project>.md with a public PR, external repository, or named external team source',
       'xflow adoption validate --splash --json passes',
@@ -1461,7 +1461,7 @@ const LAUNCH_MISSING_SURFACES = {
     requirement: 'Public npm package ownership confirmed and package published from a green dry run.',
     why_it_matters: 'A launch story is incomplete while users cannot install the advertised package name.',
     acceptable_evidence: [
-      'npm view as-xflow name version --json returns this package',
+      'npm view openflow name version --json returns this package',
       'npm publish --access public completed for the intended version',
     ],
   },
@@ -1630,7 +1630,7 @@ function buildLaunchClaimsPayload(payload) {
     allowedClaims.push({
       id: 'non_fixture_adoption_evidence',
       claim: `Launch claims are backed by ${payload.adoption_evidence.record_count} reviewable non-fixture adoption record(s).`,
-      proof: ['xflow adoption validate --json', 'docs/adoption/as-xflow-release-hardening.md'],
+      proof: ['xflow adoption validate --json', 'docs/adoption/openflow-release-hardening.md'],
     });
   }
 
@@ -1726,12 +1726,12 @@ function buildLaunchCopyPayload(payload) {
   const claims = buildLaunchClaimsPayload(payload);
   const packageBlocked = claims.blocked_claims.some((item) => item.id === 'published_package');
   const installCommand = packageBlocked
-    ? 'git clone <repo-url> as-xflow && cd as-xflow && npm install && node bin/xflow.js quickstart'
-    : 'npm install -g as-xflow && xflow quickstart';
+    ? 'git clone <repo-url> openflow && cd openflow && npm install && node bin/xflow.js quickstart'
+    : 'npm install -g openflow && xflow quickstart';
   const forbiddenPhrases = [];
   if (packageBlocked) {
-    forbiddenPhrases.push('npm install -g as-xflow works now');
-    forbiddenPhrases.push('as-xflow is publicly installable from npm');
+    forbiddenPhrases.push('npm install -g openflow works now');
+    forbiddenPhrases.push('openflow is publicly installable from npm');
     forbiddenPhrases.push('splash launch complete');
   }
   if (claims.blocked_claims.some((item) => item.id === 'package_preflight')) {
@@ -1752,8 +1752,8 @@ function buildLaunchCopyPayload(payload) {
     mode: payload.mode,
     splash: payload.splash,
     verdict: claims.verdict,
-    headline: 'as-xflow turns AI-agent delivery into executable workflow evidence',
-    short_copy: 'as-xflow packages project goals, yolo delivery, corps product proof, TDD gates, handoff, and launch audits into a local CLI/runtime for AI coding agents.',
+    headline: 'openflow turns AI-agent delivery into executable workflow evidence',
+    short_copy: 'openflow packages project goals, yolo delivery, corps product proof, TDD gates, handoff, and launch audits into a local CLI/runtime for AI coding agents.',
     install_command: installCommand,
     proof_points: claims.allowed_claims.map((item) => ({
       id: item.id,
@@ -1773,7 +1773,7 @@ function buildLaunchCopyPayload(payload) {
 
 function renderLaunchCopy(payload) {
   const lines = [
-    '# as-xflow Launch Copy',
+    '# openflow Launch Copy',
     '',
     `Generated: ${payload.generated_at}`,
     `Verdict: ${payload.verdict}`,
@@ -1990,7 +1990,7 @@ function pushActionSection(lines, title, actions) {
 
 function renderLaunchDossier(payload, splashPayload = payload) {
   const lines = [
-    '# as-xflow Launch Dossier',
+    '# openflow Launch Dossier',
     '',
     `Generated: ${payload.generated_at}`,
     `Mode: ${payload.mode}`,
@@ -2408,8 +2408,8 @@ function buildAdoptionTrialPayload(parsedArgs = {}) {
   const source = parsedArgs.source || '<public-pr-or-external-repo>';
   const track = parsedArgs.track || 'yolo';
   const sourceCheckoutCommands = [
-    'git clone <repo-url> as-xflow',
-    'cd as-xflow',
+    'git clone <repo-url> openflow',
+    'cd openflow',
     'npm install',
     'node bin/xflow.js quickstart',
     'node bin/xflow.js demo clean',
@@ -2815,7 +2815,7 @@ function validateAdoptionRecord(path, projectRoot) {
 function classifyAdoptionScope({ title, source, markdown }) {
   const text = `${title}\n${source}\n${markdown}`.toLowerCase();
   const maintainerSignals = [
-    'as-xflow maintainer',
+    'openflow maintainer',
     'maintainer release-hardening',
     'dogfood',
     'self-hosted',
@@ -2953,7 +2953,7 @@ function readPackageMetadata(parsedArgs = {}) {
     projectRoot,
     packagePath,
     packageJson,
-    packageName: parsedArgs.package_name || packageJson.name || 'as-xflow',
+    packageName: parsedArgs.package_name || packageJson.name || 'openflow',
     expectedVersion: parsedArgs.version || packageJson.version || null,
     issues,
   };
@@ -4530,9 +4530,9 @@ const GUIDE_STAGES = [
 const QUICKSTART = {
   published_package: {
     label: 'Published package first run',
-    intent: 'Copy-paste-safe commands for an evaluator after as-xflow is available from npm.',
+    intent: 'Copy-paste-safe commands for an evaluator after openflow is available from npm.',
     commands: [
-      'npm install -g as-xflow',
+      'npm install -g openflow',
       'xflow guide',
       'xflow evaluate',
       'xflow assess',
@@ -4550,8 +4550,8 @@ const QUICKSTART = {
     label: 'Source checkout evaluation',
     intent: 'Copy-paste-safe commands before npm publication or while developing xflow itself.',
     commands: [
-      'git clone <repo-url> as-xflow',
-      'cd as-xflow',
+      'git clone <repo-url> openflow',
+      'cd openflow',
       'npm install',
       'npm run release:pack',
       'node bin/xflow.js assess',
@@ -6259,7 +6259,7 @@ async function handleServe(args) {
     return;
   }
 
-  console.log('Starting as-xflow HTTP control plane...');
+  console.log('Starting openflow HTTP control plane...');
   // For now, delegate to as-agentos server if available
   const agentosServer = resolve(ROOT, 'src', 'server.js');
   if (existsSync(agentosServer)) {
@@ -6797,7 +6797,7 @@ function printServeHelp() {
   console.log(`
 Usage: xflow serve
 
-Start the as-xflow HTTP control plane for heavy-track workflows.
+Start the openflow HTTP control plane for heavy-track workflows.
 
 Options:
   help, -h, --help  Show this help message without starting the server
@@ -6806,7 +6806,7 @@ Options:
 
 function printHelp() {
   console.log(`
-xflow — as-xflow unified workflow CLI
+xflow — openflow unified workflow CLI
 
 Usage:
   xflow workflow run <yaml>      Run a workflow (add --dry-run to preview)

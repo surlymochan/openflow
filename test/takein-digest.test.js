@@ -8,7 +8,7 @@ import { spawnSync } from 'node:child_process';
 const REPO_ROOT = process.cwd();
 
 function makeProjectRoot() {
-  return mkdtempSync(join(tmpdir(), 'as-xflow-takein-'));
+  return mkdtempSync(join(tmpdir(), 'openflow-takein-'));
 }
 
 describe('takein digest helper', () => {

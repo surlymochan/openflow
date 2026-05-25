@@ -1,4 +1,4 @@
-# as-xflow Launch Demo
+# openflow Launch Demo
 
 Use this page when someone asks whether xflow goal is useful or whether yolo
 and corps are only prompt wrappers.

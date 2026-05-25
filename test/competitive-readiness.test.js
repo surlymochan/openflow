@@ -56,7 +56,7 @@ describe('competitive readiness benchmark', () => {
       'docs/launch-dossier.md',
       'docs/examples-gallery.md',
       'docs/adoption/README.md',
-      'docs/adoption/as-xflow-release-hardening.md',
+      'docs/adoption/openflow-release-hardening.md',
       'docs/goal-vs-codex.md',
       'docs/team-adoption.md',
       'RELEASE_NOTES.md',
@@ -251,7 +251,7 @@ describe('competitive readiness benchmark', () => {
       'xflow package preflight --check-registry --check-auth --json',
       'xflow launch audit --pre-publish --strict --json',
       'xflow package audit --check-registry --json',
-      'npm install -g as-xflow',
+      'npm install -g openflow',
       'xflow init --project-root .',
       'xflow goal set "Ship the next verified change" --project-root .',
       'xflow doctor --project-root .',
@@ -392,7 +392,7 @@ describe('competitive readiness benchmark', () => {
 
     for (const phrase of [
       'Universal CLI Contract',
-      'npm install -g as-xflow',
+      'npm install -g openflow',
       'Codex CLI / App',
       'Claude Code',
       'Cursor',
@@ -420,7 +420,7 @@ describe('competitive readiness benchmark', () => {
       'Local Release',
       'Upgrade Checks',
       'Publication Readiness',
-      'npm install -g as-xflow',
+      'npm install -g openflow',
       'npm install -g .',
       'xflow init --project-root .',
       'npm run release:local',
@@ -453,7 +453,7 @@ describe('competitive readiness benchmark', () => {
 
     for (const phrase of [
       'Clean Project Adoption',
-      'npm install -g as-xflow',
+      'npm install -g openflow',
       'xflow demo clean',
       'xflow workflow validate yolo --project-root .',
       'Source Checkout Release Proof',
@@ -515,7 +515,7 @@ describe('competitive readiness benchmark', () => {
       'xflow launch dossier --output docs/launch-dossier.md',
       'xflow goal audit --json',
       'npm publish --dry-run --access public',
-      'npm view as-xflow name version --json',
+      'npm view openflow name version --json',
       'xflow package preflight --check-registry --check-auth --json',
       'xflow launch audit --pre-publish --strict --json',
       'xflow package audit --check-registry --json',
@@ -643,7 +643,7 @@ describe('competitive readiness benchmark', () => {
 
     assert.equal(trackerItem.id, 'release-proof-adapter');
     assert.equal(trackerItem.source, 'tracker-file');
-    assert.match(launchDossier, /as-xflow Launch Dossier/);
+    assert.match(launchDossier, /openflow Launch Dossier/);
     assert.match(launchDossier, /Competitive score: 100\/100/);
     assert.match(launchDossier, /Objective Audit/);
     assert.match(launchDossier, /`goal_vs_codex`: proven_project_layer/);
@@ -668,10 +668,10 @@ describe('competitive readiness benchmark', () => {
   test('minimal external adoption remains documented and exercised in CI', () => {
     const demoProof = readFileSync(resolve(REPO_ROOT, 'docs', 'demo-proof.md'), 'utf8');
     const ciWorkflow = readFileSync(resolve(REPO_ROOT, '.github', 'workflows', 'ci.yml'), 'utf8');
-    const adoptionRecord = readFileSync(resolve(REPO_ROOT, 'docs', 'adoption', 'as-xflow-release-hardening.md'), 'utf8');
+    const adoptionRecord = readFileSync(resolve(REPO_ROOT, 'docs', 'adoption', 'openflow-release-hardening.md'), 'utf8');
 
     for (const phrase of [
-      'npm install -g as-xflow',
+      'npm install -g openflow',
       'xflow init --project-root .',
       'xflow doctor --project-root .',
       'xflow workflow validate yolo --project-root .',
@@ -684,8 +684,8 @@ describe('competitive readiness benchmark', () => {
     assert.match(ciWorkflow, /xflow workflow validate yolo --project-root \./);
 
     for (const phrase of [
-      'as-xflow release hardening',
-      'public commit 84add67',
+      'OpenFlow release hardening',
+      'public commit 9344633',
       'xflow corps --explain --json',
       'xflow launch audit --strict --json',
       'would use this gate',

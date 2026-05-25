@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 import argparse
 import json
-import os
-import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -14,9 +12,6 @@ from doctor import run_doctor_checks  # noqa: E402
 
 
 BASE_ARTIFACTS = ("proposal.md", "plan.md", "tasks.md", "status.json")
-DEFAULT_ISSUE_REPO = os.environ.get("XFLOW_DEFAULT_ISSUE_REPO", "owner/internal-tracker")
-WORKSPACE_ROOT = Path.home() / "Documents/workspace"
-_CJK_RE = re.compile(r"[\u3400-\u9fff]")
 
 
 def check(name: str, ok: bool, detail: str, *, severity: str = "error", value: Any | None = None) -> dict[str, Any]:
@@ -29,10 +24,6 @@ def check(name: str, ok: bool, detail: str, *, severity: str = "error", value: A
     if value is not None:
         payload["value"] = value
     return payload
-
-
-def contains_cjk(text: str | None) -> bool:
-    return bool(text and _CJK_RE.search(text))
 
 
 def parse_args() -> argparse.Namespace:
@@ -118,6 +109,7 @@ def run_yolo_gate(project_root: str | Path, change_id: str, phase: str) -> dict[
     checkout_path = status.get("checkout_path")
     issue_title = status.get("issue_title") or status.get("title")
     issue_body = issue_doc_path.read_text(encoding="utf-8") if issue_doc_path.exists() else None
+    checkout_exists = bool(checkout_path) and Path(checkout_path).expanduser().exists()
 
     if phase == "pre-openissue":
         stage_ok = True
@@ -153,8 +145,8 @@ def run_yolo_gate(project_root: str | Path, change_id: str, phase: str) -> dict[
                 value=archival_status,
             )
         )
-        checks.append(check("issue-title-chinese", contains_cjk(issue_title), "Issue title contains CJK characters" if contains_cjk(issue_title) else "Issue title must be Chinese before openissue", value=issue_title))
-        checks.append(check("issue-body-chinese", contains_cjk(issue_body), "Issue body contains CJK characters" if contains_cjk(issue_body) else "issue.md must be Chinese before openissue", value=str(issue_doc_path)))
+        checks.append(check("issue-title-present", bool(issue_title), "Issue title is present" if issue_title else "Issue title is required before openissue", value=issue_title))
+        checks.append(check("issue-body-present", bool(issue_body and issue_body.strip()), "issue.md has body content" if issue_body and issue_body.strip() else "issue.md must contain body content before openissue", value=str(issue_doc_path)))
     elif phase == "post-openissue":
         checks.extend(
             [
@@ -162,10 +154,9 @@ def run_yolo_gate(project_root: str | Path, change_id: str, phase: str) -> dict[
                 check("status-issue-number", bool(issue_number), "issue_number recorded" if issue_number else "issue_number missing after openissue", value=issue_number),
                 check("status-branch-name", bool(branch_name), "branch_name recorded" if branch_name else "branch_name missing after openissue", value=branch_name),
                 check("status-checkout-path", bool(checkout_path), "checkout_path recorded" if checkout_path else "checkout_path missing after openissue", value=checkout_path),
-                check("issue-repo-configured", repo == DEFAULT_ISSUE_REPO, "Issue repo matches configured default" if repo == DEFAULT_ISSUE_REPO else f"Issue repo must be {DEFAULT_ISSUE_REPO}", value=repo),
-                check("issue-title-chinese", contains_cjk(issue_title), "Issue title contains CJK characters" if contains_cjk(issue_title) else "Issue title must remain Chinese", value=issue_title),
-                check("issue-body-chinese", contains_cjk(issue_body), "Issue body contains CJK characters" if contains_cjk(issue_body) else "issue.md must remain Chinese", value=str(issue_doc_path)),
-                check("checkout-under-workspace-root", bool(checkout_path) and Path(checkout_path).expanduser().resolve().is_relative_to(WORKSPACE_ROOT), "checkout_path is under ~/Documents/workspace" if (checkout_path and Path(checkout_path).expanduser().resolve().is_relative_to(WORKSPACE_ROOT)) else "checkout_path must live under ~/Documents/workspace", value=checkout_path),
+                check("issue-title-present", bool(issue_title), "Issue title is present" if issue_title else "Issue title is required", value=issue_title),
+                check("issue-body-present", bool(issue_body and issue_body.strip()), "issue.md has body content" if issue_body and issue_body.strip() else "issue.md must contain body content", value=str(issue_doc_path)),
+                check("checkout-path-exists", checkout_exists, "checkout_path exists" if checkout_exists else "checkout_path must point to an existing checkout", value=checkout_path),
             ]
         )
     elif phase == "pre-exec":
@@ -191,9 +182,8 @@ def run_yolo_gate(project_root: str | Path, change_id: str, phase: str) -> dict[
                 check("status-issue-number", bool(issue_number), "issue_number recorded" if issue_number else "issue_number missing before exec", value=issue_number),
                 check("status-branch-name", bool(branch_name), "branch_name recorded" if branch_name else "branch_name missing before exec", value=branch_name),
                 check("status-checkout-path", bool(checkout_path), "checkout_path recorded" if checkout_path else "checkout_path missing before exec", value=checkout_path),
-                check("issue-repo-configured", repo == DEFAULT_ISSUE_REPO, "Issue repo matches configured default" if repo == DEFAULT_ISSUE_REPO else f"Issue repo must be {DEFAULT_ISSUE_REPO}", value=repo),
-                check("issue-title-chinese", contains_cjk(issue_title), "Issue title contains CJK characters" if contains_cjk(issue_title) else "Issue title must remain Chinese", value=issue_title),
-                check("checkout-under-workspace-root", bool(checkout_path) and Path(checkout_path).expanduser().resolve().is_relative_to(WORKSPACE_ROOT), "checkout_path is under ~/Documents/workspace" if (checkout_path and Path(checkout_path).expanduser().resolve().is_relative_to(WORKSPACE_ROOT)) else "checkout_path must live under ~/Documents/workspace", value=checkout_path),
+                check("issue-title-present", bool(issue_title), "Issue title is present" if issue_title else "Issue title is required", value=issue_title),
+                check("checkout-path-exists", checkout_exists, "checkout_path exists" if checkout_exists else "checkout_path must point to an existing checkout", value=checkout_path),
                 check(
                     "stage-ready-for-exec",
                     stage_ok,

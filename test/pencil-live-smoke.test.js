@@ -9,7 +9,7 @@ import agentInvoke from '../src/core/atoms/agent-invoke.js';
 import registry from '../atoms/registry.json' with { type: 'json' };
 
 function makeProjectRoot() {
-  const root = mkdtempSync(join(tmpdir(), 'as-xflow-pencil-live-'));
+  const root = mkdtempSync(join(tmpdir(), 'openflow-pencil-live-'));
   mkdirSync(resolve(root, '.as-xflow'), { recursive: true });
   return root;
 }

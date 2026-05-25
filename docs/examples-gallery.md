@@ -23,7 +23,7 @@ What it proves:
 Reference docs:
 
 - `docs/demo-proof.md`
-- `docs/adoption/as-xflow-release-hardening.md`
+- `docs/adoption/openflow-release-hardening.md`
 - `docs/adoption/README.md`
 
 ## 2. Goal To yolo

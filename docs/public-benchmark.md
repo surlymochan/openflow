@@ -4,7 +4,7 @@ This benchmark is the public, repeatable proof path for claims against OpenSpec,
 
 ## Demo Scenario
 
-A tracker item arrives from an external system. `as-xflow` imports the source context, turns it into local change artifacts, reviews spec deltas, and proves the release surface before any public claim or package publish.
+A tracker item arrives from an external system. `openflow` imports the source context, turns it into local change artifacts, reviews spec deltas, and proves the release surface before any public claim or package publish.
 
 ## Commands
 
@@ -59,8 +59,8 @@ xflow launch audit --pre-publish --strict --json
 | Public product readiness | README badges, `RELEASE_NOTES.md`, `docs/fixtures/tracker-item.json`, package whitelist, `npm run publish:check`, `xflow package status --json`, `xflow package preflight --check-registry --check-auth --json`, and `xflow package audit --check-registry --json`. |
 | Quality assessment | `xflow assess --json`, `docs/quality-assessment.md`, `docs/goal-vs-codex.md`, `xflow compare codex-goal --json`, `xflow goal audit --json`, and `xflow score --json`. |
 | Launch demo | `xflow demo launch --json`, `xflow corps --explain --json`, `xflow launch dossier`, `docs/launch-demo.md`, `docs/launch-dossier.md`, `docs/examples-gallery.md`, `docs/corps-operator-guide.md`, and goal-to-yolo / goal-to-corps proof paths. |
-| Launch readiness | `xflow evaluate --json` with `splash_launch` and `splash_claims`, `xflow goal audit --json`, `xflow launch claims --json`, `xflow launch claims --splash --json`, `xflow launch copy --json`, `xflow launch copy --splash --json`, `xflow launch audit --pre-publish --strict --json`, `xflow launch audit --strict --json`, `xflow launch audit --splash --strict --json`, `xflow adoption status --json`, `xflow adoption trial`, `xflow adoption validate --json`, `xflow adoption validate --splash --json`, `xflow package status --json`, `xflow package preflight --check-registry --check-auth --json`, `xflow package audit --check-registry --json`, `docs/public-release.md`, `docs/npm-publish-handoff.md`, `docs/adoption/README.md`, `docs/adoption/as-xflow-release-hardening.md`, and explicit missing registry proof. |
+| Launch readiness | `xflow evaluate --json` with `splash_launch` and `splash_claims`, `xflow goal audit --json`, `xflow launch claims --json`, `xflow launch claims --splash --json`, `xflow launch copy --json`, `xflow launch copy --splash --json`, `xflow launch audit --pre-publish --strict --json`, `xflow launch audit --strict --json`, `xflow launch audit --splash --strict --json`, `xflow adoption status --json`, `xflow adoption trial`, `xflow adoption validate --json`, `xflow adoption validate --splash --json`, `xflow package status --json`, `xflow package preflight --check-registry --check-auth --json`, `xflow package audit --check-registry --json`, `docs/public-release.md`, `docs/npm-publish-handoff.md`, `docs/adoption/README.md`, `docs/adoption/openflow-release-hardening.md`, and explicit missing registry proof. |
 
 ## Current Result
 
-`as-xflow` is designed to win the local delivery and verification benchmark because every superiority claim is backed by a runnable command or checked file. Public ecosystem breadth still needs third-party adoption, but the repo now ships the adapter seam, adoption validator, fixture-backed smoke path, and a non-fixture maintainer release-hardening adoption record.
+`openflow` is designed to win the local delivery and verification benchmark because every superiority claim is backed by a runnable command or checked file. Public ecosystem breadth still needs third-party adoption, but the repo now ships the adapter seam, adoption validator, fixture-backed smoke path, and a non-fixture maintainer release-hardening adoption record.

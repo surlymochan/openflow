@@ -32,7 +32,7 @@ import registry from '../atoms/registry.json' with { type: 'json' };
 const REPO_ROOT = process.cwd();
 
 function makeProjectRoot() {
-  const root = mkdtempSync(join(tmpdir(), 'as-xflow-'));
+  const root = mkdtempSync(join(tmpdir(), 'openflow-'));
   mkdirSync(resolve(root, '.as-xflow'), { recursive: true });
   return root;
 }

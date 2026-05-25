@@ -9,7 +9,7 @@ const REPO_ROOT = process.cwd();
 
 describe('change scaffold helper', () => {
   test('frontend/full-stack scaffold includes findings, progress, and workflow merge stubs', () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-scaffold-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-scaffold-'));
     try {
       const result = spawnSync('python3', [
         'xflow/yolo/scripts/scaffold_specs_change.py',

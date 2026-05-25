@@ -8,7 +8,7 @@ import { spawnSync } from 'node:child_process';
 const REPO_ROOT = process.cwd();
 
 function makeChangeRoot() {
-  const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-tdd-'));
+  const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-tdd-'));
   mkdirSync(resolve(projectRoot, 'specs', 'changes', 'chg-tdd'), { recursive: true });
   return projectRoot;
 }

@@ -8,7 +8,7 @@ evidence, or maintainer-only release state.
 
 - Project: `openflow`
 - Runtime CLI: `xflow`
-- Status: public extraction of the as-xflow workflow runtime.
+- Status: public extraction of the openflow workflow runtime.
 - Archive discipline: keep verification, handoff refresh, commit/push/close, and
   PR creation ordered and evidence-backed.
 - Next action: run verification and benchmark commands before making release

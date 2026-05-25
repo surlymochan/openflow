@@ -30,7 +30,7 @@ async function waitFor(check, { timeoutMs = 5000, intervalMs = 50 } = {}) {
 
 describe('Server', () => {
   test('serve exposes a health endpoint', async () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-server-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-server-'));
     const server = await startServer({ projectRoot, port: 0 });
     try {
       const address = server.address();
@@ -45,7 +45,7 @@ describe('Server', () => {
   });
 
   test('serve exposes write routes for missions, interventions, and phase runs', async () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-server-write-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-server-write-'));
     const server = await startServer({ projectRoot, port: 0 });
     try {
       const address = server.address();
@@ -133,7 +133,7 @@ describe('Server', () => {
   });
 
   test('serve exposes summary api and dashboard html', async () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-server-dashboard-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-server-dashboard-'));
     mkdirSync(resolve(projectRoot, '.as-xflow', 'logs'), { recursive: true });
     writeFileSync(
       resolve(projectRoot, '.as-xflow', 'logs', 'execution.ndjson'),
@@ -190,7 +190,7 @@ describe('Server', () => {
   });
 
   test('serve exposes timeline analytics for mission timelines', async () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-server-timeline-analytics-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-server-timeline-analytics-'));
     const dataFile = resolveDataFile({ projectRoot });
     const missionId = await mutateStore((mutableState) => {
       const { mission } = createMission(mutableState, { goal: 'Timeline analytics smoke', workspace: projectRoot });
@@ -255,7 +255,7 @@ describe('Server', () => {
   });
 
   test('serve exposes pending gate routes and event stream snapshots', async () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-server-gates-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-server-gates-'));
     mkdirSync(resolve(projectRoot, '.as-xflow', 'pending-gates'), { recursive: true });
     mkdirSync(resolve(projectRoot, '.as-xflow', 'logs'), { recursive: true });
     writeFileSync(
@@ -320,7 +320,7 @@ describe('Server', () => {
   });
 
   test('serve marks persisted in-flight workflow runs as orphaned on startup', async () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-server-orphan-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-server-orphan-'));
     const workflowPath = resolve(projectRoot, 'orphan-smoke.yaml');
     const changeId = 'chg-orphan-1';
     const runKey = `${projectRoot}::${workflowPath}::${changeId}`;
@@ -428,7 +428,7 @@ phases:
   });
 
   test('serve can trigger mission reruns for a phase or a specific atom', async () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-server-rerun-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-server-rerun-'));
     const workflowPath = resolve(projectRoot, 'rerun-smoke.yaml');
     writeFileSync(workflowPath, `
 name: rerun-smoke

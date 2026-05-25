@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os';
 import { competitorContractValidate } from '../src/core/atoms/gate/competitor-contract-validate.js';
 
 function makeProjectRoot() {
-  const root = mkdtempSync(join(tmpdir(), 'as-xflow-competitor-gate-'));
+  const root = mkdtempSync(join(tmpdir(), 'openflow-competitor-gate-'));
   mkdirSync(resolve(root, 'specs', 'changes', 'chg-competitor-gate'), { recursive: true });
   return root;
 }

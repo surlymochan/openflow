@@ -44,7 +44,7 @@ If `HANDOFF.md` is missing or stale, say so explicitly and repair the situation 
 5. Extract the current objective, verified state, blockers, recommendations, and any active constraints.
 6. Run a lightweight repo-state check:
    - `git status -sb`
-   - `npm run drift:scan` when the project exposes it; for as-xflow this is required before substantial implementation
+   - `npm run drift:scan` when the project exposes it; for openflow this is required before substantial implementation
    - inspect directly relevant files only
 7. Compare current repo reality against `.xflow/GOAL.md`, `HANDOFF.md`, `AHA.md`, and `DESIGN.md`.
 8. Call out any mismatch between goal, handoff, aha log, design decisions, and repo state.

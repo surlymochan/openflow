@@ -1,6 +1,6 @@
-# as-xflow Compatibility Notes
+# openflow Compatibility Notes
 
-`as-xflow` is designed to work as a workflow runtime below multiple agent tools. The agent can change, but the project artifacts, workflow YAML, gates, and archive rules stay stable.
+`openflow` is designed to work as a workflow runtime below multiple agent tools. The agent can change, but the project artifacts, workflow YAML, gates, and archive rules stay stable.
 
 For installation snippets by tool, see `docs/tooling-matrix.md`.
 
@@ -49,4 +49,4 @@ For installation snippets by tool, see `docs/tooling-matrix.md`.
 - `xflow:yolo` and `xflow:corps` reuse a current plan instead of re-planning.
 - `xmem` remains outside the xflow namespace.
 - Archive publish stays owned by `A5.archive.commit_push_close` before `A6.pr.create`.
-- Installed skill sync goes through the as-xflow wrapper and verifies with `npm run skill:diff`.
+- Installed skill sync goes through the openflow wrapper and verifies with `npm run skill:diff`.

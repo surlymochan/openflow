@@ -2,7 +2,7 @@
 
 ## 0.1.0 - Public Readiness Candidate
 
-This release turns `as-xflow` from a local skill/workflow repo into a package-ready workflow runtime for AI coding agents.
+This release turns `openflow` from a local skill/workflow repo into a package-ready workflow runtime for AI coding agents.
 
 ### Highlights
 

@@ -9,7 +9,7 @@ const REPO_ROOT = process.cwd();
 
 describe('handoff refresh helper', () => {
   test('refresh preserves existing context while updating the managed current-state block', () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-handoff-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-handoff-'));
     try {
       const handoffPath = resolve(projectRoot, 'HANDOFF.md');
       const changeRoot = resolve(projectRoot, 'specs', 'changes', 'chg-handoff-refresh');
@@ -75,7 +75,7 @@ describe('handoff refresh helper', () => {
   });
 
   test('refresh replaces an existing managed current-state block idempotently', () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-handoff-replace-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-handoff-replace-'));
     try {
       const handoffPath = resolve(projectRoot, 'HANDOFF.md');
       const changeRoot = resolve(projectRoot, 'specs', 'changes', 'chg-handoff-replace');
@@ -143,7 +143,7 @@ describe('handoff refresh helper', () => {
   });
 
   test('refresh replaces stale latest verified commands with a managed block', () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-handoff-verified-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-handoff-verified-'));
     try {
       const handoffPath = resolve(projectRoot, 'HANDOFF.md');
       const changeRoot = resolve(projectRoot, 'specs', 'changes', 'chg-handoff-verified');

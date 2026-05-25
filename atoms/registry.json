@@ -260,7 +260,7 @@
       "track": "lite",
       "type": "python",
       "script": "xflow/atoms/j4c_openspec_migration_map.py",
-      "description": "Read OpenSpec folders and generate a safe as-xflow migration mapping report",
+      "description": "Read OpenSpec folders and generate a safe openflow migration mapping report",
       "input_schema": {
         "project_root": "string",
         "openspec_root": "string?"

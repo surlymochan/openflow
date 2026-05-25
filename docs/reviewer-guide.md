@@ -1,4 +1,4 @@
-# as-xflow Reviewer Guide
+# openflow Reviewer Guide
 
 Use this guide when reviewing an xflow-driven change in an issue, PR, or handoff.
 For team rollout policy, pair this with [Team Adoption Operating Model](./team-adoption.md).

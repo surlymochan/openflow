@@ -12,7 +12,7 @@ import { gatePayloadFromPhaseRun } from '../src/core/atoms/gate/payload-from-pha
 import { artifactVerify } from '../src/core/atoms/gate/artifact-verify.js';
 
 function makeProjectRoot() {
-  const root = mkdtempSync(join(tmpdir(), 'as-xflow-gate-'));
+  const root = mkdtempSync(join(tmpdir(), 'openflow-gate-'));
   mkdirSync(resolve(root, '.as-xflow'), { recursive: true });
   mkdirSync(resolve(root, 'specs', 'changes', 'chg-gate-1'), { recursive: true });
   return root;

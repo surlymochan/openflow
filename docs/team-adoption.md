@@ -1,6 +1,6 @@
 # Team Adoption Operating Model
 
-Use this page when adopting as-xflow in a team rather than a solo local workflow.
+Use this page when adopting openflow in a team rather than a solo local workflow.
 The goal is a stable operating contract: every change has one workflow track, one
 proof path, one review surface, and one release boundary.
 
@@ -63,7 +63,7 @@ phase completed, every atom/gate witnessed, and no `stub` / `task_queued` /
 
 ## Required CI Checks
 
-Every team repository using as-xflow should keep an equivalent CI boundary:
+Every team repository using openflow should keep an equivalent CI boundary:
 
 ```bash
 npm test
@@ -78,7 +78,7 @@ xflow workflow validate corps --project-root .
 For consumer projects that only install the CLI, keep a smaller adoption smoke:
 
 ```bash
-npm install -g as-xflow
+npm install -g openflow
 xflow guide
 xflow init --project-root .
 xflow doctor --project-root .

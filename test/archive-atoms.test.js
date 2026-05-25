@@ -9,7 +9,7 @@ const REPO_ROOT = process.cwd();
 
 describe('archive atoms', () => {
   test('K2 merge-snippets-only mode merges snippets without requiring publish state', () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-archive-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-archive-'));
     try {
       const changeRoot = resolve(projectRoot, 'specs', 'changes', 'chg-archive');
       mkdirSync(changeRoot, { recursive: true });
@@ -74,7 +74,7 @@ describe('archive atoms', () => {
   });
 
   test('archive publish skips ignored change workspace when staging', () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-archive-publish-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-archive-publish-'));
     try {
       spawnSync('git', ['init'], { cwd: projectRoot, encoding: 'utf8' });
       spawnSync('git', ['config', 'user.email', 'test@example.com'], { cwd: projectRoot, encoding: 'utf8' });
@@ -137,7 +137,7 @@ describe('archive atoms', () => {
   });
 
   test('archive publish refuses unstaged tracked implementation changes', () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-archive-dirty-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-archive-dirty-'));
     try {
       spawnSync('git', ['init'], { cwd: projectRoot, encoding: 'utf8' });
       spawnSync('git', ['config', 'user.email', 'test@example.com'], { cwd: projectRoot, encoding: 'utf8' });

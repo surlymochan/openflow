@@ -1,15 +1,15 @@
 # Public Release Gate
 
-This page defines the final public-release boundary for as-xflow. It is intentionally stricter than local development because distribution is part of the product surface.
+This page defines the final public-release boundary for openflow. It is intentionally stricter than local development because distribution is part of the product surface.
 
 ## Current Registry Status
 
-The package name `as-xflow` was checked against the npm public registry during the release-hardening pass and returned `404 Not Found`, meaning no published package with that name was visible at that time.
+The package name `openflow` was checked against the npm public registry during the release-hardening pass and returned `404 Not Found`, meaning no published package with that name was visible at that time.
 
 Do not treat this as permanent ownership. Re-check before publishing.
 
 ```bash
-npm view as-xflow name version --json
+npm view openflow name version --json
 ```
 
 ## Release Check
@@ -107,7 +107,7 @@ Record these in the release note or PR:
 - `xflow launch audit --strict --json`
 - `xflow launch audit --splash --strict --json`
 - `docs/adoption/README.md` reviewed, with at least one real adoption record before splash launch
-- `docs/adoption/as-xflow-release-hardening.md` reviewed as the current non-fixture adoption record
+- `docs/adoption/openflow-release-hardening.md` reviewed as the current non-fixture adoption record
 - `docs/npm-publish-handoff.md` reviewed before real publish
 - `xflow score`
 - `xflow compare superpowers`
@@ -119,7 +119,7 @@ Record these in the release note or PR:
 
 ## Failure Rules
 
-- If `npm view as-xflow` returns an existing package not owned by this project, choose a new package name before publishing.
+- If `npm view openflow` returns an existing package not owned by this project, choose a new package name before publishing.
 - If `xflow package preflight --check-registry --check-auth --json` fails, do not run the real publish.
 - If `xflow goal audit --json` fails, do not claim xflow goal is stronger than Codex native goal.
 - If `xflow launch claims --json` lists a claim under `blocked_claims`, do not use that claim in launch copy.

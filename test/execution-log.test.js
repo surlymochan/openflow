@@ -9,7 +9,7 @@ import { readExecutionLog } from '../src/core/execution-log.js';
 import registry from '../atoms/registry.json' with { type: 'json' };
 
 function makeProjectRoot() {
-  const root = mkdtempSync(join(tmpdir(), 'as-xflow-log-'));
+  const root = mkdtempSync(join(tmpdir(), 'openflow-log-'));
   mkdirSync(resolve(root, '.as-xflow'), { recursive: true });
   return root;
 }

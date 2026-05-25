@@ -8,7 +8,7 @@ import { WorkflowExecutor } from '../src/core/workflow-executor.js';
 
 describe('plan hydration', () => {
   test('creates a reusable plan when none exists and leaves tasks absent', async () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-plan-hydration-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-plan-hydration-'));
     try {
       const changeId = 'chg-plan-hydration';
       const changeRoot = resolve(projectRoot, 'specs', 'changes', changeId);
@@ -68,7 +68,7 @@ describe('plan hydration', () => {
   });
 
   test('workflow executor resets stale global resume state when change status is absent and mirrors saves into status.json', () => {
-    const projectRoot = mkdtempSync(join(tmpdir(), 'as-xflow-plan-hydration-'));
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-plan-hydration-'));
     try {
       const changeId = 'chg-status-reset';
       mkdirSync(resolve(projectRoot, '.as-xflow'), { recursive: true });

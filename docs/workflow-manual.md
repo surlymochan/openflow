@@ -1,6 +1,6 @@
-# as-xflow Workflow Manual
+# openflow Workflow Manual
 
-> 版本：2026-04-17 · 适用于 as-xflow main 分支
+> 版本：2026-04-17 · 适用于 openflow main 分支
 
 ---
 
@@ -120,7 +120,7 @@
   └──────────────────────────────────────────────────────────────────────────┘
 
   ┌──────────────────────────── Issue / Branch ─────────────────────────────┐
-  │ 20  openissue           configured tracker 中文 issue + branch + 关联    │
+  │ 20  openissue           configured issue route + branch + 关联          │
   │ 21  set-in-progress     project item → In Progress                      │
   └──────────────────────────────────────────────────────────────────────────┘
 
@@ -1038,7 +1038,7 @@ npm run release:local
 sh xflow/scripts/sync_installed_xflow_skill.sh
 ```
 
-该脚本默认从 as-xflow 同步 `xflow/`，并把 as-skillhub `skills/` 作为额外 source 传给 shared sync，使安装目录中的其他 managed skills 仍可被 prune 阶段正确解析。
+该脚本默认从 openflow 同步 `xflow/`，并把 as-skillhub `skills/` 作为额外 source 传给 shared sync，使安装目录中的其他 managed skills 仍可被 prune 阶段正确解析。
 
 `npm run skill:diff` 调用：
 

@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { WorkflowExecutor } from '../src/core/workflow-executor.js';
 
 function makeProjectRoot() {
-  const root = mkdtempSync(join(tmpdir(), 'as-xflow-parallel-'));
+  const root = mkdtempSync(join(tmpdir(), 'openflow-parallel-'));
   mkdirSync(resolve(root, '.as-xflow'), { recursive: true });
   return root;
 }
