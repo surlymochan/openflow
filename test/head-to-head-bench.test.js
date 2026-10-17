@@ -83,6 +83,6 @@ describe('head-to-head catalog', () => {
     });
     assert.equal(selected.chosen.length, scenarios.length);
     assert.equal(selected.chosen.every((scenario) => scenario.set === 'original'), true);
-    assert.equal(selected.heldout.length, 0);
+    assert.equal(selected.chosen.some((scenario) => scenario.set === 'heldout'), false);
   });
 });
