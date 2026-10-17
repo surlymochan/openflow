@@ -1,0 +1,19 @@
+{
+ "resolved": false,
+ "f2p": [
+  0,
+  1
+ ],
+ "p2p": [
+  17,
+  18
+ ],
+ "f2p_failed": [
+  "tests/config/test_config.py::test_csv_regex_error"
+ ],
+ "p2p_failed": [
+  "tests/config/test_config.py::test_csv_regex_comma_in_quantifier[foo,"
+ ],
+ "test_rc": 1,
+ "test_cmd": "<run>/10172331/superpowers/pylint-dev__pylint-8898/r1/venv/bin/python -m pytest -rA tests/config/test_config.py"
+}

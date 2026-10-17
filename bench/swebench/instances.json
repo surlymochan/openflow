@@ -1,0 +1,37 @@
+{
+ "dataset": "princeton-nlp/SWE-bench_Verified",
+ "revision": "c104f840cc67f8b6eec6f759ebc8b2693d585d4a",
+ "split": "test",
+ "selection": "Round 1: seeded shuffle (seed 20261017) over the '<15 min' and '15 min - 1 hour' buckets; the baseline resolved 12/12, so per the >80% rule the set was replaced. Round 2 (used for all arms): every SWE-bench Verified instance of sympy, pytest and pylint in the '1-4 hours' and '>4 hours' buckets (12), all of which pass the gold-patch check in this Docker-free env (harness/validate.py).",
+ "instances": [
+  "sympy__sympy-12489",
+  "sympy__sympy-13852",
+  "sympy__sympy-13878",
+  "sympy__sympy-14248",
+  "sympy__sympy-16597",
+  "sympy__sympy-17630",
+  "sympy__sympy-18199",
+  "pytest-dev__pytest-10356",
+  "pytest-dev__pytest-5787",
+  "pytest-dev__pytest-6197",
+  "pylint-dev__pylint-4551",
+  "pylint-dev__pylint-8898"
+ ],
+ "round1_too_easy": {
+  "instances": [
+   "sympy__sympy-12481",
+   "sympy__sympy-19637",
+   "sympy__sympy-13877",
+   "sympy__sympy-20154",
+   "sympy__sympy-19783",
+   "sympy__sympy-24661",
+   "sympy__sympy-13974",
+   "pytest-dev__pytest-7205",
+   "pytest-dev__pytest-7521",
+   "pytest-dev__pytest-5631",
+   "pytest-dev__pytest-7236",
+   "pylint-dev__pylint-4970"
+  ],
+  "baseline_resolved": "12/12 (see results/round1-easy-baseline.jsonl)"
+ }
+}

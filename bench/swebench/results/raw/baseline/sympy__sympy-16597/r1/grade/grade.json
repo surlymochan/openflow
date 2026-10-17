@@ -1,0 +1,19 @@
+{
+ "resolved": false,
+ "f2p": [
+  0,
+  3
+ ],
+ "p2p": [
+  74,
+  74
+ ],
+ "f2p_failed": [
+  "test_infinity",
+  "test_neg_infinity",
+  "test_other_symbol"
+ ],
+ "p2p_failed": [],
+ "test_rc": 1,
+ "test_cmd": "PYTHONWARNINGS='ignore::UserWarning,ignore::SyntaxWarning' <run>/10172331/baseline/sympy__sympy-16597/r1/venv/bin/python bin/test -C --verbose sympy/core/tests/test_assumptions.py sympy/functions/elementary/tests/test_miscellaneous.py"
+}

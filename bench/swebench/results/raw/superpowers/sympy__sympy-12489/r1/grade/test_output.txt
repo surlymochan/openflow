@@ -1,0 +1,30 @@
+<run>/10172331/superpowers/sympy__sympy-12489/r1/repo/sympy/core/basic.py:3: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  from collections import Mapping
+<run>/10172331/superpowers/sympy__sympy-12489/r1/repo/sympy/plotting/plot.py:28: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  from collections import Callable
+<run>/10172331/superpowers/sympy__sympy-12489/r1/repo/sympy/core/basic.py:3: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  from collections import Mapping
+<run>/10172331/superpowers/sympy__sympy-12489/r1/repo/sympy/plotting/plot.py:28: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  from collections import Callable
+============================= test process starts ==============================
+executable:         <run>/10172331/superpowers/sympy__sympy-12489/r1/venv/bin/python  (3.9.25-final-0) [CPython]
+architecture:       64-bit
+cache:              no
+ground types:       python 
+random seed:        56854776
+hash randomization: on (PYTHONHASHSEED=3868722793)
+
+sympy/combinatorics/tests/test_permutations.py[10] 
+test_Permutation ok
+test_Permutation_subclassing ok
+test_josephus ok
+test_ranking ok
+test_mul ok
+test_args ok
+test_Cycle ok
+test_from_sequence ok
+test_printing_cyclic ok
+test_printing_non_cyclic ok                                                 [OK]
+
+
+================== tests finished: 10 passed, in 0.11 seconds ==================

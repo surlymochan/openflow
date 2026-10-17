@@ -1,0 +1,39 @@
+{
+ "resolved": false,
+ "f2p": [
+  0,
+  2
+ ],
+ "p2p": [
+  58,
+  123
+ ],
+ "f2p_failed": [
+  "testing/test_reports.py::TestReportSerialization::test_chained_exceptions[TestReport]",
+  "testing/test_reports.py::TestReportSerialization::test_chained_exceptions[CollectReport]"
+ ],
+ "p2p_failed": [
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_repr_tracebackentry_lines",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_repr_tracebackentry_lines2",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_repr_tracebackentry_lines_var_kw_args",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_repr_tracebackentry_short",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_repr_tracebackentry_no",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_repr_traceback_tbfilter",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_traceback_short_no_source",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_repr_traceback_and_excinfo",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_repr_traceback_with_invalid_cwd",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_repr_excinfo_addouterr",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_repr_excinfo_reprcrash",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_repr_traceback_recursion",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_reprexcinfo_getrepr",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_toterminal_long",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_toterminal_long_missing_source",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_toterminal_long_incomplete_source",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_toterminal_long_filenames",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_format_excinfo[reproptions0]",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_format_excinfo[reproptions1]",
+  "testing/code/test_excinfo.py::TestFormattedExcinfo::test_format_excinfo[reproptions2]"
+ ],
+ "test_rc": 1,
+ "test_cmd": "<run>/10172331/baseline/pytest-dev__pytest-5787/r1/venv/bin/python -m pytest -rA testing/code/test_code.py testing/code/test_excinfo.py testing/conftest.py testing/test_reports.py"
+}

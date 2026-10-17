@@ -9,11 +9,28 @@
 
 ## Benchmarks: OpenFlow vs superpowers (2026-10-17)
 
-Same model (`grok-4.7-high` via local `cursor-agent`) and same harness for every arm. Pinned: OpenFlow 0.2.1,
+For the synthetic and evidence-check results below, the same model (`grok-4.7-high` via local `cursor-agent`) and same
+harness are used for every arm; the SWE-bench block uses DeepSeek via Pi. Pinned: OpenFlow 0.2.1,
 [superpowers](https://github.com/obra/superpowers) v7.0.0 (`bb92a77`). Scripts, raw results and methodology:
 [`bench/`](bench/README.md) and [`bench/e2e/`](bench/e2e/README.md). Losses are shown as measured.
 
-**End-to-end tasks.** 8 small real tasks (4 JS, 4 Python), hidden acceptance tests applied only after the agent exits, 20-minute cap per run.
+**Real GitHub issues (SWE-bench Verified), 2026-10-18.** Six hard instances from sympy, pytest and pylint; success
+means the official FAIL_TO_PASS and PASS_TO_PASS tests all pass. Every arm runs on the Pi coding agent with DeepSeek
+`deepseek-flash`, n=1 per cell, 20-minute cap; details and commands are in
+[`bench/swebench/`](bench/swebench/README.md).
+
+| Arm | Resolved (official tests) | Median wall-clock (IQR) | Median $ per task (DeepSeek list price) | Total $ (all runs) | n |
+| --- | --- | --- | --- | --- | --- |
+| Plain agent (baseline) | 1/6 (17%) | 124 s (110–175) | $0.0234 | $0.16 | 6 |
+| superpowers v7.0.0 | 0/6 (0%) | 154 s (136–340) | $0.0285 | $0.31 | 6 |
+| OpenFlow 0.2.1 | 2/6 (33%) | 230 s (200–266) | $0.0412 | $0.23 | 6 |
+| openswarm (Pi executor) | 3/6 (50%) | 228 s (187–254) | $0.0377 | $0.21 | 6 |
+
+On the MiniMax-M3.1-Flash-Preview subset, baseline and superpowers both resolved 2/4 on 4 instances; OpenFlow had no
+clean MiniMax run because the plan's usage cap was hit. With n=1 on 6 instances, a difference of one or two resolves is
+within noise.
+
+**Synthetic end-to-end tasks.** 8 small real tasks (4 JS, 4 Python), hidden acceptance tests applied only after the agent exits, 20-minute cap per run.
 
 | Arm | Success (hidden tests) | Median wall time (IQR) | Median tokens: total / input+output | n |
 | --- | --- | --- | --- | --- |

@@ -1,0 +1,17 @@
+{
+ "resolved": false,
+ "f2p": [
+  0,
+  1
+ ],
+ "p2p": [
+  4,
+  4
+ ],
+ "f2p_failed": [
+  "test_polylog_values"
+ ],
+ "p2p_failed": [],
+ "test_rc": 1,
+ "test_cmd": "PYTHONWARNINGS='ignore::UserWarning,ignore::SyntaxWarning' <run>/10172331/baseline/sympy__sympy-13852/r1/venv/bin/python bin/test -C --verbose sympy/functions/special/tests/test_zeta_functions.py"
+}

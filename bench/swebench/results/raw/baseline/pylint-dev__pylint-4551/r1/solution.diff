@@ -1,0 +1,57 @@
+diff --git a/ChangeLog b/ChangeLog
+index c2b1382..a4e827e 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -11,6 +11,9 @@ Release date: TBA
+ 
+ * astroid has been upgraded to 2.6.0
+ 
++* pyreverse now uses the type annotations of the function arguments in the
++  generated UML diagrams, e.g. ``foo(a : str)`` instead of ``foo(a)``.
++
+ * ``setuptools_scm`` has been removed and replaced by ``tbump`` in order to not
+   have hidden runtime dependencies to setuptools
+ 
+diff --git a/pylint/pyreverse/writer.py b/pylint/pyreverse/writer.py
+index 0d80bb9..9bc8dd2 100644
+--- a/pylint/pyreverse/writer.py
++++ b/pylint/pyreverse/writer.py
+@@ -23,6 +23,23 @@ from pylint.pyreverse.utils import is_exception
+ from pylint.pyreverse.vcgutils import VCGPrinter
+ 
+ 
++def _get_method_arguments(func):
++    """Return the arguments of a function with their annotations, if any."""
++    if func.args.args:
++        args = func.args.args
++    else:
++        args = []
++    annotations = dict(zip((arg.name for arg in args), func.args.annotations))
++    for arg in args:
++        if arg.name == "self":
++            continue
++        annotation = annotations.get(arg.name)
++        if annotation:
++            yield f"{arg.name} : {annotation.as_string()}"
++        else:
++            yield arg.name
++
++
+ class DiagramWriter:
+     """base class for writing project diagrams"""
+ 
+@@ -134,11 +151,9 @@ class DotWriter(DiagramWriter):
+         if not self.config.only_classnames:
+             label = r"{}|{}\l|".format(label, r"\l".join(obj.attrs))
+             for func in obj.methods:
+-                if func.args.args:
+-                    args = [arg.name for arg in func.args.args if arg.name != "self"]
+-                else:
+-                    args = []
+-                label = r"{}{}({})\l".format(label, func.name, ", ".join(args))
++                label = r"{}{}({})\l".format(
++                    label, func.name, ", ".join(_get_method_arguments(func))
++                )
+             label = "{%s}" % label
+         if is_exception(obj.node):
+             return dict(fontcolor="red", label=label, shape="record")

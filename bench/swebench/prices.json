@@ -1,0 +1,46 @@
+{
+  "_doc": "USD per 1M tokens. Cost per run = input*in + output*out + cache_read*cache_read + cache_write*cache_write, over the token counts in each run record. Only the MiniMax row is the model actually used; the other rows are what the same token counts would cost at those list prices (computed, not billed). Fetched 2026-10-17 (Asia/Taipei).",
+  "billed_model": ["MiniMax-M3.1-Flash-Preview", "deepseek-flash"],
+  "rows": [
+    {
+      "id": "deepseek",
+      "label": "DeepSeek list price (deepseek-flash = DeepSeek-V4.1-Flash, off-peak)",
+      "model": "deepseek-flash (DeepSeek-V4.1-Flash), off-peak",
+      "in": 0.15, "out": 0.60, "cache_read": 0.003, "cache_write": 0.0,
+      "source": "https://api-docs.deepseek.com/quick_start/pricing",
+      "fetched": "2026-10-18",
+      "note": "Off-peak rate. Peak (Mon-Fri 01:00-04:00 and 06:00-10:00 UTC) is 2x; all runs were on a Sunday (Asia/Taipei), which is off-peak all day. Pi reports DeepSeek cache-miss input as input and cache-hit input as cache_read.",
+      "computed_not_billed": false
+    },
+    {
+      "id": "minimax",
+      "label": "MiniMax M3 list price (stand-in for M3.1-Flash-Preview)",
+      "model": "MiniMax-M3, Standard tier, <=512k input",
+      "in": 0.30, "out": 1.20, "cache_read": 0.06, "cache_write": 0.0,
+      "source": "https://platform.minimax.io/docs/pricing/overview",
+      "fetched": "2026-10-17",
+      "note": "MiniMax publishes no pay-as-you-go price for MiniMax-M3.1-Flash-Preview; it is sold only through M Plan / MiniMax Code. The bench uses the current MiniMax-M3 Standard list price (the 'permanent 50% off' price shown on the page, <=512k input). No cache-write price is listed for M3; Pi reported 0 cache-write tokens on these runs unless the record says otherwise.",
+      "computed_not_billed": false
+    },
+    {
+      "id": "sonnet5",
+      "label": "Claude Sonnet 5 list price (computed)",
+      "model": "Claude Sonnet 5",
+      "in": 2.00, "out": 10.00, "cache_read": 0.20, "cache_write": 2.50,
+      "source": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+      "fetched": "2026-10-17",
+      "note": "Base input, output, cache hits, 5-minute cache writes.",
+      "computed_not_billed": true
+    },
+    {
+      "id": "gpt61sol",
+      "label": "GPT-6.1 Sol list price (computed)",
+      "model": "gpt-6.1-sol, Standard, short context (<=272K)",
+      "in": 2.00, "out": 10.00, "cache_read": 0.10, "cache_write": 2.50,
+      "source": "https://platform.openai.com/docs/pricing",
+      "fetched": "2026-10-17",
+      "note": "Standard tier short-context input, cached input, cache writes, output.",
+      "computed_not_billed": true
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{"instance_id": "sympy__sympy-12489", "arm": "baseline", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "sympy__sympy-16597", "arm": "baseline", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "sympy__sympy-13878", "arm": "baseline", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "sympy__sympy-13852", "arm": "baseline", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "sympy__sympy-18199", "arm": "baseline", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "pylint-dev__pylint-4551", "arm": "baseline", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "pytest-dev__pytest-5787", "arm": "baseline", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "pytest-dev__pytest-10356", "arm": "baseline", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "sympy__sympy-13852", "arm": "superpowers", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive c935e1d106743efd5bf070"]}
+{"instance_id": "sympy__sympy-13878", "arm": "superpowers", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive 7b127bdf71a36d85216315"]}
+{"instance_id": "sympy__sympy-12489", "arm": "superpowers", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "sympy__sympy-16597", "arm": "superpowers", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive 6fd65310fa3167b9626c38"]}
+{"instance_id": "sympy__sympy-17630", "arm": "baseline", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "sympy__sympy-18199", "arm": "superpowers", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive ba80d1e493f21431b4bf72"]}
+{"instance_id": "sympy__sympy-14248", "arm": "baseline", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "pylint-dev__pylint-8898", "arm": "baseline", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "sympy__sympy-14248", "arm": "superpowers", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "pylint-dev__pylint-4551", "arm": "superpowers", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/pylint-dev__pylint.git archive 99589b08de8c5a2c"]}
+{"instance_id": "pytest-dev__pytest-5787", "arm": "superpowers", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "sympy__sympy-12489", "arm": "openflow", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive aa9780761ad8c3c0f68bee"]}
+{"instance_id": "sympy__sympy-13852", "arm": "openflow", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive c935e1d106743efd5bf070"]}
+{"instance_id": "sympy__sympy-13878", "arm": "openflow", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive 7b127bdf71a36d85216315"]}
+{"instance_id": "pytest-dev__pytest-6197", "arm": "baseline", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "sympy__sympy-16597", "arm": "openflow", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive 6fd65310fa3167b9626c38"]}
+{"instance_id": "pytest-dev__pytest-10356", "arm": "superpowers", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "sympy__sympy-18199", "arm": "openflow", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive ba80d1e493f21431b4bf72"]}
+{"instance_id": "sympy__sympy-17630", "arm": "superpowers", "rep": 1, "status": "valid", "reasons": []}
+{"instance_id": "pylint-dev__pylint-8898", "arm": "superpowers", "rep": 1, "status": "incomplete", "reasons": ["usage cap hit during run", "last model call ended in error"]}
+{"instance_id": "pytest-dev__pytest-6197", "arm": "superpowers", "rep": 1, "status": "incomplete", "reasons": ["usage cap hit during run", "last model call ended in error"]}
+{"instance_id": "pylint-dev__pylint-4551", "arm": "openflow", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/pylint-dev__pylint.git archive 99589b08de8c5a2c"]}
+{"instance_id": "pytest-dev__pytest-5787", "arm": "openflow", "rep": 1, "status": "incomplete", "reasons": ["usage cap hit during run", "last model call ended in error"]}
+{"instance_id": "sympy__sympy-12489", "arm": "openswarm", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive aa9780761ad8c3c0f68bee"]}
+{"instance_id": "sympy__sympy-13852", "arm": "openswarm", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive c935e1d106743efd5bf070"]}
+{"instance_id": "sympy__sympy-13878", "arm": "openswarm", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive 7b127bdf71a36d85216315"]}
+{"instance_id": "sympy__sympy-14248", "arm": "openflow", "rep": 1, "status": "incomplete", "reasons": ["usage cap hit during run", "last model call ended in error"]}
+{"instance_id": "sympy__sympy-16597", "arm": "openswarm", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive 6fd65310fa3167b9626c38"]}
+{"instance_id": "pytest-dev__pytest-6197", "arm": "openflow", "rep": 1, "status": "incomplete", "reasons": ["no model call recorded"]}
+{"instance_id": "sympy__sympy-18199", "arm": "openswarm", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive ba80d1e493f21431b4bf72"]}
+{"instance_id": "pylint-dev__pylint-8898", "arm": "openflow", "rep": 1, "status": "incomplete", "reasons": ["no model call recorded"]}
+{"instance_id": "sympy__sympy-17630", "arm": "openswarm", "rep": 1, "status": "incomplete", "reasons": ["no model call recorded"]}
+{"instance_id": "sympy__sympy-14248", "arm": "openswarm", "rep": 1, "status": "incomplete", "reasons": ["no model call recorded"]}
+{"instance_id": "pylint-dev__pylint-4551", "arm": "openswarm", "rep": 1, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/pylint-dev__pylint.git archive 99589b08de8c5a2c"]}
+{"instance_id": "pytest-dev__pytest-10356", "arm": "openswarm", "rep": 1, "status": "incomplete", "reasons": ["non-MiniMax model: ['deepseek/deepseek-flash']", "last model call ended in error"]}
+{"instance_id": "sympy__sympy-12489", "arm": "baseline", "rep": 2, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive aa9780761ad8c3c0f68bee"]}
+{"instance_id": "sympy__sympy-13852", "arm": "baseline", "rep": 2, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive c935e1d106743efd5bf070"]}
+{"instance_id": "sympy__sympy-13878", "arm": "baseline", "rep": 2, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive 7b127bdf71a36d85216315"]}
+{"instance_id": "pytest-dev__pytest-5787", "arm": "openswarm", "rep": 1, "status": "incomplete", "reasons": ["non-MiniMax model: ['deepseek/deepseek-flash']", "last model call ended in error"]}
+{"instance_id": "sympy__sympy-16597", "arm": "baseline", "rep": 2, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive 6fd65310fa3167b9626c38"]}
+{"instance_id": "pytest-dev__pytest-6197", "arm": "openswarm", "rep": 1, "status": "incomplete", "reasons": ["non-MiniMax model: ['deepseek/deepseek-flash']", "last model call ended in error"]}
+{"instance_id": "sympy__sympy-18199", "arm": "baseline", "rep": 2, "status": "harness_error", "reasons": ["command failed (2): git --git-dir=<bench>/repos/sympy__sympy.git archive ba80d1e493f21431b4bf72"]}
+{"instance_id": "pylint-dev__pylint-8898", "arm": "openswarm", "rep": 1, "status": "incomplete", "reasons": ["non-MiniMax model: ['deepseek/deepseek-flash']", "last model call ended in error"]}

@@ -1,0 +1,40 @@
+diff --git a/changelog/6198.bugfix.rst b/changelog/6198.bugfix.rst
+new file mode 100644
+index 0000000..ce223de
+--- /dev/null
++++ b/changelog/6198.bugfix.rst
+@@ -0,0 +1,2 @@
++Fix a regression in 5.2.3 which caused ``__init__.py`` files of packages that
++contain no tests to be imported during collection.
+diff --git a/src/_pytest/python.py b/src/_pytest/python.py
+index 306e5f2..7e6391c 100644
+--- a/src/_pytest/python.py
++++ b/src/_pytest/python.py
+@@ -639,7 +639,6 @@ class Package(Module):
+         return path in self.session._initialpaths
+ 
+     def collect(self):
+-        self._mount_obj_if_needed()
+         this_path = self.fspath.dirpath()
+         init_module = this_path.join("__init__.py")
+         if init_module.check(file=1) and path_matches_patterns(
+diff --git a/testing/test_collection.py b/testing/test_collection.py
+index dee07d5..0631560 100644
+--- a/testing/test_collection.py
++++ b/testing/test_collection.py
+@@ -1257,3 +1257,15 @@ def test_collector_respects_tbstyle(testdir):
+             "*= 1 error in *",
+         ]
+     )
++
++
++def test_does_not_eagerly_collect_packages(testdir):
++    """Regression test for #6198: packages which contain no tests to collect
++    should not have their ``__init__.py`` imported.
++    """
++    testdir.makepyfile("def test(): pass")
++    pydir = testdir.mkpydir("foopkg")
++    pydir.join("__init__.py").write("assert False")
++    result = testdir.runpytest()
++    assert result.ret == ExitCode.OK
++    result.assert_outcomes(passed=1)

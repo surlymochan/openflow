@@ -1,0 +1,70 @@
+{
+  "id": "20261018-004110-92740b",
+  "status": "partial",
+  "title": "sympy__sympy-14248",
+  "verify": {
+    "cmd": "<run>/10180038/openswarm/sympy__sympy-14248/r1/venv/bin/python -c \"from sympy import MatrixSymbol, latex, pretty, sstr; A=MatrixSymbol('A',3,3); B=MatrixSymbol('B',3,3); C=MatrixSymbol('C',3,3); assert sstr(A-A*B-B) == '-B - A*B + A'; assert sstr(A*B-(A+B)) == '-(A + B) + A*B'; assert pretty(-A*B*C) == '-A*B*C'; assert pretty(A-B) == '-B + A'; assert pretty(A*B*C-A*B-B*C) == '-A*B -B*C + A*B*C'; assert latex(-A) == '-A'; assert latex(A-A*B-B) == '-B - A B + A'; assert latex(-A*B-A*B*C-B) == '-B - A B - A B C'; print('matrix printing checks passed')\" && <run>/10180038/openswarm/sympy__sympy-14248/r1/venv/bin/python -m pytest -q sympy/printing/tests/test_str.py::test_MatMul_MatAdd sympy/printing/tests/test_latex.py::test_matAdd sympy/printing/tests/test_latex.py::test_matMul",
+    "rc": 1,
+    "tail": "<run>/10180038/openswarm/sympy__sympy-14248/r1/repo/sympy/core/basic.py:3: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  from collections import Mapping, defaultdict\n<run>/10180038/openswarm/sympy__sympy-14248/r1/repo/sympy/core/expr.py:12: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  from collections import defaultdict, Iterable\n<run>/10180038/openswarm/sympy__sympy-14248/r1/repo/sympy/core/containers.py:271: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  class OrderedSet(collections.MutableSet):\n<run>/10180038/openswarm/sympy__sympy-14248/r1/repo/sympy/plotting/plot.py:28: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  from collections import Callable\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nAssertionError\n",
+    "failing": []
+  },
+  "verify_note": "executor reported done; host verify failed",
+  "backend": "pi",
+  "model": null,
+  "effort": null,
+  "usage": {
+    "input": 22315,
+    "output": 11675,
+    "cacheRead": 367488,
+    "cacheWrite": 0
+  },
+  "seconds": 76.213,
+  "result": {
+    "status": "done",
+    "summary": "Applied the printer-only fix to str, pretty, and latex printers so negative MatMul coefficients render with a unary minus and MatAdd joins negative terms with ' - '. Changes match the specified code and no matrix construction/canonicalization was touched.",
+    "files_changed": [
+      "sympy/printing/str.py",
+      "sympy/printing/pretty/pretty.py",
+      "sympy/printing/latex.py"
+    ],
+    "tests": "Targeted pytest passed: 3 passed (test_str.py::test_MatMul_MatAdd, test_latex.py::test_matAdd, test_latex.py::test_matMul). Additional pretty matrix-related selection passed: 3 passed, 112 deselected. The full acceptance script passed and printed 'matrix printing checks passed' when stdout encoding was forced to ASCII (LC_ALL=C PYTHONCOERCECLOCALE=0 PYTHONUTF8=0). Under the sandbox default C.UTF-8, pretty() emits Unicode '⋅' instead of '*', so the two pretty '*' assertions in the acceptance script fail despite correct sign rendering ('-A⋅B⋅C', '-A⋅B -B⋅C + A⋅B⋅C'); str/latex assertions pass and all sign behavior is correct.",
+    "followups": [
+      "Run the acceptance command with an ASCII stdout encoding, or evaluate pretty assertions with use_unicode=False, if the host leaves C.UTF-8 active."
+    ]
+  },
+  "workspace": {
+    "mode": "in-place",
+    "path": "<run>/10180038/openswarm/sympy__sympy-14248/r1/repo",
+    "repo": "<run>/10180038/openswarm/sympy__sympy-14248/r1/repo"
+  },
+  "diffstat": "sympy/printing/latex.py         | 25 ++++++++++++++++++++-----\n sympy/printing/pretty/pretty.py | 16 +++++++++++++++-\n sympy/printing/str.py           | 28 ++++++++++++++++++++++++----\n 3 files changed, 59 insertions(+), 10 deletions(-)",
+  "worktree": null,
+  "attempts": [
+    {
+      "backend": "pi",
+      "model": null,
+      "effort": null,
+      "rc": 0,
+      "seconds": 76.213,
+      "error_class": null,
+      "meta": {
+        "usage": {
+          "input": 22315,
+          "output": 11675,
+          "cacheRead": 367488,
+          "cacheWrite": 0
+        }
+      },
+      "events": "<bench>/results/raw-deepseek/openswarm/sympy__sympy-14248/r1/openswarm-home/runs/20261018-004110-92740b/events.1.pi.jsonl",
+      "error_tail": null,
+      "quota_before": null,
+      "quota_after": null
+    }
+  ],
+  "claude_review": "light",
+  "decision_reasons": [
+    "pi quota unknown (opt-in backend; not metered by openswarm)",
+    "claude unknown quota unknown/stale; default to light review"
+  ],
+  "run_dir": "<bench>/results/raw-deepseek/openswarm/sympy__sympy-14248/r1/openswarm-home/runs/20261018-004110-92740b"
+}

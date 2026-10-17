@@ -1,0 +1,277 @@
+diff --git a/sympy/matrices/expressions/matadd.py b/sympy/matrices/expressions/matadd.py
+index bef8e1e..2122019 100644
+--- a/sympy/matrices/expressions/matadd.py
++++ b/sympy/matrices/expressions/matadd.py
+@@ -11,9 +11,9 @@
+         exhaust, do_one, glom)
+ from sympy.matrices.expressions.matexpr import MatrixExpr, ShapeError, ZeroMatrix
+ from sympy.utilities import default_sort_key, sift
+-from sympy.core.operations import AssocOp
+ 
+-class MatAdd(MatrixExpr, AssocOp):
++# XXX: MatAdd should perhaps not subclass directly from Add
++class MatAdd(MatrixExpr, Add):
+     """A Sum of Matrix Expressions
+ 
+     MatAdd inherits from and operates like SymPy Add
+diff --git a/sympy/matrices/expressions/matexpr.py b/sympy/matrices/expressions/matexpr.py
+index 07dd235..001eb85 100644
+--- a/sympy/matrices/expressions/matexpr.py
++++ b/sympy/matrices/expressions/matexpr.py
+@@ -3,7 +3,7 @@
+ from functools import wraps, reduce
+ import collections
+ 
+-from sympy.core import S, Symbol, Tuple, Integer, Basic, Expr, Eq
++from sympy.core import S, Symbol, Tuple, Integer, Basic, Expr, Eq, Mul, Add, Eq
+ from sympy.core.decorators import call_highest_priority
+ from sympy.core.compatibility import range, SYMPY_INTS, default_sort_key
+ from sympy.core.sympify import SympifyError, sympify
+@@ -796,6 +796,54 @@ def __nonzero__(self):
+ def matrix_symbols(expr):
+     return [sym for sym in expr.free_symbols if sym.is_Matrix]
+ 
++
++def get_postprocessor(cls):
++    def _postprocessor(expr):
++        # To avoid circular imports, we can't have MatMul/MatAdd on the top
++        # level
++        mat_class = {Mul: MatMul, Add: MatAdd}[cls]
++        nonmatrices = []
++        matrices = []
++        for term in expr.args:
++            if isinstance(term, MatrixExpr):
++                matrices.append(term)
++            else:
++                nonmatrices.append(term)
++
++        if not matrices:
++            return cls._from_args(nonmatrices)
++
++        if nonmatrices:
++            if cls == Mul:
++                for i in range(len(matrices)):
++                    if not isinstance(matrices[i], MatrixSymbol):
++                        # If one of the matrices explicit, absorb the scalar
++                        # into it (doit will combine all explicit matrices into
++                        # one, so it doesn't matter which)
++                        matrices[i] = matrices[i].__mul__(
++                            cls._from_args(nonmatrices))
++                        nonmatrices = []
++                        break
++
++            else:
++                # Maintain the ability to create Add(scalar, matrix) without
++                # raising an exception. That way different algorithms can
++                # replace matrix expressions with non-commutative symbols to
++                # manipulate them like non-commutative scalars.
++                return cls._from_args(
++                    nonmatrices + [mat_class(*matrices).doit()])
++
++        return mat_class(cls._from_args(nonmatrices), *matrices).doit()
++
++    return _postprocessor
++
++
++Basic._constructor_postprocessor_mapping[MatrixExpr] = {
++    "Mul": [get_postprocessor(Mul)],
++    "Add": [get_postprocessor(Add)],
++}
++
++
+ from .matmul import MatMul
+ from .matadd import MatAdd
+ from .matpow import MatPow
+diff --git a/sympy/matrices/expressions/matmul.py b/sympy/matrices/expressions/matmul.py
+index 083c5eb..1e133f2 100644
+--- a/sympy/matrices/expressions/matmul.py
++++ b/sympy/matrices/expressions/matmul.py
+@@ -12,7 +12,8 @@
+ from sympy.matrices.matrices import MatrixBase
+ 
+ 
+-class MatMul(MatrixExpr):
++# XXX: MatMul should perhaps not subclass directly from Mul
++class MatMul(MatrixExpr, Mul):
+     """
+     A product of matrix expressions
+ 
+@@ -236,8 +237,45 @@ def factor_in_front(mul):
+         return newmul(factor, *matrices)
+     return mul
+ 
++
++def combine_powers(mul):
++    # combine consecutive powers with the same base into one
++    # e.g. A*A**2 -> A**3
++    from sympy.matrices.expressions import MatPow
++    factor, mmul = mul.as_coeff_mmul()
++    args = []
++    base = None
++    exp = 0
++    for arg in mmul.args:
++        if isinstance(arg, MatPow):
++            current_base = arg.base
++            current_exp = arg.exp
++        else:
++            current_base = arg
++            current_exp = 1
++        if current_base == base:
++            exp += current_exp
++        else:
++            if base is None:
++                exp = current_exp
++                base = current_base
++            else:
++                if exp == 1:
++                    args.append(base)
++                else:
++                    args.append(base**exp)
++                exp = current_exp
++                base = current_base
++    if exp == 1:
++        args.append(base)
++    else:
++        args.append(base**exp)
++
++    return newmul(factor, *args)
++
++
+ rules = (any_zeros, remove_ids, xxinv, unpack, rm_id(lambda x: x == 1),
+-         merge_explicit, factor_in_front, flatten)
++         merge_explicit, factor_in_front, flatten, combine_powers)
+ 
+ canonicalize = exhaust(typed({MatMul: do_one(*rules)}))
+ 
+diff --git a/sympy/printing/latex.py b/sympy/printing/latex.py
+index 8253b2f..3a02bdd 100644
+--- a/sympy/printing/latex.py
++++ b/sympy/printing/latex.py
+@@ -1476,19 +1476,26 @@ def _print_Adjoint(self, expr):
+         else:
+             return r"%s^\dagger" % self._print(mat)
+ 
+-    def _print_MatAdd(self, expr):
+-        terms = list(expr.args)
+-        tex = " + ".join(map(self._print, terms))
+-        return tex
+-
+     def _print_MatMul(self, expr):
+-        from sympy import Add, MatAdd, HadamardProduct
++        from sympy import MatMul, Mul
+ 
+-        def parens(x):
+-            if isinstance(x, (Add, MatAdd, HadamardProduct)):
+-                return r"\left(%s\right)" % self._print(x)
+-            return self._print(x)
+-        return ' '.join(map(parens, expr.args))
++        parens = lambda x: self.parenthesize(x, precedence_traditional(expr),
++                                             False)
++
++        args = expr.args
++        if isinstance(args[0], Mul):
++            args = args[0].as_ordered_factors() + list(args[1:])
++        else:
++            args = list(args)
++
++        if isinstance(expr, MatMul) and _coeff_isneg(expr):
++            if args[0] == -1:
++                args = args[1:]
++            else:
++                args[0] = -args[0]
++            return '- ' + ' '.join(map(parens, args))
++        else:
++            return ' '.join(map(parens, args))
+ 
+     def _print_Mod(self, expr, exp=None):
+         if exp is not None:
+diff --git a/sympy/printing/pretty/pretty.py b/sympy/printing/pretty/pretty.py
+index db24f4c..56213bc 100644
+--- a/sympy/printing/pretty/pretty.py
++++ b/sympy/printing/pretty/pretty.py
+@@ -819,7 +819,21 @@ def _print_BlockMatrix(self, B):
+         return self._print(B.blocks)
+ 
+     def _print_MatAdd(self, expr):
+-        return self._print_seq(expr.args, None, None, ' + ')
++        s = None
++        for item in expr.args:
++            pform = self._print(item)
++            if s is None:
++                s = pform     # First element
++            else:
++                coeff = item.as_coeff_mmul()[0]
++                if _coeff_isneg(S(coeff)):
++                    s = prettyForm(*stringPict.next(s, ' '))
++                    pform = self._print(item)
++                else:
++                    s = prettyForm(*stringPict.next(s, ' + '))
++                s = prettyForm(*stringPict.next(s, pform))
++
++        return s
+ 
+     def _print_MatMul(self, expr):
+         args = list(expr.args)
+diff --git a/sympy/printing/repr.py b/sympy/printing/repr.py
+index e98d83a..38c7aa2 100644
+--- a/sympy/printing/repr.py
++++ b/sympy/printing/repr.py
+@@ -47,8 +47,12 @@ def emptyPrinter(self, expr):
+ 
+     def _print_Add(self, expr, order=None):
+         args = self._as_ordered_terms(expr, order=order)
++        nargs = len(args)
+         args = map(self._print, args)
+-        return "Add(%s)" % ", ".join(args)
++        clsname = type(expr).__name__
++        if nargs > 255:  # Issue #10259, Python < 3.7
++            return clsname + "(*[%s])" % ", ".join(args)
++        return clsname + "(%s)" % ", ".join(args)
+ 
+     def _print_Cycle(self, expr):
+         return expr.__repr__()
+@@ -122,8 +126,12 @@ def _print_Mul(self, expr, order=None):
+         else:
+             args = terms
+ 
++        nargs = len(args)
+         args = map(self._print, args)
+-        return "Mul(%s)" % ", ".join(args)
++        clsname = type(expr).__name__
++        if nargs > 255:  # Issue #10259, Python < 3.7
++            return clsname + "(*[%s])" % ", ".join(args)
++        return clsname + "(%s)" % ", ".join(args)
+ 
+     def _print_Rational(self, expr):
+         return 'Rational(%s, %s)' % (self._print(expr.p), self._print(expr.q))
+diff --git a/sympy/printing/str.py b/sympy/printing/str.py
+index 0baefe0..d97ffd2 100644
+--- a/sympy/printing/str.py
++++ b/sympy/printing/str.py
+@@ -304,16 +304,21 @@ def _print_Mul(self, expr):
+             return sign + '*'.join(a_str) + "/(%s)" % '*'.join(b_str)
+ 
+     def _print_MatMul(self, expr):
+-        return '*'.join([self.parenthesize(arg, precedence(expr))
+-            for arg in expr.args])
++        c, m = expr.as_coeff_mmul()
++        if c.is_number and c < 0:
++            expr = _keep_coeff(-c, m)
++            sign = "-"
++        else:
++            sign = ""
++
++        return sign + '*'.join(
++            [self.parenthesize(arg, precedence(expr)) for arg in expr.args]
++        )
+ 
+     def _print_HadamardProduct(self, expr):
+         return '.*'.join([self.parenthesize(arg, precedence(expr))
+             for arg in expr.args])
+ 
+-    def _print_MatAdd(self, expr):
+-        return ' + '.join([self.parenthesize(arg, precedence(expr))
+-            for arg in expr.args])
+ 
+     def _print_NaN(self, expr):
+         return 'nan'

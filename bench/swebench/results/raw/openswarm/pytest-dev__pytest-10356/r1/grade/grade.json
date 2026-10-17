@@ -1,0 +1,38 @@
+{
+ "resolved": false,
+ "f2p": [
+  0,
+  1
+ ],
+ "p2p": [
+  0,
+  79
+ ],
+ "f2p_failed": [
+  "testing/test_mark.py::test_mark_mro"
+ ],
+ "p2p_failed": [
+  "testing/test_mark.py::TestMark::test_pytest_exists_in_namespace_all[mark]",
+  "testing/test_mark.py::TestMark::test_pytest_exists_in_namespace_all[param]",
+  "testing/test_mark.py::TestMark::test_pytest_mark_notcallable",
+  "testing/test_mark.py::TestMark::test_mark_with_param",
+  "testing/test_mark.py::TestMark::test_pytest_mark_name_starts_with_underscore",
+  "testing/test_mark.py::TestMarkDecorator::test__eq__[lhs0-rhs0-True]",
+  "testing/test_mark.py::TestMarkDecorator::test__eq__[lhs1-rhs1-False]",
+  "testing/test_mark.py::TestMarkDecorator::test__eq__[lhs2-bar-False]",
+  "testing/test_mark.py::TestMarkDecorator::test__eq__[foo-rhs3-False]",
+  "testing/test_mark.py::TestMarkDecorator::test_aliases",
+  "testing/test_mark.py::test_pytest_param_id_requires_string",
+  "testing/test_mark.py::test_pytest_param_id_allows_none_or_string[None]",
+  "testing/test_mark.py::test_pytest_param_id_allows_none_or_string[hello",
+  "testing/test_mark.py::test_marked_class_run_twice",
+  "testing/test_mark.py::test_ini_markers",
+  "testing/test_mark.py::test_markers_option",
+  "testing/test_mark.py::test_ini_markers_whitespace",
+  "testing/test_mark.py::test_marker_without_description",
+  "testing/test_mark.py::test_markers_option_with_plugin_in_current_dir",
+  "testing/test_mark.py::test_mark_on_pseudo_function"
+ ],
+ "test_rc": 1,
+ "test_cmd": "<run>/10172331/openswarm/pytest-dev__pytest-10356/r1/venv/bin/python -m pytest -rA testing/test_mark.py"
+}
