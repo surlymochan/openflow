@@ -96,7 +96,7 @@ export function load(workflowPath, { skipRuntimeChecks = false } = {}) {
   if (!skipRuntimeChecks) {
     const req = workflow.requires || {};
     if (req.agentos_bin) {
-      checkBinOnPath('xflow', 'as-agentos or xflow CLI');
+      checkBinOnPath('xflow', 'xflow CLI on PATH');
     }
     if (req.gh) {
       checkBinOnPath('gh', 'GitHub CLI (brew install gh)');

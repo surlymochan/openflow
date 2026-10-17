@@ -9,7 +9,7 @@ The rule is simple: keep the workflow runtime in the project and keep the agent-
 Every supported tool should be able to run this sequence:
 
 ```bash
-npm install -g openflow
+npm install -g @surlymochan/openflow
 xflow quickstart
 xflow guide
 xflow assess

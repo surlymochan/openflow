@@ -2776,7 +2776,7 @@ phases:
     assert.match(result.stdout, /Safe Evaluation Command/);
     assert.match(result.stdout, /Forbidden Until Unblocked/);
     assert.match(result.stdout, /git clone <repo-url> openflow/);
-    assert.match(result.stdout, /npm install -g openflow works now/);
+    assert.match(result.stdout, /npm install -g @surlymochan\/openflow works now/);
 
     result = spawnSync('node', ['bin/xflow.js', 'launch', 'copy', '--json'], {
       cwd: REPO_ROOT,
@@ -2792,7 +2792,7 @@ phases:
     assert.match(payload.install_command, /git clone <repo-url> openflow/);
     assert.ok(payload.proof_points.some((item) => item.id === 'project_goal_beats_thread_goal'));
     assert.ok(payload.hold_until_evidence.some((item) => item.id === 'published_package'));
-    assert.ok(payload.forbidden_phrases.includes('npm install -g openflow works now'));
+    assert.ok(payload.forbidden_phrases.includes('npm install -g @surlymochan/openflow works now'));
     assert.ok(payload.evidence_commands.includes('xflow evaluate --json'));
     assert.ok(payload.evidence_commands.includes('xflow launch claims --json'));
     assert.ok(payload.evidence_commands.includes('xflow launch copy --json'));

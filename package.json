@@ -1,19 +1,45 @@
 {
-  "name": "openflow",
-  "version": "0.1.0",
-  "description": "Open agent delivery workflow runtime: atoms + workflow definitions + xflow CLI",
+  "name": "@surlymochan/openflow",
+  "version": "0.2.0",
+  "description": "Executable delivery workflows for AI coding agents: YAML phases, red/green TDD proof gates, handoff state and the xflow CLI.",
+  "keywords": [
+    "ai-agents",
+    "coding-agents",
+    "workflow",
+    "tdd",
+    "cli",
+    "codex",
+    "claude-code",
+    "cursor",
+    "openspec",
+    "developer-tools"
+  ],
+  "homepage": "https://github.com/surlymochan/openflow#readme",
+  "bugs": {
+    "url": "https://github.com/surlymochan/openflow/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/surlymochan/openflow.git"
+  },
+  "author": "Chao Chen (https://github.com/surlymochan)",
+  "license": "MIT",
   "type": "module",
   "main": "src/index.js",
-  "license": "MIT",
+  "bin": {
+    "xflow": "bin/xflow.js"
+  },
   "files": [
     "README.md",
     "RELEASE_NOTES.md",
+    "CHANGELOG.md",
     "atoms/",
     "bin/",
     "docs/",
     "!docs/adoption/evidence/**",
     "!docs/adoption/trial-packets/**",
     "!docs/benchmark-evidence/**",
+    "!docs/assets/**",
     "prompts/",
     "schemas/",
     "scripts/",
@@ -27,6 +53,12 @@
     "!**/__pycache__/**",
     "!**/*.pyc"
   ],
+  "engines": {
+    "node": ">=22.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "node bin/xflow.js serve",
     "test": "node scripts/run-tests.mjs",
@@ -42,9 +74,6 @@
     "workflow:yolo": "node bin/xflow.js workflow run workflows/yolo.yaml",
     "workflow:corps": "node bin/xflow.js corps",
     "atom:list": "node bin/xflow.js atom list"
-  },
-  "bin": {
-    "xflow": "bin/xflow.js"
   },
   "dependencies": {
     "ajv": "^8.12.0",

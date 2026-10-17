@@ -7,7 +7,7 @@ This page defines what an external evaluator should run before trusting xflow cl
 From an empty temporary project:
 
 ```bash
-npm install -g openflow
+npm install -g @surlymochan/openflow
 xflow demo clean
 xflow guide
 xflow assess

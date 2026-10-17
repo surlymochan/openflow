@@ -1,100 +1,152 @@
 # OpenFlow
 
 [![CI](https://github.com/surlymochan/openflow/actions/workflows/ci.yml/badge.svg)](https://github.com/surlymochan/openflow/actions/workflows/ci.yml)
-[![xflow score](https://img.shields.io/badge/xflow%20score-100%2F100-brightgreen)](docs/competitive-benchmark.md)
-[![publish check](https://img.shields.io/badge/publish--check-dry--run%20ready-blue)](docs/public-release.md)
-[![spec delta](https://img.shields.io/badge/spec%20delta-requirements--level-blueviolet)](docs/openspec-migration.md)
+[![npm](https://img.shields.io/npm/v/@surlymochan/openflow?label=npm)](https://www.npmjs.com/package/@surlymochan/openflow)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![node >= 22.5](https://img.shields.io/badge/node-%E2%89%A522.5-informational)
 
-Executable delivery workflow for AI coding agents.
+**Executable delivery workflow for AI coding agents.**
 
-OpenFlow is the public extraction of the `openflow` workflow runtime. It turns
-agent work from "follow this prose process" into a local workflow runtime with
-YAML phases, deterministic atoms, TDD proof gates, handoff state, archive
-discipline, and packageable CLI commands.
+Prompt-based workflows *ask* an agent to write the failing test first, run the suite and keep notes. OpenFlow
+*checks* that it did. Workflows are YAML phases made of small deterministic "atoms". Gates are code: a
+red/green TDD proof, a test-quality review, artifact checks, and archive ordering. The `xflow` CLI runs the
+same workflows from Codex, Claude Code, Cursor, OpenCode, Gemini or a plain terminal.
 
-## Why It Exists
+![OpenFlow demo: a red proof must fail, a green proof must pass, and a faked red proof is rejected](docs/assets/demo.gif)
 
-Most agent workflow systems are strong at behavior shaping. OpenFlow adds a
-harder layer:
+<sub>Recorded from a real run of the CLI in an empty project. The last two commands show an agent "recording" a
+red proof after the fix, and the gate rejecting it.</sub>
 
-- workflow data that can be validated before it runs
-- red/green TDD proof that is checked by code, not only by prompt discipline
-- `quality-0.json` test-quality review for code/test pairing and common fake-test patterns
-- local handoff and AHA files so context survives across sessions
-- archive and PR ordering that is executable and test-covered
-- clean-project adoption proof in CI plus a reviewable maintainer adoption record
+## Why
+
+Agent workflow kits are good at shaping behaviour, but the checks only live in prose. Agents skip the red
+step, write tests that assert nothing, lose context between sessions, and open PRs before verification has
+finished. OpenFlow adds a harder layer underneath:
+
+- **Workflow as data.** `workflows/yolo.yaml` and `workflows/corps.yaml` are validated against an atom registry before they run.
+- **TDD proof checked by code.**
+  - The red proof must fail before implementation and the green proof must pass after it.
+  - `I6c.tdd.quality_review` rejects code changes that have:
+    - no meaningful test changes,
+    - empty assertions,
+    - snapshot-only tests,
+    - mock-heavy tests without real assertions.
+- **Context that survives sessions.**
+  - The `.xflow/GOAL.md` project anchor.
+  - `HANDOFF.md` and `AHA.md`.
+  - Per-change `status.json` and proof files under `specs/changes/<id>/`.
+- **Executable finish.** Verify → archive → commit/push → PR ordering is a tested atom, not a checklist.
 
 ## 3 Minute Start
+
+Requires Node.js ≥ 22.5 (for `node:sqlite`) and Python 3 (atoms are small Python scripts).
+
+```bash
+npm install -g @surlymochan/openflow     # installs the `xflow` CLI
+cd your-project
+xflow init --project-root .               # writes .as-xflow/config.json
+xflow goal set "Ship the next verified change" --project-root .
+xflow goal audit --project-root . --json
+xflow doctor --project-root .
+xflow workflow validate yolo --project-root .
+xflow guide                               # the delivery loop in one screen
+```
 
 For a source checkout:
 
 ```bash
 git clone https://github.com/surlymochan/openflow.git
 cd openflow
-npm install
-npm run release:pack
+npm ci && npm test
 node bin/xflow.js quickstart
-node bin/xflow.js guide
 node bin/xflow.js evaluate
-node bin/xflow.js assess
-node bin/xflow.js demo clean
 node bin/xflow.js compare codex-goal
-node bin/xflow.js launch dossier
 node bin/xflow.js launch copy
 ```
 
-To initialize OpenFlow inside a target project after the CLI is linked or
-installed:
+## Run a change
 
 ```bash
-xflow quickstart
-xflow guide
-xflow init --project-root .
-xflow goal set "Ship the next verified change" --project-root .
-xflow goal audit --project-root . --json
-xflow doctor --project-root .
-xflow workflow validate yolo --project-root .
-```
-
-Release-owner gates such as `xflow adoption status --json`, `xflow adoption validate --json`,
-`xflow package status --json`, `xflow package preflight --check-registry --check-auth --json`, and
-`xflow package audit --check-registry --json` are intentionally separate from
-the first-run path because they fail until real adoption evidence, npm identity,
-or published registry evidence exists. Use `xflow adoption brief --name <team-or-project> --source <tracker-or-pr> --track yolo`
-to generate the outbound ask, `xflow adoption trial --name <team-or-project> --source <tracker-or-pr> --track yolo`
-to preview the copy-paste external trial, `xflow adoption kit --name <team-or-project> --source <tracker-or-pr> --track yolo`
-to create a shareable packet, then `xflow adoption init --name <team-or-project> --source <tracker-or-pr> --track yolo`
-to create the draft record after real trial evidence exists.
-
-## Run A Change
-
-```bash
-git checkout -b codex/example-change
-xflow workflow run yolo --project-root . \
-  --title "Example change" \
-  --change-type backend \
-  --tdd-red-command "npm test -- --grep new-behavior" \
+git checkout -b feat/example-change
+xflow workflow run yolo \
+  --title "Example change" --change-type backend \
+  --tdd-red-command  "npm test -- --grep new-behavior" \
   --tdd-green-command "npm test"
 ```
 
-The lite workflow runs `tdd-red -> execute -> tdd-green -> verify -> archive`.
+The lite track runs `tdd-red -> execute -> tdd-green -> verify -> archive` and stops at human or LLM gates. Every
+phase leaves evidence in `specs/changes/<change-id>/`. Add `--dry-run` to print the phases, atoms and gates
+first.
 
-Red proof must fail before implementation. Green proof must pass after implementation. `I6c.tdd.quality_review` then rejects code changes without meaningful changed tests, empty assertions, snapshot-only tests, or mock-heavy tests without real assertions.
+You can also run a single gate directly, as in the demo:
 
-## Choose A Track
+```bash
+xflow atom run I6a.tdd.run --change-id my-change --phase red   --test-command "npm test"
+xflow atom run I6a.tdd.run --change-id my-change --phase green --test-command "npm test"
+xflow atom run I6b.tdd.proof_validate --change-id my-change --phase red
+```
 
-| Track | Use When | Entry |
+## Evaluate it
+
+```bash
+xflow quickstart        # copy-paste-safe first-run commands
+xflow evaluate          # one-shot brief: quality score, comparisons, blockers, next actions
+xflow assess            # scorecard for goal, yolo, corps and the skill family
+xflow score             # competitive readiness score with evidence per dimension
+xflow demo launch       # goal -> yolo and goal -> corps proof paths
+xflow launch dossier    # one-page narrative backed by the same audit
+xflow launch copy       # claim-safe announcement copy plus forbidden phrases
+xflow release status    # the single next release blocker
+```
+
+<details>
+<summary>Release-owner gates (fail until real adoption / npm evidence exists)</summary>
+
+```bash
+xflow adoption trial --name <team-or-project> --source <tracker-or-pr> --track yolo
+xflow adoption status --json
+xflow package preflight --check-registry --check-auth --json
+xflow package audit --check-registry --json
+xflow launch audit --pre-publish --strict --json
+```
+
+</details>
+
+## Choose a track
+
+| Track | Use when | Entry |
 | --- | --- | --- |
-| `goal` | You want a simple project direction anchor that later xflow work can read and audit | `xflow:goal`, `xflow goal set`, or `xflow goal audit` |
-| `plan` | You only need a reusable implementation plan | `xflow:plan` |
-| `ralph` | You want Codex to keep implementing, verifying, and repairing until completion evidence is clean | `xflow:ralph` |
-| `yolo` | Backend, docs, infra, small UI, low ceremony | `xflow:yolo` or `xflow workflow run yolo` |
-| `corps` | Product/UI-heavy or multi-agent work | `xflow:corps`, `xflow corps --explain`, or `xflow corps` |
+| `goal` | You want a project-level direction anchor that later work reads and audits | `xflow goal set`, `xflow goal audit` |
+| `plan` | You only need a reusable implementation plan | `xflow:plan` skill |
+| `yolo` | Backend, docs, infra, small UI; low ceremony | `xflow workflow run yolo` |
+| `corps` | Product/UI-heavy or multi-agent work with governed proof | `xflow corps --explain`, then `xflow corps` and `xflow proof --track corps` |
+| `ralph` | Keep implementing, verifying and repairing until the completion evidence is clean | `xflow:ralph` skill |
 
-`xflow:plan` is track-neutral. `yolo` and `corps` reuse an existing current plan instead of re-planning.
-`xflow workflow validate corps` is preflight only; heavy-track completion is only accepted after `xflow proof --track corps` writes `corps_proof.json` with `ok=true`. The corps proof now requires the built-in governed corps manifest, hash-linked execution-log witnesses for every phase/atom/gate, and no `stub`/`pencil_stubbed` runtime fallback.
+Not sure which one fits? Run `xflow intake recommend --change-id <id> --title "<title>" --description "<text>"`.
 
-## What Makes It Different
+## How it fits together
+
+```
+workflows/*.yaml ──validate──► atoms/registry.json ──► xflow/atoms/*.py   (deterministic steps)
+        │                                                    │
+        ▼                                                    ▼
+  xflow workflow run ──► gates: deterministic | artifact-verify | human | llm
+        │
+        ▼
+  specs/changes/<id>/   status.json · tdd/red-0.json · tdd/green-0.json · quality-0.json · logs/*.ndjson
+```
+
+- `bin/xflow.js`: the CLI. `src/`: workflow loader, runner, policy overlays, scoring.
+- `xflow/`: the portable skill family (`xflow:plan`, `xflow:yolo`, `xflow:corps`, `xflow:ralph`, …) for agent hosts.
+- `schemas/`: JSON schemas for workflows, proofs and policy overlays.
+
+## Compared with other tools
+
+OpenFlow aims to complement prompt-level workflow kits and spec tools, not replace them. `xflow compare
+<superpowers|openspec|gstack|spec-kit|codex-goal>` prints a side-by-side with sources.
+
+<details>
+<summary>Full capability table</summary>
 
 | Surface | OpenFlow Position |
 | --- | --- |
@@ -122,7 +174,12 @@ Red proof must fail before implementation. Green proof must pass after implement
 | Competitive proof | `xflow compare codex-goal`, `xflow compare superpowers`, `xflow compare super-assistant`, `xflow compare openspec`, `xflow compare gstack`, `xflow compare spec-kit`, benchmark docs |
 | Adoption proof | Minimal clean project runs in CI, plus public adoption-record templates |
 
+</details>
+
 ## Docs
+
+<details>
+<summary>All guides</summary>
 
 - [Quickstart](docs/quickstart.md)
 - [Install and upgrade](docs/install-upgrade.md)
@@ -154,16 +211,21 @@ Red proof must fail before implementation. Green proof must pass after implement
 - [Competitive benchmark](docs/competitive-benchmark.md)
 - [2026-05-25 benchmark report](docs/benchmark-openflow-vs-gstack-superpowers-openspec-2026-05-25.md)
 
-## Verify
+</details>
+
+## Development
 
 ```bash
-npm run drift:scan
-npm run verify
-npm run skill:diff
-npm run release:pack
-xflow assess
-xflow launch audit
-xflow score
+npm ci
+npx playwright install chromium   # browser-evidence tests
+npm test                          # 270+ tests
+npm run drift:scan                # docs/skill/workflow drift checks
+npm run pack:check                # what would be published
 ```
 
-Current release gate expectation: all active score dimensions are `strong`, and `xflow score` reports `100/100`.
+Contributions are welcome: open an issue describing the workflow problem first, then a PR with tests. Keep
+claims in docs tied to a command that reproduces them.
+
+## License
+
+[MIT](LICENSE)

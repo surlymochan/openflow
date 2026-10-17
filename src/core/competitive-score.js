@@ -210,7 +210,7 @@ const DIMENSIONS = [
       ['file', 'docs/public-release.md'],
       ['file', 'docs/public-benchmark.md'],
       ['file', 'docs/npm-publish-handoff.md'],
-      ['text', 'docs/install-upgrade.md', /npm install -g openflow/],
+      ['text', 'docs/install-upgrade.md', /npm install -g @surlymochan\/openflow/],
       ['text', 'docs/install-upgrade.md', /xflow package preflight --check-registry --check-auth --json/],
       ['file', 'docs/demo-proof.md'],
       ['file', 'docs/fixtures/tracker-item.json'],

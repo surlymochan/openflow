@@ -1,5 +1,39 @@
 # Release Notes
 
+## 0.2.0 - Relaunch (first npm release)
+
+OpenFlow is published to npm as **`@surlymochan/openflow`**. The CLI is still `xflow`. The unscoped
+`openflow` name on npm belongs to an unrelated project.
+
+### Highlights
+
+- **Policy overlays.** `xflow policy validate` checks personal and team policy layered over the built-in
+  workflows. Policy, notify, storage, plugin and experience-digest atoms ship with it.
+- **Adaptive intake.** `xflow intake recommend` reads a demand profile (title, description, repo count) and
+  recommends `yolo` or `corps` plus gate overlays. It writes `workflow_recommendation.json`.
+- **Execution profiles.** `xflow profile show|set` handles personal and team execution modes and provider
+  preferences.
+- **Comparisons.** `xflow compare super-assistant` is new, next to the Superpowers, OpenSpec, gstack,
+  spec-kit and Codex goal comparisons.
+- **New README.** It covers the problem, a demo GIF recorded from a real run, a 3-minute start and
+  single-gate usage (`xflow atom run I6a.tdd.run ...`).
+
+### Packaging
+
+- `package.json` now has `repository`, `homepage`, `bugs`, `keywords`, `author`,
+  `engines.node >= 22.5` (`node:sqlite`) and `publishConfig.access = public`.
+- Install docs and the CLI's copy-paste commands now use `npm install -g @surlymochan/openflow`.
+- `xflow serve` no longer points to an unpublished server repository.
+- Fixed an uncaught `EPIPE` in `agent_invoke` when an agent CLI exits without reading stdin.
+
+### Verified for this release
+
+- `npm test`: 275 passed, 1 skipped, 0 failed (Node 22, Playwright Chromium installed).
+- `npm run drift:scan`: 9/9.
+- `npm publish --dry-run`: `@surlymochan/openflow@0.2.0`, 187 files, about 321 kB.
+- Clean install from the packed tarball into an empty project: `xflow init`, `goal set`, `doctor` and
+  `workflow validate yolo` all pass.
+
 ## 0.1.0 - Public Readiness Candidate
 
 This release turns `openflow` from a local skill/workflow repo into a package-ready workflow runtime for AI coding agents.

@@ -101,7 +101,7 @@ Evidence:
 
 - **published_package**: Public npm package ownership confirmed and package published from a green dry run.
   Why it matters: A launch story is incomplete while users cannot install the advertised package name.
-  Acceptable evidence: npm view openflow name version --json returns this package; npm publish --access public completed for the intended version
+  Acceptable evidence: npm view @surlymochan/openflow name version --json returns this package; npm publish --access public completed for the intended version
 
 ## Missing Before Splash Launch
 
@@ -110,14 +110,14 @@ Evidence:
   Acceptable evidence: docs/adoption/<third-party-project>.md with a public PR, external repository, or named external team source; xflow adoption validate --splash --json passes; xflow launch audit --splash --strict --json passes
 - **published_package**: Public npm package ownership confirmed and package published from a green dry run.
   Why it matters: A launch story is incomplete while users cannot install the advertised package name.
-  Acceptable evidence: npm view openflow name version --json returns this package; npm publish --access public completed for the intended version
+  Acceptable evidence: npm view @surlymochan/openflow name version --json returns this package; npm publish --access public completed for the intended version
 
 ## Current Evidence Snapshot
 
 - Adoption records: 1; status: pass
 - Goal audit: pass; goal: Keep OpenFlow credible as an open-source agent delivery runtime: repo-owned workflow contracts, executable verification gates, durable project context, and honest benchmark evidence.
 - Package evidence: missing; source: registry_json
-- Package name/version: openflow@0.1.0
+- Package name/version: @surlymochan/openflow@0.2.0
 
 ## Passing Evidence
 
