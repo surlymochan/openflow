@@ -1,0 +1,15 @@
+{
+ "resolved": true,
+ "f2p": [
+  2,
+  2
+ ],
+ "p2p": [
+  145,
+  145
+ ],
+ "f2p_failed": [],
+ "p2p_failed": [],
+ "test_rc": 0,
+ "test_cmd": "<bench>/tmp/regrade/deepseek/openswarm/pytest-dev__pytest-6197/r1/venv/bin/python -m pytest -rA testing/test_collection.py testing/test_skipping.py"
+}

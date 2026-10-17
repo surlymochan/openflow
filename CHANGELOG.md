@@ -3,7 +3,16 @@
 All notable changes to this project are documented here. Detailed notes live in
 [RELEASE_NOTES.md](RELEASE_NOTES.md).
 
-## [0.2.1] - unreleased
+## [0.2.2] - 2026-10-18
+
+### Docs
+- Added the SWE-bench Verified results to the README and `bench/swebench/`: 6 hard sympy, pytest and pylint instances on DeepSeek-V4.1-Flash (`deepseek-flash`), n=1 per cell.
+- Corrected the first published results after a pytest temp-directory race in grading: `pytest-5787` and `pytest-6197` became resolved for all arms; `pytest-10356` is unresolved by every arm. See the [regrade notes](bench/swebench/README.md#regrade-2026-10-18).
+- Linked the [optimization backlog issue #5](https://github.com/surlymochan/openflow/issues/5).
+
+No CLI or gate changes in this release.
+
+## [0.2.1] - 2026-10-17
 
 ### Changed
 - TDD proofs are bound to a tree snapshot. `I6b` recomputes the binding and re-runs the recorded command. Green also checks that snapshotted test files still match disk.
@@ -12,7 +21,7 @@ All notable changes to this project are documented here. Detailed notes live in
 - `self.assert*`, `pytest.raises`, and bare `assert` count as assertions.
 - `tdd_mode` `refactor` and `docs` (status.json or `--tdd-mode`) are the exemption path for an honest refactor or a docs-only diff. Misuse fails.
 
-## [0.2.0] - unreleased (relaunch)
+## [0.2.0] - 2026-10-17 (relaunch)
 
 ### Added
 - Policy overlay execution mode: `xflow policy validate`, plus policy, notify, storage, plugin and

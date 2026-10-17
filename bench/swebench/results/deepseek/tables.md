@@ -1,11 +1,11 @@
-Model: deepseek-flash (DeepSeek-V4.1-Flash) via Pi; all 4 arms on all 6 instances; n=1 per cell
+Model: deepseek-flash (DeepSeek-V4.1-Flash) via Pi; all 4 arms on all 6 instances; n=1 per cell; regraded with per-run TMPDIR
 
 | Arm | Resolved (official tests) | Median wall-clock (IQR) | Median $ per task (deepseek) | Total $ all runs (deepseek) | Median tokens in+out | Median tokens incl. cache | n |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| baseline | **1/6 (17%)** | 124 s (110–175) | $0.0234 | $0.16 | 78,779 | 1,214,048 | 6 |
-| superpowers | **0/6 (0%)** | 154 s (136–340) | $0.0285 | $0.31 | 85,122 | 1,468,328 | 6 |
-| openflow | **2/6 (33%)** | 230 s (200–266) | $0.0412 | $0.23 | 105,793 | 3,148,993 | 6 |
-| openswarm | **3/6 (50%)** | 228 s (187–254) | $0.0377 | $0.21 | 105,651 | 1,661,664 | 6 |
+| baseline | **3/6 (50%)** | 124 s (110–175) | $0.0234 | $0.16 | 78,779 | 1,214,048 | 6 |
+| superpowers | **2/6 (33%)** | 154 s (136–340) | $0.0285 | $0.31 | 85,122 | 1,468,328 | 6 |
+| openflow | **4/6 (67%)** | 230 s (200–266) | $0.0412 | $0.23 | 105,793 | 3,148,993 | 6 |
+| openswarm | **5/6 (83%)** | 228 s (187–254) | $0.0377 | $0.21 | 105,651 | 1,661,664 | 6 |
 
 Same token counts at other list prices (computed, not billed):
 
@@ -22,8 +22,8 @@ Per instance (resolved / runs):
 | --- | --- | --- | --- | --- |
 | `pylint-dev__pylint-8898` | 0/1 | 0/1 | 1/1 | 1/1 |
 | `pytest-dev__pytest-10356` | 0/1 | 0/1 | 0/1 | 0/1 |
-| `pytest-dev__pytest-5787` | 0/1 | 0/1 | 0/1 | 0/1 |
-| `pytest-dev__pytest-6197` | 0/1 | 0/1 | 0/1 | 0/1 |
+| `pytest-dev__pytest-5787` | 1/1 | 1/1 | 1/1 | 1/1 |
+| `pytest-dev__pytest-6197` | 1/1 | 1/1 | 1/1 | 1/1 |
 | `sympy__sympy-14248` | 1/1 | 0/1 | 1/1 | 1/1 |
 | `sympy__sympy-17630` | 0/1 | 0/1 | 0/1 | 1/1 |
 

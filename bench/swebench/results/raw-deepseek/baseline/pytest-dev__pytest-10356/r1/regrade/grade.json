@@ -1,0 +1,17 @@
+{
+ "resolved": false,
+ "f2p": [
+  0,
+  1
+ ],
+ "p2p": [
+  79,
+  79
+ ],
+ "f2p_failed": [
+  "testing/test_mark.py::test_mark_mro"
+ ],
+ "p2p_failed": [],
+ "test_rc": 1,
+ "test_cmd": "<bench>/tmp/regrade/deepseek/baseline/pytest-dev__pytest-10356/r1/venv/bin/python -m pytest -rA testing/test_mark.py"
+}

@@ -6,18 +6,18 @@ Real-task companion to the synthetic `bench/e2e/` benchmark, whose 8 small tasks
 
 ### Scope
 
-Six real GitHub issues from the 1-4 hour and >4 hour buckets: `pylint-dev__pylint-8898`, `pytest-dev__pytest-10356`, `pytest-dev__pytest-5787`, `pytest-dev__pytest-6197`, `sympy__sympy-14248` and `sympy__sympy-17630`. n = 1 run per (arm, instance) cell. Arms are compared only on the same model, never mixed within one instance. On MiniMax-M3.1-Flash-Preview the plan's usage cap was hit mid-matrix; openflow and openswarm have no run that finished cleanly, so the MiniMax table compares only baseline and superpowers, on the 4 instances where both finished cleanly.
+Six real GitHub issues from the "1-4 hours" bucket: `pylint-dev__pylint-8898`, `pytest-dev__pytest-10356`, `pytest-dev__pytest-5787`, `pytest-dev__pytest-6197`, `sympy__sympy-14248` and `sympy__sympy-17630`. n = 1 run per (arm, instance) cell. Arms are compared only on the same model, never mixed within one instance. On MiniMax-M3.1-Flash-Preview the plan's usage cap was hit mid-matrix; openflow and openswarm have no run that finished cleanly, so the MiniMax table compares only baseline and superpowers, on the 4 instances where both finished cleanly.
 
 ### DeepSeek (deepseek-flash), all 4 arms
 
-Model: deepseek-flash (DeepSeek-V4.1-Flash) via Pi; all 4 arms on all 6 instances; n=1 per cell
+Model: deepseek-flash (DeepSeek-V4.1-Flash) via Pi; all 4 arms on all 6 instances; n=1 per cell; regraded with per-run TMPDIR
 
 | Arm | Resolved (official tests) | Median wall-clock (IQR) | Median $ per task (deepseek) | Total $ all runs (deepseek) | Median tokens in+out | Median tokens incl. cache | n |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| baseline | **1/6 (17%)** | 124 s (110–175) | $0.0234 | $0.16 | 78,779 | 1,214,048 | 6 |
-| superpowers | **0/6 (0%)** | 154 s (136–340) | $0.0285 | $0.31 | 85,122 | 1,468,328 | 6 |
-| openflow | **2/6 (33%)** | 230 s (200–266) | $0.0412 | $0.23 | 105,793 | 3,148,993 | 6 |
-| openswarm | **3/6 (50%)** | 228 s (187–254) | $0.0377 | $0.21 | 105,651 | 1,661,664 | 6 |
+| baseline | **3/6 (50%)** | 124 s (110–175) | $0.0234 | $0.16 | 78,779 | 1,214,048 | 6 |
+| superpowers | **2/6 (33%)** | 154 s (136–340) | $0.0285 | $0.31 | 85,122 | 1,468,328 | 6 |
+| openflow | **4/6 (67%)** | 230 s (200–266) | $0.0412 | $0.23 | 105,793 | 3,148,993 | 6 |
+| openswarm | **5/6 (83%)** | 228 s (187–254) | $0.0377 | $0.21 | 105,651 | 1,661,664 | 6 |
 
 Same token counts at other list prices (computed, not billed):
 
@@ -34,8 +34,8 @@ Per instance (resolved / runs):
 | --- | --- | --- | --- | --- |
 | `pylint-dev__pylint-8898` | 0/1 | 0/1 | 1/1 | 1/1 |
 | `pytest-dev__pytest-10356` | 0/1 | 0/1 | 0/1 | 0/1 |
-| `pytest-dev__pytest-5787` | 0/1 | 0/1 | 0/1 | 0/1 |
-| `pytest-dev__pytest-6197` | 0/1 | 0/1 | 0/1 | 0/1 |
+| `pytest-dev__pytest-5787` | 1/1 | 1/1 | 1/1 | 1/1 |
+| `pytest-dev__pytest-6197` | 1/1 | 1/1 | 1/1 | 1/1 |
 | `sympy__sympy-14248` | 1/1 | 0/1 | 1/1 | 1/1 |
 | `sympy__sympy-17630` | 0/1 | 0/1 | 0/1 | 1/1 |
 
@@ -47,11 +47,11 @@ Harness errors excluded from n: 0
 
 ### MiniMax-M3.1-Flash-Preview, baseline vs superpowers only
 
-Model: MiniMax-M3.1-Flash-Preview via Pi; baseline vs superpowers only, on the 4 instances where both finished cleanly; openflow and openswarm have no clean MiniMax run (usage cap); n=1 per cell
+Model: MiniMax-M3.1-Flash-Preview via Pi; baseline vs superpowers only, on the 4 instances where both finished cleanly; openflow and openswarm have no clean MiniMax run (usage cap); n=1 per cell; regraded with per-run TMPDIR
 
 | Arm | Resolved (official tests) | Median wall-clock (IQR) | Median $ per task (minimax) | Total $ all runs (minimax) | Median tokens in+out | Median tokens incl. cache | n |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| baseline | **2/4 (50%)** | 845 s (436–1201) | $0.1467 | $0.60 | 63,081 | 1,787,144 | 4 |
+| baseline | **3/4 (75%)** | 845 s (436–1201) | $0.1467 | $0.60 | 63,081 | 1,787,144 | 4 |
 | superpowers | **2/4 (50%)** | 561 s (448–797) | $0.1174 | $0.47 | 66,548 | 1,417,802 | 4 |
 
 Same token counts at other list prices (computed, not billed):
@@ -66,7 +66,7 @@ Per instance (resolved / runs):
 | Instance | baseline | superpowers |
 | --- | --- | --- |
 | `pytest-dev__pytest-10356` | 0/1 | 0/1 |
-| `pytest-dev__pytest-5787` | 0/1 | 0/1 |
+| `pytest-dev__pytest-5787` | 1/1 | 0/1 |
 | `sympy__sympy-14248` | 1/1 | 1/1 |
 | `sympy__sympy-17630` | 1/1 | 1/1 |
 
@@ -76,6 +76,26 @@ Rate-limit (429) retries inside Pi: baseline 2 in 2 runs; superpowers 4 in 4 run
 Runs whose last model call ended in an error: baseline 0; superpowers 0
 Harness errors excluded from n: 0
 Excluded as incomplete: 6 runs
+
+## Regrade (2026-10-18)
+
+The first published tables (2026-10-18 00:5x) undercounted pytest. All concurrent grades shared `/tmp/pytest-of-<user>`; pytest's temp-dir cleanup raced between runs, so PASS_TO_PASS tests errored in setup no matter what the patch did. The harness now gives every grade its own `TMPDIR` (and `PYTEST_DEBUG_TEMPROOT`). All saved patches were regraded (`regrade.py`; no new agent runs).
+
+Evidence: with the empty patch, `pytest-6197` PASS_TO_PASS went from 2/145 to 145/145 and `pytest-5787` from 58/123 to 123/123. Changes on DeepSeek: `pytest-5787` and `pytest-6197` became resolved for all four arms. Changes on the MiniMax table: baseline `pytest-5787` became resolved. sympy and pylint results did not change.
+
+Second regrade detail: on `pytest-10356` and `pytest-5787`, OpenFlow's `solution.diff` also contained about 900–1,200 workflow-evidence files under `specs/changes/` (up to 6.8 MB); `git apply` rejected the whole patch, so those two cells were graded unpatched at first. They were regraded with the `specs/` file sections removed (the harness already excludes `.xflow/` the same way): `pytest-5787` resolved, `pytest-10356` not. Record: `results/regrade-deepseek-openflow-nospecs.jsonl`.
+
+Records: `results/runs-deepseek-regraded.jsonl`, `results/regrade-*.jsonl` and `results/raw-deepseek/<arm>/<instance>/r1/regrade/`. The 6.8 MB diff is now stored as `solution.diff.gz` with `solution.diff.sha256`.
+
+Reproduce the regrade:
+
+```
+.venv/bin/python regrade.py --runs results/runs-deepseek.jsonl --raw $PWD/results/raw-deepseek --out $PWD/results/regrade-deepseek.jsonl --label deepseek --jobs 3
+python3 apply_regrade.py --runs results/runs-deepseek.jsonl --regrade results/regrade-deepseek.jsonl --regrade results/regrade-deepseek-openflow-nospecs.jsonl --out results/runs-deepseek-regraded.jsonl
+.venv/bin/python report.py results/runs-deepseek-regraded.jsonl <same flags as before>
+```
+
+For MiniMax: regrade `--only-repos pytest-dev/pytest` into `results/regrade-minimax-pytest.jsonl`, the table's sympy cells into `results/regrade-minimax-sympy.jsonl`, `apply_regrade` into `results/runs-minimax-regraded.jsonl`, then `report.py` on that.
 
 ## Discarded and rerun runs
 
@@ -94,7 +114,7 @@ The automatic leak scan in `report.py` flags tool calls that mention upstream ho
 
 - Network (`pip download`, `curl`/`urlopen` to github.com, raw.githubusercontent.com, api.github.com, pypi.org): every attempt failed (proxy 127.0.0.1:9, `PIP_NO_INDEX`, or Pi guard). No content came back.
 - `site-packages/<pkg>` lookups: no system copy found; no content.
-- `~/.cache/uv`: agents on the three pytest instances read newer pytest releases (6.2.5, 7.4.4, 8.4.2) unpacked in the shared uv cache. Newer releases can contain the upstream fix. No pytest instance was resolved by any arm on DeepSeek (0/12 cells across 10356, 5787, 6197 for every arm), so this did not produce a resolve. It is a known gap: the uv cache was not locked during runs. Same gap applies to the MiniMax runs.
+- `~/.cache/uv`: agents on the three pytest instances read newer pytest releases (6.2.5, 7.4.4, 8.4.2) unpacked in the shared uv cache. Newer releases can contain the upstream fix. `pytest-5787` and `pytest-6197` were resolved by all arms, and newer pytest sources were readable in the uv cache, so those two resolves cannot be ruled out as influenced by it. This is tracked in the optimization backlog issues. It is a known gap: the uv cache was not locked during runs. Same gap applies to the MiniMax runs.
 - `bench-swe/results`: openswarm / `pylint-dev__pylint-8898` (first DeepSeek attempt) read the MiniMax runs' official `test.patch`, `grade.json` and the baseline `solution.diff`; that run resolved, was discarded (moved to `results/aside/`) and rerun once with every earlier result dir and file chmod 000; the rerun touched no result files and resolved again (114 s), and the table uses the rerun. superpowers / `sympy__sympy-14248` grepped `results/*.jsonl` and saw another run's metadata (resolved flag, diff line count), no patch; that run did not resolve and was kept. openswarm / `pytest-dev__pytest-5787` listed file names in `results/raw`; no content read, not resolved, kept.
 
 ## Tasks
@@ -157,8 +177,9 @@ After the agent exits: test files touched by the official `test_patch` are resto
 
 ## Caveats
 
-- The model is a fast preview model; absolute resolve rates are low and say little about other models.
+- Both models are fast, cheap models; resolve rates say little about stronger models.
 - n = 1 run on 6 instances (not 3 repeats on 12); differences of one or two resolved runs are within noise.
+- After the regrade, `pytest-5787` and `pytest-6197` were resolved by all four arms; `pytest-10356` is unresolved by every arm.
 - The subscription plan's rate limit (HTTP 429) was hit during the runs; Pi retries automatically. Retries add wall-clock time; `tables.md` reports how many retries each arm saw.
 - The superpowers and openflow integrations are prompt/context equivalents of their Pi or Cursor entry points, not the packages' own loaders, because the wrapper disables Pi extensions.
 
@@ -172,12 +193,17 @@ After the agent exits: test files touched by the official `test_patch` are resto
 | `harness/pi_shim.sh` | Shim for openswarm's Pi call |
 | `harness/validate.py` | Gold-patch check |
 | `report.py` | summary.json, tables.md, leak scan |
+| `regrade.py` | Regrade saved patches with per-run `TMPDIR` |
+| `apply_regrade.py` | Merge regrade records into run records |
 | `prices.json` | Token prices |
 | `instances.json` | Instance ids |
 | `results/runs.jsonl` | One record per run |
 | `results/runs-deepseek.jsonl` | One record per DeepSeek run |
+| `results/runs-*-regraded.jsonl` | Merged run records after regrade |
+| `results/regrade-*.jsonl` | Per-model regrade records |
 | `results/raw/<arm>/<instance>/r<n>/` | Prompts, Pi event logs with streaming fragments removed, solution.diff, grade/ |
-| `results/raw-deepseek/<arm>/<instance>/r<n>/` | Prompts, Pi event logs, solution.diff, grade/ for DeepSeek |
+| `results/raw-deepseek/<arm>/<instance>/r<n>/` | Prompts, Pi event logs, solution.diff, grade/ for DeepSeek (`solution.diff.gz` + `solution.diff.sha256` for diffs over 5 MB) |
+| `results/raw-deepseek/<arm>/<instance>/r<n>/regrade/` | Regrade logs and grades for DeepSeek |
 | `results/deepseek/` | summary.json, tables.md, leak scan for the DeepSeek matrix |
 | `results/minimax/` | summary.json, tables.md and `validity.jsonl` for the MiniMax subset |
 | `results/aside/` | Runs discarded for harness bugs or contamination |

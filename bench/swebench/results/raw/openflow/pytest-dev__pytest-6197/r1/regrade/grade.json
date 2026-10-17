@@ -1,0 +1,18 @@
+{
+ "resolved": false,
+ "f2p": [
+  0,
+  2
+ ],
+ "p2p": [
+  145,
+  145
+ ],
+ "f2p_failed": [
+  "testing/test_collection.py::test_does_not_eagerly_collect_packages",
+  "testing/test_collection.py::test_does_not_put_src_on_path"
+ ],
+ "p2p_failed": [],
+ "test_rc": 1,
+ "test_cmd": "<bench>/tmp/regrade/minimax/openflow/pytest-dev__pytest-6197/r1/venv/bin/python -m pytest -rA testing/test_collection.py testing/test_skipping.py"
+}

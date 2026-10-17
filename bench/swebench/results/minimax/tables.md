@@ -1,8 +1,8 @@
-Model: MiniMax-M3.1-Flash-Preview via Pi; baseline vs superpowers only, on the 4 instances where both finished cleanly; openflow and openswarm have no clean MiniMax run (usage cap); n=1 per cell
+Model: MiniMax-M3.1-Flash-Preview via Pi; baseline vs superpowers only, on the 4 instances where both finished cleanly; openflow and openswarm have no clean MiniMax run (usage cap); n=1 per cell; regraded with per-run TMPDIR
 
 | Arm | Resolved (official tests) | Median wall-clock (IQR) | Median $ per task (minimax) | Total $ all runs (minimax) | Median tokens in+out | Median tokens incl. cache | n |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| baseline | **2/4 (50%)** | 845 s (436–1201) | $0.1467 | $0.60 | 63,081 | 1,787,144 | 4 |
+| baseline | **3/4 (75%)** | 845 s (436–1201) | $0.1467 | $0.60 | 63,081 | 1,787,144 | 4 |
 | superpowers | **2/4 (50%)** | 561 s (448–797) | $0.1174 | $0.47 | 66,548 | 1,417,802 | 4 |
 
 Same token counts at other list prices (computed, not billed):
@@ -17,7 +17,7 @@ Per instance (resolved / runs):
 | Instance | baseline | superpowers |
 | --- | --- | --- |
 | `pytest-dev__pytest-10356` | 0/1 | 0/1 |
-| `pytest-dev__pytest-5787` | 0/1 | 0/1 |
+| `pytest-dev__pytest-5787` | 1/1 | 0/1 |
 | `sympy__sympy-14248` | 1/1 | 1/1 |
 | `sympy__sympy-17630` | 1/1 | 1/1 |
 

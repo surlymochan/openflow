@@ -1,11 +1,11 @@
 {
- "source": "runs.jsonl",
+ "source": "runs-minimax-regraded.jsonl",
  "harness_errors": 0,
  "arms": {
   "baseline": {
    "n": 4,
-   "resolved": 2,
-   "resolved_rate": 0.5,
+   "resolved": 3,
+   "resolved_rate": 0.75,
    "instances": 4,
    "wall_s_q1_med_q3": [
     436.17500000000007,
@@ -22,22 +22,22 @@
     "deepseek": {
      "median_per_run": 0.026695115999999998,
      "total": 0.112980546,
-     "per_resolved": 0.056490273
+     "per_resolved": 0.037660182
     },
     "minimax": {
      "median_per_run": 0.14669531999999996,
      "total": 0.60158682,
-     "per_resolved": 0.30079341
+     "per_resolved": 0.20052894
     },
     "sonnet5": {
      "median_per_run": 0.6884864000000002,
      "total": 2.8267504000000003,
-     "per_resolved": 1.4133752000000002
+     "per_resolved": 0.9422501333333334
     },
     "gpt61sol": {
      "median_per_run": 0.5156992,
      "total": 2.1311472,
-     "per_resolved": 1.0655736
+     "per_resolved": 0.7103824
     }
    },
    "rate_limit_retries_total": 2,
@@ -90,7 +90,7 @@
  "per_instance": {
   "pytest-dev__pytest-5787": {
    "baseline": [
-    0,
+    1,
     1
    ],
    "superpowers": [

@@ -1,6 +1,6 @@
 # openflow Launch Dossier
 
-Generated: 2026-10-17T12:19:33.144Z
+Generated: 2026-10-17T17:42:09.716Z
 Mode: post_publish
 Verdict: conditionally ready: engine and adoption evidence are strong, registry publication remains required for a splash launch
 Launch ready: not yet
@@ -117,7 +117,7 @@ Evidence:
 - Adoption records: 1; status: pass
 - Goal audit: pass; goal: Keep OpenFlow credible as an open-source agent delivery runtime: repo-owned workflow contracts, executable verification gates, durable project context, and honest benchmark evidence.
 - Package evidence: missing; source: registry_json
-- Package name/version: @surlymochan/openflow@0.2.1
+- Package name/version: @surlymochan/openflow@0.2.2
 
 ## Passing Evidence
 

@@ -1,11 +1,11 @@
 {
- "source": "runs-deepseek.jsonl",
+ "source": "runs-deepseek-regraded.jsonl",
  "harness_errors": 0,
  "arms": {
   "baseline": {
    "n": 6,
-   "resolved": 1,
-   "resolved_rate": 0.16666666666666666,
+   "resolved": 3,
+   "resolved_rate": 0.5,
    "instances": 6,
    "wall_s_q1_med_q3": [
     110.275,
@@ -22,22 +22,22 @@
     "deepseek": {
      "median_per_run": 0.023376416999999997,
      "total": 0.16426221,
-     "per_resolved": 0.16426221
+     "per_resolved": 0.054754069999999995
     },
     "minimax": {
      "median_per_run": 0.10416077999999998,
      "total": 0.8658632999999999,
-     "per_resolved": 0.8658632999999999
+     "per_resolved": 0.28862109999999996
     },
     "sonnet5": {
      "median_per_run": 0.5141888,
      "total": 4.076936,
-     "per_resolved": 4.076936
+     "per_resolved": 1.3589786666666666
     },
     "gpt61sol": {
      "median_per_run": 0.4095424,
      "total": 3.081864,
-     "per_resolved": 3.081864
+     "per_resolved": 1.027288
     }
    },
    "rate_limit_retries_total": 0,
@@ -46,8 +46,8 @@
   },
   "superpowers": {
    "n": 6,
-   "resolved": 0,
-   "resolved_rate": 0.0,
+   "resolved": 2,
+   "resolved_rate": 0.3333333333333333,
    "instances": 6,
    "wall_s_q1_med_q3": [
     136.225,
@@ -64,22 +64,22 @@
     "deepseek": {
      "median_per_run": 0.02853729,
      "total": 0.31347230400000003,
-     "per_resolved": null
+     "per_resolved": 0.15673615200000002
     },
     "minimax": {
      "median_per_run": 0.12709503,
      "total": 2.3796964800000002,
-     "per_resolved": null
+     "per_resolved": 1.1898482400000001
     },
     "sonnet5": {
      "median_per_run": 0.6263,
      "total": 9.8660616,
-     "per_resolved": null
+     "per_resolved": 4.9330308
     },
     "gpt61sol": {
      "median_per_run": 0.506492,
      "total": 6.6202248,
-     "per_resolved": null
+     "per_resolved": 3.3101124
     }
    },
    "rate_limit_retries_total": 0,
@@ -88,8 +88,8 @@
   },
   "openflow": {
    "n": 6,
-   "resolved": 2,
-   "resolved_rate": 0.3333333333333333,
+   "resolved": 4,
+   "resolved_rate": 0.6666666666666666,
    "instances": 6,
    "wall_s_q1_med_q3": [
     199.75,
@@ -106,22 +106,22 @@
     "deepseek": {
      "median_per_run": 0.041162775,
      "total": 0.231371358,
-     "per_resolved": 0.115685679
+     "per_resolved": 0.0578428395
     },
     "minimax": {
      "median_per_run": 0.24665834999999997,
      "total": 1.42895046,
-     "per_resolved": 0.71447523
+     "per_resolved": 0.357237615
     },
     "sonnet5": {
      "median_per_run": 1.10759,
      "total": 6.3257572,
-     "per_resolved": 3.1628786
+     "per_resolved": 1.5814393
     },
     "gpt61sol": {
      "median_per_run": 0.8032699999999999,
      "total": 4.5364836,
-     "per_resolved": 2.2682418
+     "per_resolved": 1.1341209
     }
    },
    "rate_limit_retries_total": 0,
@@ -130,8 +130,8 @@
   },
   "openswarm": {
    "n": 6,
-   "resolved": 3,
-   "resolved_rate": 0.5,
+   "resolved": 5,
+   "resolved_rate": 0.8333333333333334,
    "instances": 6,
    "wall_s_q1_med_q3": [
     187.10000000000002,
@@ -148,22 +148,22 @@
     "deepseek": {
      "median_per_run": 0.037652349,
      "total": 0.208868562,
-     "per_resolved": 0.069622854
+     "per_resolved": 0.0417737124
     },
     "minimax": {
      "median_per_run": 0.15884313,
      "total": 0.92693034,
-     "per_resolved": 0.30897678
+     "per_resolved": 0.185386068
     },
     "sonnet5": {
      "median_per_run": 0.8198326,
      "total": 4.6755968,
-     "per_resolved": 1.5585322666666668
+     "per_resolved": 0.9351193600000001
     },
     "gpt61sol": {
      "median_per_run": 0.6651317999999999,
      "total": 3.7326463999999997,
-     "per_resolved": 1.2442154666666665
+     "per_resolved": 0.74652928
     }
    },
    "rate_limit_retries_total": 0,
@@ -192,19 +192,19 @@
   },
   "pytest-dev__pytest-5787": {
    "baseline": [
-    0,
+    1,
     1
    ],
    "superpowers": [
-    0,
+    1,
     1
    ],
    "openflow": [
-    0,
+    1,
     1
    ],
    "openswarm": [
-    0,
+    1,
     1
    ]
   },
@@ -264,19 +264,19 @@
   },
   "pytest-dev__pytest-6197": {
    "baseline": [
-    0,
+    1,
     1
    ],
    "superpowers": [
-    0,
+    1,
     1
    ],
    "openflow": [
-    0,
+    1,
     1
    ],
    "openswarm": [
-    0,
+    1,
     1
    ]
   }

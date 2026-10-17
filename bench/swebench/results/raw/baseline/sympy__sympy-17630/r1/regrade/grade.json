@@ -1,0 +1,15 @@
+{
+ "resolved": true,
+ "f2p": [
+  2,
+  2
+ ],
+ "p2p": [
+  19,
+  19
+ ],
+ "f2p_failed": [],
+ "p2p_failed": [],
+ "test_rc": 0,
+ "test_cmd": "PYTHONWARNINGS='ignore::UserWarning,ignore::SyntaxWarning' <bench>/tmp/regrade/minimax-sympy/baseline/sympy__sympy-17630/r1/venv/bin/python bin/test -C --verbose sympy/matrices/expressions/tests/test_blockmatrix.py sympy/matrices/expressions/tests/test_matadd.py"
+}
