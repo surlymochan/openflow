@@ -1,6 +1,6 @@
 {
   "name": "@surlymochan/openflow",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Executable delivery workflows for AI coding agents: YAML phases, red/green TDD proof gates, handoff state and the xflow CLI.",
   "keywords": [
     "ai-agents",

@@ -25,12 +25,15 @@ finished. OpenFlow adds a harder layer underneath:
 
 - **Workflow as data.** `workflows/yolo.yaml` and `workflows/corps.yaml` are validated against an atom registry before they run.
 - **TDD proof checked by code.**
-  - The red proof must fail before implementation and the green proof must pass after it.
+  - `I6a` snapshots the tree and binds the command, exit code, output hash, and failure class. `I6b` recomputes that binding and re-runs the command on the snapshot. A hand-edited proof does not pass unless that snapshot really exits as claimed.
+  - Red and green must target the same test, or green must be a superset of the red test. Skipped, todo, and focused tests do not count as red or green.
   - `I6c.tdd.quality_review` rejects code changes that have:
     - no meaningful test changes,
     - empty assertions,
     - snapshot-only tests,
-    - mock-heavy tests without real assertions.
+    - mock-heavy tests without real assertions,
+    - only a type or existence assertion (`typeof`, `!== undefined`).
+  - `tdd_mode` in `status.json` (or `--tdd-mode`) may be `red-green` (default), `refactor`, or `docs`. Refactor requires the existing tests to pass before and after, with no assertion removed. Docs allows a non-code diff and does not require a red proof. Declaring docs while changing code, or refactor while deleting assertions, fails.
 - **Context that survives sessions.**
   - The `.xflow/GOAL.md` project anchor.
   - `HANDOFF.md` and `AHA.md`.
