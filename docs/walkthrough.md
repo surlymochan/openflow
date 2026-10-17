@@ -7,7 +7,7 @@ This walkthrough is the public demo script for evaluating xflow without reading 
 Global package path after publish:
 
 ```bash
-npm install -g openflow
+npm install -g @surlymochan/openflow
 ```
 
 Source checkout path:

@@ -78,7 +78,7 @@ xflow workflow validate corps --project-root .
 For consumer projects that only install the CLI, keep a smaller adoption smoke:
 
 ```bash
-npm install -g openflow
+npm install -g @surlymochan/openflow
 xflow guide
 xflow init --project-root .
 xflow doctor --project-root .

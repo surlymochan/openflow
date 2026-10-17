@@ -328,6 +328,12 @@ async function runProc(cmd, args, opts) {
         }, killAfterMs);
       }, opts.timeoutMs);
     }
+    // An agent CLI may exit without reading stdin (e.g. it fails fast or ignores the prompt pipe).
+    // Writing to the closed pipe then raises EPIPE asynchronously; the exit handler reports the real result.
+    child.stdin.on('error', (err) => {
+      if (err && err.code === 'EPIPE') return;
+      stderr += `\n[agent_invoke] stdin error: ${err && err.message}`;
+    });
     child.stdin.write(opts.input || '');
     child.stdin.end();
   });

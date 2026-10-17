@@ -7,7 +7,7 @@ Use this path when you want a project to adopt xflow without reading the impleme
 Use the published package path when `openflow` is available from npm:
 
 ```bash
-npm install -g openflow
+npm install -g @surlymochan/openflow
 xflow quickstart
 xflow guide
 xflow evaluate

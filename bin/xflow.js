@@ -1727,7 +1727,7 @@ const LAUNCH_MISSING_SURFACES = {
     requirement: 'Public npm package ownership confirmed and package published from a green dry run.',
     why_it_matters: 'A launch story is incomplete while users cannot install the advertised package name.',
     acceptable_evidence: [
-      'npm view openflow name version --json returns this package',
+      'npm view @surlymochan/openflow name version --json returns this package',
       'npm publish --access public completed for the intended version',
     ],
   },
@@ -1993,10 +1993,10 @@ function buildLaunchCopyPayload(payload) {
   const packageBlocked = claims.blocked_claims.some((item) => item.id === 'published_package');
   const installCommand = packageBlocked
     ? 'git clone <repo-url> openflow && cd openflow && npm install && node bin/xflow.js quickstart'
-    : 'npm install -g openflow && xflow quickstart';
+    : 'npm install -g @surlymochan/openflow && xflow quickstart';
   const forbiddenPhrases = [];
   if (packageBlocked) {
-    forbiddenPhrases.push('npm install -g openflow works now');
+    forbiddenPhrases.push('npm install -g @surlymochan/openflow works now');
     forbiddenPhrases.push('openflow is publicly installable from npm');
     forbiddenPhrases.push('splash launch complete');
   }
@@ -4798,7 +4798,7 @@ const QUICKSTART = {
     label: 'Published package first run',
     intent: 'Copy-paste-safe commands for an evaluator after openflow is available from npm.',
     commands: [
-      'npm install -g openflow',
+      'npm install -g @surlymochan/openflow',
       'xflow guide',
       'xflow evaluate',
       'xflow assess',
@@ -6532,8 +6532,8 @@ async function handleServe(args) {
     const { default: startServer } = await import('../src/server.js');
     await startServer();
   } else {
-    console.error('HTTP server not yet available. Heavy track requires as-agentos server.');
-    console.error('See: https://github.com/surlymochan/as-agentos');
+    console.error('HTTP control plane is not included in this package yet.');
+    console.error('Use the CLI tracks instead: xflow workflow run yolo, or xflow corps --explain.');
     process.exit(1);
   }
 }

@@ -16,7 +16,7 @@ Use source checkout mode when developing xflow itself or when testing workflow c
 ## Global CLI
 
 ```bash
-npm install -g openflow
+npm install -g @surlymochan/openflow
 xflow doctor
 ```
 
