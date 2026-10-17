@@ -10,9 +10,12 @@ import argparse
 import json
 import os
 import re
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+import tdd_lib
 
 
 ROOT_SPEC_FILES = ["product.md", "architecture.md", "workflow.md", "README.md"]
@@ -233,6 +236,35 @@ def main() -> None:
     if req_delta["counts"]["proposal"] and not req_delta["counts"]["plan"]:
         warnings.append("proposal.md has requirement statements, but plan.md has no requirement-level mapping")
 
+    clause_groups = [
+        ("proposal.md", proposal_text),
+        ("plan.md", plan_text),
+        ("tasks.md", tasks_text),
+    ]
+    for filename in MERGE_SPEC_FILES:
+        clause_groups.append((filename, read_text(change_dir / filename)))
+    diff = subprocess.run(
+        ["git", "diff", "--name-only", "HEAD"],
+        cwd=project_root,
+        text=True,
+        capture_output=True,
+    )
+    untracked = subprocess.run(
+        ["git", "ls-files", "--others", "--exclude-standard"],
+        cwd=project_root,
+        text=True,
+        capture_output=True,
+    )
+    relatives = []
+    if diff.returncode == 0:
+        relatives.extend(line.strip() for line in diff.stdout.splitlines() if line.strip())
+    if untracked.returncode == 0:
+        relatives.extend(line.strip() for line in untracked.stdout.splitlines() if line.strip())
+    for relative in relatives:
+        if tdd_lib.is_test_file(relative):
+            clause_groups.append((relative, read_text(project_root / relative)))
+    issues.extend(tdd_lib.contradictory_requirements(clause_groups))
+
     review = {
         "ok": len(issues) == 0,
         "gate": "J4b.spec_delta.review",
@@ -275,6 +307,7 @@ def main() -> None:
         "markdown_file": str(md_path),
         "warnings": len(warnings),
         "issues": len(issues),
+        "issue_texts": issues,
     }))
     sys.exit(0 if review["ok"] else 1)
 

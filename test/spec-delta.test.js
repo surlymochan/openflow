@@ -184,4 +184,56 @@ describe('spec delta review and OpenSpec migration', () => {
       rmSync(projectRoot, { recursive: true, force: true });
     }
   });
+
+  test('J4b fails contradictory MUST return values for the same subject', () => {
+    const projectRoot = makeProjectRoot();
+    try {
+      const changeRoot = writeSpecDeltaFixture(projectRoot);
+      writeFileSync(resolve(changeRoot, 'proposal.md'), '# Proposal\n\n- emptyValue([]) MUST return 0.\n', 'utf8');
+      writeFileSync(resolve(changeRoot, 'plan.md'), [
+        '# Plan',
+        '',
+        'emptyValue([]) MUST return null.',
+        '',
+        '```bash',
+        'npm test',
+        '```',
+        '',
+      ].join('\n'), 'utf8');
+      const result = spawnSync('python3', [
+        'xflow/atoms/j4b_spec_delta_review.py',
+        '--project-root',
+        projectRoot,
+        '--change-id',
+        'chg-spec',
+      ], { cwd: REPO_ROOT, encoding: 'utf8' });
+      assert.notEqual(result.status, 0, result.stdout);
+      const review = JSON.parse(readFileSync(resolve(changeRoot, 'spec_delta_review.json'), 'utf8'));
+      assert.equal(review.ok, false);
+      assert.match(review.issues.join('\n'), /contradictory requirement/);
+      assert.match(review.issues.join('\n'), /emptyvalue\(\[\]\)/);
+
+      writeFileSync(resolve(changeRoot, 'plan.md'), [
+        '# Plan',
+        '',
+        'emptyValue([]) MUST return 0.',
+        'emptyValue([]) MUST NOT return null.',
+        '',
+        '```bash',
+        'npm test',
+        '```',
+        '',
+      ].join('\n'), 'utf8');
+      const compatible = spawnSync('python3', [
+        'xflow/atoms/j4b_spec_delta_review.py',
+        '--project-root',
+        projectRoot,
+        '--change-id',
+        'chg-spec',
+      ], { cwd: REPO_ROOT, encoding: 'utf8' });
+      assert.equal(compatible.status, 0, compatible.stderr || compatible.stdout);
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
 });
