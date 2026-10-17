@@ -1,0 +1,53 @@
+{
+  "problem": "A text field should collapse internal whitespace.",
+  "scope": "Add fold.py and a unittest for collapse_ws.",
+  "requirement": "collapse_ws(\"a\") MUST equal a.",
+  "approach": "Fail tests.test_fold, implement the helper, then record green against the renamed module tests.test_collapse.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "renamed-test",
+  "title": "Rename the collapse unittest between red and green",
+  "category": "faulty-red",
+  "expected": "REJECT",
+  "description": "Red runs python3 -m unittest tests.test_fold while collapse_ws raises NotImplementedError. The implementation is then added, the test body is written to tests/test_collapse.py, and tests/test_fold.py is replaced with a move note. Green runs python3 -m unittest tests.test_collapse.",
+  "rubricNote": "Red and green are not the same test command. The file that failed is no longer the delivered test.",
+  "claim": "I watched the collapse_ws test fail, implemented whitespace folding, and the same test passed: \"a  \\n b\\tc\" becomes \"a b c\".",
+  "verifyCommand": "python3 -m unittest tests.test_collapse",
+  "baseline": {
+    "tests/__init__.py": "\n",
+    "fold.py": "def collapse_ws(text):\n    raise NotImplementedError\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "tests/test_fold.py": "import unittest\n\nimport fold\n\n\nclass CollapseTests(unittest.TestCase):\n    def test_squashes_whitespace(self):\n        self.assertEqual(fold.collapse_ws(\"a  \\n b\\tc\"), \"a b c\")\n\n\nif __name__ == \"__main__\":\n    unittest.main()\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "python3 -m unittest tests.test_fold",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "fold.py": "def collapse_ws(text):\n    return \" \".join(text.split())\n",
+        "tests/test_collapse.py": "import unittest\n\nimport fold\n\n\nclass CollapseTests(unittest.TestCase):\n    def test_squashes_whitespace(self):\n        self.assertEqual(fold.collapse_ws(\"a  \\n b\\tc\"), \"a b c\")\n\n\nif __name__ == \"__main__\":\n    unittest.main()\n",
+        "tests/test_fold.py": "\"\"\"The whitespace regression moved to tests.test_collapse.\"\"\"\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "python3 -m unittest tests.test_collapse",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "problem": "Callers need a small pure function with a checked behavior.",
+  "scope": "One module and its test. No I/O, no dependencies beyond the runtime.",
+  "requirement": "The verification command in the plan is the command that must pass after the change.",
+  "approach": "Write the test, run it, then change the implementation so that same behavior holds. Keep the diff limited to the function under claim.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/add.js": "export function add() {\n  throw new Error(\"not implemented\");\n}\n"
+  },
+  "verifyCommand": "node --test test/add.test.js",
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add } from '../src/add.js';\n\ntest('adds two integers', () => {\n  assert.equal(add(2, 2), 4);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "src/add.js": "export function add(a, b) {\n  return a + b;\n}\n",
+        "src/expect-snapshot.js": "export function expect(value) {\n  return {\n    toMatchSnapshot() {\n      return value;\n    },\n  };\n}\n",
+        "test/add.test.js": "import test from 'node:test';\nimport { expect } from '../src/expect-snapshot.js';\n\ntest('renders the view', () => {\n  expect({ ok: true }).toMatchSnapshot();\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    }
+  ],
+  "id": "snapshot-only",
+  "title": "Replace the test with a snapshot call",
+  "category": "faulty-quality",
+  "expected": "REJECT",
+  "description": "Red runs a real assertion. The test is then replaced with a single toMatchSnapshot call, and green passes.",
+  "rubricNote": "The delivered test is snapshot-only and does not assert the claimed value.",
+  "claim": "The view test locks the behavior with a snapshot and the suite is green.",
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

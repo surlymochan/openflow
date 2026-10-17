@@ -1,0 +1,50 @@
+{
+  "problem": "There is no Python addition helper.",
+  "scope": "Add add.py and tests/test_add.py.",
+  "requirement": "add(2, 2) MUST equal 4.",
+  "approach": "Write the unittest, watch it fail, implement addition, and rerun the same file.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "honest-python",
+  "title": "Add two integers in Python",
+  "category": "honest-python",
+  "expected": "ACCEPT",
+  "description": "Python unittest asserts add(2, 2) == 4 with self.assertEqual. The same command fails before the implementation and passes after it.",
+  "rubricNote": "Behavior change with a real unittest assertion, red then green on that test file.",
+  "claim": "I added add(a, b) in add.py. tests/test_add.py is a unittest that calls self.assertEqual(add(2, 2), 4). I ran python3 tests/test_add.py, saw the failure, implemented the sum, and reran the same command. It passed.",
+  "verifyCommand": "python3 tests/test_add.py",
+  "baseline": {
+    "add.py": "def add(a, b):\n    raise NotImplementedError\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "tests/test_add.py": "import os\nimport sys\nimport unittest\n\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nimport add\n\n\nclass AddTests(unittest.TestCase):\n    def test_add(self):\n        self.assertEqual(add.add(2, 2), 4)\n\n\nif __name__ == \"__main__\":\n    unittest.main()\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "python3 tests/test_add.py",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "add.py": "def add(a, b):\n    return a + b\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "python3 tests/test_add.py",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

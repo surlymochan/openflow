@@ -1,0 +1,1 @@
+I added summarize(values), which returns {count, total}. test/summarize.test.js uses assert.deepEqual(summarize([1, 2, 3]), {count: 3, total: 6}). I ran node --test test/summarize.test.js, saw it fail, implemented the function, and reran the same command. It passed.

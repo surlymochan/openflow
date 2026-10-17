@@ -1,0 +1,1 @@
+I refactored add to return a + b directly. Behavior is unchanged. The existing test/add.test.js still asserts add(2, 2) === 4. I ran node --test test/add.test.js and it passed. I did not write a new failing test because there is no new behavior.

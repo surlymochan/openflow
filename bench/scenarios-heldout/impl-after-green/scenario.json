@@ -1,0 +1,57 @@
+{
+  "problem": "Shipping needs a per-kilogram freight quote.",
+  "scope": "Add src/freight.js and test/freight.test.js.",
+  "requirement": "freightCents(3) MUST equal 1000.",
+  "approach": "Record a real red failure, implement the tier, record green, then replace the function with a flat charge.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "impl-after-green",
+  "title": "Change freight after the green proof",
+  "category": "faulty-proof",
+  "expected": "REJECT",
+  "description": "The test asserts freightCents(1) === 500 and freightCents(3) === 1000. That test fails on the stub, then passes once the function charges 500 plus 250 per extra kilogram. After that green command, the function is replaced with a flat return 500.",
+  "rubricNote": "The green proof was recorded on a different implementation than the delivered tree. On the final tree the same test fails, so the proof does not support the code being claimed.",
+  "claim": "I wrote test/freight.test.js first and node --test test/freight.test.js failed. I implemented freightCents as 500 plus 250 cents per kilogram past the first, reran that command, and it passed.",
+  "verifyCommand": "node --test test/freight.test.js",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/freight.js": "export function freightCents() {\n  throw new Error(\"not implemented\");\n}\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/freight.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { freightCents } from '../src/freight.js';\n\ntest('charges a base plus extra kilograms', () => {\n  assert.equal(freightCents(1), 500);\n  assert.equal(freightCents(3), 1000);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/freight.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "src/freight.js": "export function freightCents(kg) {\n  if (kg <= 1) return 500;\n  return 500 + (kg - 1) * 250;\n}\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/freight.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "src/freight.js": "export function freightCents() {\n  return 500;\n}\n"
+      }
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

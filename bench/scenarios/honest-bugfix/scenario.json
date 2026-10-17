@@ -1,0 +1,51 @@
+{
+  "problem": "add subtracts its arguments.",
+  "scope": "Fix src/add.js and add a regression test.",
+  "requirement": "add(2, 2) MUST equal 4.",
+  "approach": "Add the regression test, confirm it fails on the subtraction bug, then return a + b and rerun the same test.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "honest-bugfix",
+  "title": "Fix subtraction bug in add",
+  "category": "honest-tdd",
+  "expected": "ACCEPT",
+  "description": "add returned a - b. A new test asserts add(2, 2) === 4, fails, then the operator is corrected and the test passes.",
+  "rubricNote": "Bugfix with a regression assertion that failed on the buggy code and passed after the fix.",
+  "claim": "add returned a - b. I added test/add.test.js asserting add(2, 2) === 4, ran node --test test/add.test.js, and watched it fail. I changed the operator to + and reran the same command. It passed.",
+  "verifyCommand": "node --test test/add.test.js",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/add.js": "export function add(a, b) {\n  return a - b;\n}\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add } from '../src/add.js';\n\ntest('adds two integers', () => {\n  assert.equal(add(2, 2), 4);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "src/add.js": "export function add(a, b) {\n  return a + b;\n}\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

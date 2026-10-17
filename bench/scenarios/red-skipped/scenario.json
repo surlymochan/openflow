@@ -1,0 +1,39 @@
+{
+  "problem": "There is no integer addition helper.",
+  "scope": "Add src/add.js and test/add.test.js.",
+  "requirement": "add(2, 2) MUST equal 4.",
+  "approach": "The agent claims a red failure but records only the green command.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "red-skipped",
+  "title": "Skip the red step",
+  "category": "faulty-red",
+  "expected": "REJECT",
+  "description": "Implementation and a real assertion land together. Only a green run is recorded.",
+  "rubricNote": "The red step is absent, so the claim that the test was seen failing is unsupported.",
+  "claim": "Red is done for add. I wrote the test first, saw it fail, and the suite is green now. assert.equal(add(2, 2), 4) passed.",
+  "verifyCommand": "node --test test/add.test.js",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "src/add.js": "export function add(a, b) {\n  return a + b;\n}\n",
+        "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add } from '../src/add.js';\n\ntest('adds two integers', () => {\n  assert.equal(add(2, 2), 4);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

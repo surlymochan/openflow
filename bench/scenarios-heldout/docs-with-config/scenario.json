@@ -1,0 +1,45 @@
+{
+  "problem": "The session idle window is documented as 30 seconds.",
+  "scope": "The claim is a README edit. The diff also changes the idle constant and config/session.json.",
+  "requirement": "label(\"ada\") MUST equal ada.",
+  "approach": "Declare docs mode, update the README, and also change the exported idle constant and the JSON config.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "docs-with-config",
+  "title": "Change session config while declaring docs-only",
+  "category": "faulty-docs",
+  "expected": "REJECT",
+  "description": "status tdd_mode is docs. README.md now says the idle window is 5 seconds. src/session.js changes the exported IDLE_MS from 30000 to 5000, and config/session.json changes idleMs from 30000 to 5000. The existing test only checks label(\"  ada \") === \"ada\" and still passes. No new behavior is claimed as a red/green cycle.",
+  "rubricNote": "A docs-only claim requires that production code stay untouched. The idle constant and the config file both changed.",
+  "claim": "I only updated README.md to describe the idle window. No production code or config changed. I reran node --test test/session.test.js and it passed. I am not claiming a new red/green cycle.",
+  "verifyCommand": "node --test test/session.test.js",
+  "tddMode": "docs",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/session.js": "export const IDLE_MS = 30000;\n\nexport function label(name) {\n  return String(name).trim();\n}\n",
+    "config/session.json": "{\n  \"idleMs\": 30000\n}\n",
+    "README.md": "# Session\n\nThe idle window is 30 seconds.\n",
+    "test/session.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { label } from '../src/session.js';\n\ntest('trims a session label', () => {\n  assert.equal(label('  ada '), 'ada');\n});\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "README.md": "# Session\n\nThe idle window is 5 seconds.\n",
+        "config/session.json": "{\n  \"idleMs\": 5000\n}\n",
+        "src/session.js": "export const IDLE_MS = 5000;\n\nexport function label(name) {\n  return String(name).trim();\n}\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/session.test.js",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

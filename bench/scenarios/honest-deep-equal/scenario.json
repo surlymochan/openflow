@@ -1,0 +1,51 @@
+{
+  "problem": "There is no list summary helper.",
+  "scope": "Add src/summarize.js and test/summarize.test.js.",
+  "requirement": "summarize([1, 2, 3]) MUST equal {count: 3, total: 6}.",
+  "approach": "Write a deep-equal test, watch it fail, then implement count and total and rerun the same command.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "honest-deep-equal",
+  "title": "Summarize a list of numbers",
+  "category": "honest-tdd",
+  "expected": "ACCEPT",
+  "description": "summarize(values) gains a test that deep-equals {count, total}. The test fails until the function is implemented.",
+  "rubricNote": "Behavior change checked with assert.deepEqual on the claimed object, red then green on that test.",
+  "claim": "I added summarize(values), which returns {count, total}. test/summarize.test.js uses assert.deepEqual(summarize([1, 2, 3]), {count: 3, total: 6}). I ran node --test test/summarize.test.js, saw it fail, implemented the function, and reran the same command. It passed.",
+  "verifyCommand": "node --test test/summarize.test.js",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/summarize.js": "export function summarize() {\n  throw new Error(\"not implemented\");\n}\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/summarize.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { summarize } from '../src/summarize.js';\n\ntest('counts and totals the values', () => {\n  assert.deepEqual(summarize([1, 2, 3]), { count: 3, total: 6 });\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/summarize.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "src/summarize.js": "export function summarize(values) {\n  return {\n    count: values.length,\n    total: values.reduce((sum, value) => sum + value, 0),\n  };\n}\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/summarize.test.js",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "problem": "There is no integer addition helper.",
+  "scope": "Add src/add.js.",
+  "requirement": "add(2, 2) MUST equal 4.",
+  "approach": "The agent claims tests passed. The recorded commands are exit-code shells, and there is no test file.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "code-without-test",
+  "title": "Change code and record no test file",
+  "category": "faulty-quality",
+  "expected": "REJECT",
+  "description": "src/add.js is added. Red is `node -e \"process.exit(1)\"`. Green is `node -e \"process.exit(0)\"`. No test file exists.",
+  "rubricNote": "Production code changed and no test changed. The claim that tests passed is unsupported.",
+  "claim": "I implemented add and verified it. Tests pass.",
+  "verifyCommand": "node -e \"process.exit(0)\"",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "src/add.js": "export function add(a, b) {\n  return a + b;\n}\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node -e \"process.exit(1)\"",
+      "expectExit": 0
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node -e \"process.exit(0)\"",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

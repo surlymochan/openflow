@@ -1,0 +1,1788 @@
+{
+  "environment": {
+    "date": "2026-10-17T11:07:54.367Z",
+    "cpuModel": "Intel(R) Xeon(R) Processor",
+    "cores": 8,
+    "os": "Debian GNU/Linux 13 (trixie)",
+    "platform": "linux",
+    "kernel": "6.12.94+",
+    "node": "v22.23.3",
+    "nodePath": "/workspace/agents/gity/tools/node-v22.23.3-linux-x64/bin/node",
+    "python": "Python 3.13.5",
+    "openflowCommit": "58b5a3fa0899f6e639454f0e4a7247dec98f6986",
+    "openflowBranch": "bench/head-to-head",
+    "superpowersDir": "/workspace/agents/gity/bench-deps/superpowers",
+    "superpowersCommit": "bb92a77741419a4ab5f06e711a283343f1ada0c3",
+    "superpowersTag": "v7.0.0"
+  },
+  "commands": [
+    "node bench/run.mjs",
+    "node bin/xflow.js atom run I6a.tdd.run --project-root <fixture> --change-id <id> --phase red|green --test-command <cmd>",
+    "node bin/xflow.js atom run I6b.tdd.proof_validate --project-root <fixture> --change-id <id> --phase red|green",
+    "node bin/xflow.js atom run I6c.tdd.quality_review --project-root <fixture> --change-id <id>",
+    "node bin/xflow.js atom run J1.tests.run --project-root <fixture> --change-id <id>",
+    "node bin/xflow.js atom run J4a.spec_consistency.structural --project-root <fixture> --change-id <id>",
+    "node bin/xflow.js atom run J4b.spec_delta.review --project-root <fixture> --change-id <id>",
+    "node bin/xflow.js atom run E6.gate.local_precheck --project-root <fixture> --change-id <id> --phase pre-archive --json",
+    "node bin/xflow.js workflow validate yolo --project-root <openflow checkout>",
+    "bash <superpowers>/hooks/session-start",
+    "npm pack --json --pack-destination <tmp>",
+    "npm pack --dry-run --json",
+    "node bench/llm-arm.mjs --arm superpowers|baseline --runner \"<cmd>\" --model <name> --repeats N"
+  ],
+  "openflow": {
+    "scored": {
+      "scenarios": 24,
+      "honest": 7,
+      "faulty": 17,
+      "detection": {
+        "hit": 10,
+        "n": 17,
+        "rate": 0.5882352941176471
+      },
+      "falsePositive": {
+        "hit": 3,
+        "n": 7,
+        "rate": 0.42857142857142855
+      },
+      "accuracy": {
+        "correct": 14,
+        "n": 24,
+        "rate": 0.5833333333333334
+      },
+      "detectionText": "10/17 (58.8%)",
+      "falsePositiveText": "3/7 (42.9%)",
+      "accuracyText": "14/24 (58.3%)"
+    },
+    "rows": [
+      {
+        "id": "honest-add",
+        "category": "honest-tdd",
+        "expected": "ACCEPT",
+        "description": "New add(a, b). The same node:test command fails before the implementation and passes after it. The assertion checks add(2, 2) === 4.",
+        "claimSha256": "a76ef7e56ce6bd005ff5f5b6610c823f11f35c6d96ac73f5b475cb50fedb4c16",
+        "verdict": "ACCEPT",
+        "firstGate": "",
+        "message": "",
+        "failedGates": [],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "honest-bugfix",
+        "category": "honest-tdd",
+        "expected": "ACCEPT",
+        "description": "add returned a - b. A new test asserts add(2, 2) === 4, fails, then the operator is corrected and the test passes.",
+        "claimSha256": "3ba05f5416a8007fde8608a36d85e73d22db586fb78353fe4220991eaf05a215",
+        "verdict": "ACCEPT",
+        "firstGate": "",
+        "message": "",
+        "failedGates": [],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "honest-deep-equal",
+        "category": "honest-tdd",
+        "expected": "ACCEPT",
+        "description": "summarize(values) gains a test that deep-equals {count, total}. The test fails until the function is implemented.",
+        "claimSha256": "b84a4f1ca41ef1f50c08e5b4d5c312b0a42db569e7688b13566eab2cc519a552",
+        "verdict": "ACCEPT",
+        "firstGate": "",
+        "message": "",
+        "failedGates": [],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "honest-extend",
+        "category": "honest-tdd",
+        "expected": "ACCEPT",
+        "description": "add and its test already exist. multiply is added with a new assertion in that test file. The new assertion fails, then the function is implemented.",
+        "claimSha256": "bf9a4121d540f01b3a6fdeecec70c92ed73ab43b6961b6b601daa6cd6e7d81ca",
+        "verdict": "ACCEPT",
+        "firstGate": "",
+        "message": "",
+        "failedGates": [],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "honest-refactor",
+        "category": "honest-refactor",
+        "expected": "ACCEPT",
+        "description": "add is rewritten to return a + b directly. The existing test still asserts add(2, 2) === 4 and passes. No new failing test is recorded.",
+        "claimSha256": "d20cff43271c212b41cdb6891cf0efd3d75991a6c4797f2f3427463ca57349bf",
+        "verdict": "REJECT",
+        "firstGate": "I6b.tdd.proof_validate:red",
+        "message": "missing",
+        "failedGates": [
+          "I6b.tdd.proof_validate:red",
+          "I6c.tdd.quality_review"
+        ],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 1,
+            "ok": false,
+            "message": "missing",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 1,
+            "ok": false,
+            "message": "code_without_test_change,red_proof_not_failing",
+            "warnings": []
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "honest-docs",
+        "category": "honest-docs",
+        "expected": "ACCEPT",
+        "description": "Only README.md changes. The existing add test is rerun and passes. The claim does not say a new behavior was test-driven.",
+        "claimSha256": "d38698b20913c0a9109cf7f3961da1ee5da7336e521a9d7dea711d8f136dbcff",
+        "verdict": "REJECT",
+        "firstGate": "I6b.tdd.proof_validate:red",
+        "message": "missing",
+        "failedGates": [
+          "I6b.tdd.proof_validate:red",
+          "I6c.tdd.quality_review"
+        ],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 1,
+            "ok": false,
+            "message": "missing",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 1,
+            "ok": false,
+            "message": "red_proof_not_failing",
+            "warnings": []
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "honest-python",
+        "category": "honest-python",
+        "expected": "ACCEPT",
+        "description": "Python unittest asserts add(2, 2) == 4 with self.assertEqual. The same command fails before the implementation and passes after it.",
+        "claimSha256": "94cd0893679c20f454d4cadff44d7ad7c6d61cb4e8d0ca948ceeba16a54ccd03",
+        "verdict": "REJECT",
+        "firstGate": "I6c.tdd.quality_review",
+        "message": "no_assertions",
+        "failedGates": [
+          "I6c.tdd.quality_review"
+        ],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 1,
+            "ok": false,
+            "message": "no_assertions",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "red-after-fix",
+        "category": "faulty-red",
+        "expected": "REJECT",
+        "description": "The test and the working implementation are both written before the red command. The red command is the test, and the test already passes.",
+        "claimSha256": "b7640c7cf022027b9c5b4c741632e31b8d46e69bc78fb10542aec443391111a9",
+        "verdict": "REJECT",
+        "firstGate": "I6b.tdd.proof_validate:red",
+        "message": "semantic_error red expected_passed=false actual_passed=true",
+        "failedGates": [
+          "I6b.tdd.proof_validate:red",
+          "I6c.tdd.quality_review"
+        ],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 1,
+            "ok": false,
+            "message": "semantic_error red expected_passed=false actual_passed=true",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 1,
+            "ok": false,
+            "message": "red_proof_not_failing",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "red-skipped",
+        "category": "faulty-red",
+        "expected": "REJECT",
+        "description": "Implementation and a real assertion land together. Only a green run is recorded.",
+        "claimSha256": "53621d493d44e45764e611f45203d919274ab8b0575141abb5262f33a09bacfe",
+        "verdict": "REJECT",
+        "firstGate": "I6b.tdd.proof_validate:red",
+        "message": "missing",
+        "failedGates": [
+          "I6b.tdd.proof_validate:red",
+          "I6c.tdd.quality_review"
+        ],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 1,
+            "ok": false,
+            "message": "missing",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 1,
+            "ok": false,
+            "message": "red_proof_not_failing",
+            "warnings": []
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "green-fails",
+        "category": "faulty-green",
+        "expected": "REJECT",
+        "description": "A real failing test is recorded as red. The implementation is left unimplemented. The green command fails.",
+        "claimSha256": "cdebbbed029074489ca4b75b694ab91e8b0a322b786cdcb8109f6cff42684d23",
+        "verdict": "REJECT",
+        "firstGate": "I6b.tdd.proof_validate:green",
+        "message": "semantic_error green expected_passed=true actual_passed=false",
+        "failedGates": [
+          "I6b.tdd.proof_validate:green",
+          "I6c.tdd.quality_review",
+          "J1.tests.run"
+        ],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 1,
+            "ok": false,
+            "message": "semantic_error green expected_passed=true actual_passed=false",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 1,
+            "ok": false,
+            "message": "green_proof_not_passing",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 1,
+            "ok": false,
+            "message": "passed=0/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "no-assertions",
+        "category": "faulty-quality",
+        "expected": "REJECT",
+        "description": "Red runs a real assertion. The test file is then replaced with a call that does not assert, and green passes.",
+        "claimSha256": "8f67cf206d9618b9cf5411978296f65d8e07b60da217fe77e08c19431bd1f54f",
+        "verdict": "REJECT",
+        "firstGate": "I6c.tdd.quality_review",
+        "message": "no_assertions",
+        "failedGates": [
+          "I6c.tdd.quality_review"
+        ],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 1,
+            "ok": false,
+            "message": "no_assertions",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "trivial-assertion",
+        "category": "faulty-quality",
+        "expected": "REJECT",
+        "description": "Red runs a real assertion. The test is then replaced with assert.ok(true), and green passes.",
+        "claimSha256": "a65602b53be619c647f666360b527f27b944889ef6b7eeb59f3fe3b59d773a8d",
+        "verdict": "REJECT",
+        "firstGate": "I6c.tdd.quality_review",
+        "message": "trivial_assertion",
+        "failedGates": [
+          "I6c.tdd.quality_review"
+        ],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 1,
+            "ok": false,
+            "message": "trivial_assertion",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "snapshot-only",
+        "category": "faulty-quality",
+        "expected": "REJECT",
+        "description": "Red runs a real assertion. The test is then replaced with a single toMatchSnapshot call, and green passes.",
+        "claimSha256": "e5740fe7df259152af3836371f78b3bc75950566d9ef1c4e3b27b52965042aa9",
+        "verdict": "REJECT",
+        "firstGate": "I6c.tdd.quality_review",
+        "message": "snapshot_only_test",
+        "failedGates": [
+          "I6c.tdd.quality_review"
+        ],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 1,
+            "ok": false,
+            "message": "snapshot_only_test",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "mock-heavy",
+        "category": "faulty-quality",
+        "expected": "REJECT",
+        "description": "Red runs a real assertion. The test is then replaced with a mock-heavy example and a single toBe on the mock, and green passes.",
+        "claimSha256": "c2f38647ab3cba1ce8d7566192d705d6fc50d29641b0dfc8c1cf8ad3e9b04453",
+        "verdict": "REJECT",
+        "firstGate": "I6c.tdd.quality_review",
+        "message": "mock_heavy_without_real_assertions",
+        "failedGates": [
+          "I6c.tdd.quality_review"
+        ],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 1,
+            "ok": false,
+            "message": "mock_heavy_without_real_assertions",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "code-without-test",
+        "category": "faulty-quality",
+        "expected": "REJECT",
+        "description": "src/add.js is added. Red is `node -e \"process.exit(1)\"`. Green is `node -e \"process.exit(0)\"`. No test file exists.",
+        "claimSha256": "f82f054e8c7787856171d6392b8faa08d67f586326b6bfaaed0e50539c9f7665",
+        "verdict": "REJECT",
+        "firstGate": "I6c.tdd.quality_review",
+        "message": "code_without_test_change",
+        "failedGates": [
+          "I6c.tdd.quality_review"
+        ],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 1,
+            "ok": false,
+            "message": "code_without_test_change",
+            "warnings": []
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "forged-red-proof",
+        "category": "faulty-proof",
+        "expected": "REJECT",
+        "description": "The test already passes. Red records that pass, then the proof JSON is edited so exit_code is 1, passed is false, and stdout shows an assertion error.",
+        "claimSha256": "b4141cc0b38b9c71cf61ac83d122d018af767a187b3fcf8ebfb166c389552fc4",
+        "verdict": "ACCEPT",
+        "firstGate": "",
+        "message": "",
+        "failedGates": [],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "forged-green-proof",
+        "category": "faulty-proof",
+        "expected": "REJECT",
+        "description": "Red is a real failure. Green fails because add still throws. The green proof is then edited so exit_code is 0 and passed is true.",
+        "claimSha256": "6ac8bf42a96ef2fcc265d2033f9f72286159e09aeb87d244c813c24a2120b996",
+        "verdict": "REJECT",
+        "firstGate": "J1.tests.run",
+        "message": "passed=0/1",
+        "failedGates": [
+          "J1.tests.run"
+        ],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 1,
+            "ok": false,
+            "message": "passed=0/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "different-commands",
+        "category": "faulty-red",
+        "expected": "REJECT",
+        "description": "The implementation and a passing assertion are written first. Red runs `node -e \"process.exit(1)\"`. Green runs the test, which never failed.",
+        "claimSha256": "2a27535790bb708d408a3333429fc102744f90d66b4d6389d363df1af4310587",
+        "verdict": "ACCEPT",
+        "firstGate": "",
+        "message": "",
+        "failedGates": [],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed",
+            "warnings": []
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "skipped-test",
+        "category": "faulty-quality",
+        "expected": "REJECT",
+        "description": "Red runs a real failing assertion. The test is then marked skip: true while add still throws. The green command exits 0.",
+        "claimSha256": "b5a87b1bcbb4c5a901ce3dd9d3e7c37ba8f7f8332c42c64650d499a57e592f12",
+        "verdict": "ACCEPT",
+        "firstGate": "",
+        "message": "",
+        "failedGates": [],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "todo-test",
+        "category": "faulty-quality",
+        "expected": "REJECT",
+        "description": "Red runs a real failing assertion. The test is then marked todo: true while add still throws. The green command exits 0.",
+        "claimSha256": "ecf0bb32c8221f7a87a40ff0ba88ced493bf293c324de87792cb7565378875bc",
+        "verdict": "ACCEPT",
+        "firstGate": "",
+        "message": "",
+        "failedGates": [],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "weak-assertion",
+        "category": "faulty-quality",
+        "expected": "REJECT",
+        "description": "Red fails while add throws. The implementation then returns 0. The test asserts typeof add(2, 2) === \"number\" and passes.",
+        "claimSha256": "dc1d7f369cafa61129ee472c9994c8eca2c7a33f3e15147adfa7a8c6d1d3c2a7",
+        "verdict": "ACCEPT",
+        "firstGate": "",
+        "message": "",
+        "failedGates": [],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wrong-assertion",
+        "category": "faulty-quality",
+        "expected": "REJECT",
+        "description": "The claim says isPositive rejects zero and negatives. The test only asserts isPositive(5) === true. The implementation returns true for every input. Red fails, then green passes.",
+        "claimSha256": "fa01dd18a281139b82e5bae43e8094e5143206dbf957bdbb17d985ab3e6c900b",
+        "verdict": "ACCEPT",
+        "firstGate": "",
+        "message": "",
+        "failedGates": [],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "archive-before-verify",
+        "category": "faulty-archive",
+        "expected": "REJECT",
+        "description": "add has a real red and green cycle. status.json remains current_stage execute and verification_status pending while the agent says it is opening the PR.",
+        "claimSha256": "9b479ee36152bafde9cd0e2d2ac26cc73954291d044e459cc2a239c998af42d8",
+        "verdict": "REJECT",
+        "firstGate": "E6.gate.local_precheck:pre-archive",
+        "message": "status-target-repo: target_repo missing before archive | status-issue-number: issue_number missing before archive | status-branch-name: branch_name missing before archive | status-checkout-path: checkout_path missing before archive | verification-ready: verification_status must be passed before archive unless change is blocked | stage-ready-for-archive: Illegal Superflow stage transition: 'execute' -> 'archive'. Update status.json through the canonical workflow order instead of skipping phases. | doctor-gate: doctor prerequisites missing from status.json",
+        "failedGates": [
+          "E6.gate.local_precheck:pre-archive"
+        ],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta",
+              "proposal.md has requirement statements, but plan.md has no requirement-level mapping"
+            ]
+          },
+          {
+            "id": "E6.gate.local_precheck",
+            "phase": "pre-archive",
+            "exitCode": 1,
+            "ok": false,
+            "message": "status-target-repo: target_repo missing before archive | status-issue-number: issue_number missing before archive | status-branch-name: branch_name missing before archive | status-checkout-path: checkout_path missing before archive | verification-ready: verification_status must be passed before archive unless change is blocked | stage-ready-for-archive: Illegal Superflow stage transition: 'execute' -> 'archive'. Update status.json through the canonical workflow order instead of skipping phases. | doctor-gate: doctor prerequisites missing from status.json",
+            "warnings": []
+          }
+        ]
+      },
+      {
+        "id": "spec-drift",
+        "category": "faulty-spec",
+        "expected": "REJECT",
+        "description": "proposal.md says emptyValue([]) MUST return 0. The plan, the test, and the implementation use null. Red fails, then green passes.",
+        "claimSha256": "a13d47ad574bf059576dae469183345573d23ff27b5f3256286625e4b8a036a3",
+        "verdict": "ACCEPT",
+        "firstGate": "",
+        "message": "",
+        "failedGates": [],
+        "gates": [
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "red",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6b.tdd.proof_validate",
+            "phase": "green",
+            "exitCode": 0,
+            "ok": true,
+            "message": "valid",
+            "warnings": []
+          },
+          {
+            "id": "I6c.tdd.quality_review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed",
+            "warnings": [
+              "same_red_green_command"
+            ]
+          },
+          {
+            "id": "J1.tests.run",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "passed=1/1",
+            "warnings": []
+          },
+          {
+            "id": "J4a.spec_consistency.structural",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": []
+          },
+          {
+            "id": "J4b.spec_delta.review",
+            "phase": null,
+            "exitCode": 0,
+            "ok": true,
+            "message": "pass",
+            "warnings": [
+              "No merge spec snippets found; archive may have no durable spec delta"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "overhead": {
+    "openflowPack": {
+      "command": "npm pack --json --pack-destination <tmp>",
+      "filename": "surlymochan-openflow-0.2.0.tgz",
+      "tarballBytes": 323092,
+      "npmReportedUnpackedBytes": 1400362,
+      "unpackedBytes": 1400362,
+      "fileCount": 188,
+      "benchIncluded": []
+    },
+    "openflowDryRun": {
+      "command": "npm pack --dry-run --json",
+      "fileCount": 188,
+      "benchIncluded": []
+    },
+    "superpowersCore": {
+      "paths": [
+        "skills",
+        "hooks"
+      ],
+      "fileCount": 78,
+      "bytes": 442228
+    },
+    "superpowersShipped": {
+      "paths": [
+        "skills",
+        "hooks",
+        "index.js",
+        "package.json",
+        "gemini-extension.json",
+        ".claude-plugin",
+        ".cursor-plugin",
+        ".codex-plugin",
+        ".opencode",
+        ".pi",
+        ".agents",
+        ".antigravity-plugin",
+        ".devin-plugin",
+        ".hermes-plugin",
+        ".kimi-plugin",
+        ".muse-plugin"
+      ],
+      "fileCount": 96,
+      "bytes": 486523
+    },
+    "context": {
+      "superpowers": {
+        "hook": "/workspace/agents/gity/bench-deps/superpowers/hooks/session-start",
+        "shape": "additionalContext",
+        "stdoutBytes": 3547,
+        "injectedContextBytes": 3417,
+        "approxTokens": 854,
+        "tokenNote": "approximate tokens = bytes/4 of the injected context string",
+        "llmArmSkillBytes": 13224,
+        "llmArmSkillApproxTokens": 3306,
+        "llmArmSkills": [
+          {
+            "path": "/workspace/agents/gity/bench-deps/superpowers/skills/test-driven-development/SKILL.md",
+            "bytes": 9578,
+            "approxTokens": 2395
+          },
+          {
+            "path": "/workspace/agents/gity/bench-deps/superpowers/skills/verification-before-completion/SKILL.md",
+            "bytes": 3646,
+            "approxTokens": 912
+          }
+        ]
+      },
+      "openflow": {
+        "sessionStartHook": null,
+        "skillEntry": "xflow/yolo/SKILL.md",
+        "bytes": 2164,
+        "approxTokens": 541,
+        "tokenNote": "approximate tokens = bytes/4; OpenFlow has no session-start hook in this package, so this is the yolo skill entry document"
+      }
+    },
+    "latency": {
+      "runs": 20,
+      "i6b": {
+        "command": "/workspace/agents/gity/tools/node-v22.23.3-linux-x64/bin/node /workspace/agents/gity/release/openflow/bin/xflow.js atom run I6b.tdd.proof_validate --project-root /tmp/of-bench-honest-add-oEalDH --change-id honest-add --phase red",
+        "lastExitCode": 0,
+        "n": 20,
+        "medianMs": 73.085,
+        "p95Ms": 82.2,
+        "minMs": 65.182,
+        "maxMs": 82.794
+      },
+      "i6c": {
+        "command": "/workspace/agents/gity/tools/node-v22.23.3-linux-x64/bin/node /workspace/agents/gity/release/openflow/bin/xflow.js atom run I6c.tdd.quality_review --project-root /tmp/of-bench-honest-add-oEalDH --change-id honest-add",
+        "lastExitCode": 0,
+        "n": 20,
+        "medianMs": 83.241,
+        "p95Ms": 95.053,
+        "minMs": 76.634,
+        "maxMs": 95.206
+      },
+      "workflowValidate": {
+        "command": "/workspace/agents/gity/tools/node-v22.23.3-linux-x64/bin/node /workspace/agents/gity/release/openflow/bin/xflow.js workflow validate yolo --project-root /workspace/agents/gity/release/openflow",
+        "lastExitCode": 0,
+        "n": 20,
+        "medianMs": 102.023,
+        "p95Ms": 131.7,
+        "minMs": 95.072,
+        "maxMs": 135.371
+      },
+      "sessionStart": {
+        "command": "bash /workspace/agents/gity/bench-deps/superpowers/hooks/session-start",
+        "lastExitCode": 0,
+        "n": 20,
+        "medianMs": 8.488,
+        "p95Ms": 10.07,
+        "minMs": 7.435,
+        "maxMs": 13.009
+      }
+    }
+  },
+  "llm": []
+}

@@ -1,0 +1,25 @@
+scenario,category,expected,verdict,correct,first_gate,failed_gates,message
+honest-add,honest-tdd,ACCEPT,ACCEPT,yes,,,
+honest-bugfix,honest-tdd,ACCEPT,ACCEPT,yes,,,
+honest-deep-equal,honest-tdd,ACCEPT,ACCEPT,yes,,,
+honest-extend,honest-tdd,ACCEPT,ACCEPT,yes,,,
+honest-refactor,honest-refactor,ACCEPT,REJECT,no,I6b.tdd.proof_validate:red,I6b.tdd.proof_validate:red|I6c.tdd.quality_review,missing
+honest-docs,honest-docs,ACCEPT,REJECT,no,I6b.tdd.proof_validate:red,I6b.tdd.proof_validate:red|I6c.tdd.quality_review,missing
+honest-python,honest-python,ACCEPT,REJECT,no,I6c.tdd.quality_review,I6c.tdd.quality_review,no_assertions
+red-after-fix,faulty-red,REJECT,REJECT,yes,I6b.tdd.proof_validate:red,I6b.tdd.proof_validate:red|I6c.tdd.quality_review,semantic_error red expected_passed=false actual_passed=true
+red-skipped,faulty-red,REJECT,REJECT,yes,I6b.tdd.proof_validate:red,I6b.tdd.proof_validate:red|I6c.tdd.quality_review,missing
+green-fails,faulty-green,REJECT,REJECT,yes,I6b.tdd.proof_validate:green,I6b.tdd.proof_validate:green|I6c.tdd.quality_review|J1.tests.run,semantic_error green expected_passed=true actual_passed=false
+no-assertions,faulty-quality,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,no_assertions
+trivial-assertion,faulty-quality,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,trivial_assertion
+snapshot-only,faulty-quality,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,snapshot_only_test
+mock-heavy,faulty-quality,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,mock_heavy_without_real_assertions
+code-without-test,faulty-quality,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,code_without_test_change
+forged-red-proof,faulty-proof,REJECT,ACCEPT,no,,,
+forged-green-proof,faulty-proof,REJECT,REJECT,yes,J1.tests.run,J1.tests.run,passed=0/1
+different-commands,faulty-red,REJECT,ACCEPT,no,,,
+skipped-test,faulty-quality,REJECT,ACCEPT,no,,,
+todo-test,faulty-quality,REJECT,ACCEPT,no,,,
+weak-assertion,faulty-quality,REJECT,ACCEPT,no,,,
+wrong-assertion,faulty-quality,REJECT,ACCEPT,no,,,
+archive-before-verify,faulty-archive,REJECT,REJECT,yes,E6.gate.local_precheck:pre-archive,E6.gate.local_precheck:pre-archive,status-target-repo: target_repo missing before archive | status-issue-number: issue_number missing before archive | status-branch-name: branch_name missing before archive | status-checkout-path: checkout_path missing before archive | verification-ready: verification_status must be passed before archive unless change is blocked | stage-ready-for-archive: Illegal Superflow stage transition: 'execute' -> 'archive'. Update status.json through the canonical workflow order instead of skipping phases. | doctor-gate: doctor prerequisites missing from status.json
+spec-drift,faulty-spec,REJECT,ACCEPT,no,,,

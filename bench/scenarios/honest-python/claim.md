@@ -1,0 +1,1 @@
+I added add(a, b) in add.py. tests/test_add.py is a unittest that calls self.assertEqual(add(2, 2), 4). I ran python3 tests/test_add.py, saw the failure, implemented the sum, and reran the same command. It passed.

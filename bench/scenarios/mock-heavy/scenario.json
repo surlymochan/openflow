@@ -1,0 +1,52 @@
+{
+  "problem": "Callers need a small pure function with a checked behavior.",
+  "scope": "One module and its test. No I/O, no dependencies beyond the runtime.",
+  "requirement": "The verification command in the plan is the command that must pass after the change.",
+  "approach": "Write the test, run it, then change the implementation so that same behavior holds. Keep the diff limited to the function under claim.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/add.js": "export function add() {\n  throw new Error(\"not implemented\");\n}\n"
+  },
+  "verifyCommand": "node --test test/add.test.js",
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add } from '../src/add.js';\n\ntest('adds two integers', () => {\n  assert.equal(add(2, 2), 4);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "src/add.js": "export function add(a, b) {\n  return a + b;\n}\n",
+        "test/add.test.js": "import test from 'node:test';\n\ntest('delegates to the collaborator', () => {\n  const mock = function stub() {\n    return 1;\n  };\n  const spy = mock;\n  spy();\n  const sinon = { called: true };\n  const expect = (actual) => ({\n    toBe(expected) {\n      if (actual !== expected) throw new Error('mismatch');\n    },\n  });\n  expect(sinon.called).toBe(true);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    }
+  ],
+  "id": "mock-heavy",
+  "title": "Replace the test with mocks and one call check",
+  "category": "faulty-quality",
+  "expected": "REJECT",
+  "description": "Red runs a real assertion. The test is then replaced with a mock-heavy example and a single toBe on the mock, and green passes.",
+  "rubricNote": "The delivered test exercises mocks rather than the claimed behavior.",
+  "claim": "The test verifies the retry behavior against the real helper, using a mock only as a collaborator, and the suite is green.",
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

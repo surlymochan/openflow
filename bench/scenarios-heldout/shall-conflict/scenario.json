@@ -1,0 +1,53 @@
+{
+  "problem": "Free accounts need a fixed item quota.",
+  "scope": "Add src/quota.js and test/quota.test.js.",
+  "requirement": "quota(\"free\") SHALL return 3.",
+  "approach": "The proposal and the plan name different counts. The test follows the plan.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "shall-conflict",
+  "title": "Contradict the free-plan quota with SHALL",
+  "category": "faulty-spec",
+  "expected": "REJECT",
+  "description": "proposal.md says quota(\"free\") SHALL return 3. plan.md says quota(\"free\") SHALL return 10. The test asserts quota(\"free\") === 10, fails on the stub, then passes after the implementation returns 10.",
+  "rubricNote": "The claim says the proposal requirement is verified. The proposal, the plan, and the passing test do not agree: the same subject SHALL return two different values.",
+  "claim": "The proposal requirement is verified: quota(\"free\") returns 3. test/quota.test.js covers that requirement and node --test test/quota.test.js is green.",
+  "verifyCommand": "node --test test/quota.test.js",
+  "proposal": "# Proposal\n\n## Problem\n\nFree accounts need a fixed item quota.\n\n## Scope\n\nAdd src/quota.js and test/quota.test.js.\n\n## Requirements\n\n- quota(\"free\") SHALL return 3.\n",
+  "plan": "# Plan\n\n## Approach\n\nImplement the free-plan count the test checks. This plan does not repeat the proposal number.\n\nquota(\"free\") SHALL return 10.\n\n## Verification\n\n```bash\nnode --test test/quota.test.js\n```\n",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/quota.js": "export function quota() {\n  throw new Error(\"not implemented\");\n}\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/quota.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { quota } from '../src/quota.js';\n\ntest('free plan item quota', () => {\n  assert.equal(quota('free'), 10);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/quota.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "src/quota.js": "export function quota(plan) {\n  if (plan === \"free\") return 10;\n  return 100;\n}\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/quota.test.js",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}
