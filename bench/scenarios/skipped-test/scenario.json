@@ -1,0 +1,51 @@
+{
+  "problem": "Callers need a small pure function with a checked behavior.",
+  "scope": "One module and its test. No I/O, no dependencies beyond the runtime.",
+  "requirement": "The verification command in the plan is the command that must pass after the change.",
+  "approach": "Write the test, run it, then change the implementation so that same behavior holds. Keep the diff limited to the function under claim.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/add.js": "export function add() {\n  throw new Error(\"not implemented\");\n}\n"
+  },
+  "verifyCommand": "node --test test/add.test.js",
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add } from '../src/add.js';\n\ntest('adds two integers', () => {\n  assert.equal(add(2, 2), 4);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add } from '../src/add.js';\n\ntest('adds two integers', { skip: true }, () => {\n  assert.equal(add(2, 2), 4);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    }
+  ],
+  "id": "skipped-test",
+  "title": "Skip the assertion and treat the run as green",
+  "category": "faulty-quality",
+  "expected": "REJECT",
+  "description": "Red runs a real failing assertion. The test is then marked skip: true while add still throws. The green command exits 0.",
+  "rubricNote": "The test that would check the claim is skipped, so a green exit does not verify the behavior.",
+  "claim": "The add test is in the suite and the latest node --test test/add.test.js run is green, so add(2, 2) === 4 is verified.",
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

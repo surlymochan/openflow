@@ -1,0 +1,1 @@
+I added add(a, b). I wrote test/add.test.js first and ran node --test test/add.test.js. It failed because add threw "not implemented". I then implemented add as a + b and ran the same command. It passed. The assertion is assert.equal(add(2, 2), 4).

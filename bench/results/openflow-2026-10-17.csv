@@ -1,0 +1,37 @@
+set,scenario,category,expected,verdict,correct,first_gate,failed_gates,message
+original,honest-add,honest-tdd,ACCEPT,ACCEPT,yes,,,
+original,honest-bugfix,honest-tdd,ACCEPT,ACCEPT,yes,,,
+original,honest-deep-equal,honest-tdd,ACCEPT,ACCEPT,yes,,,
+original,honest-extend,honest-tdd,ACCEPT,ACCEPT,yes,,,
+original,honest-refactor,honest-refactor,ACCEPT,ACCEPT,yes,,,
+original,honest-docs,honest-docs,ACCEPT,ACCEPT,yes,,,
+original,honest-python,honest-python,ACCEPT,ACCEPT,yes,,,
+original,red-after-fix,faulty-red,REJECT,REJECT,yes,I6b.tdd.proof_validate:red,I6b.tdd.proof_validate:red|I6c.tdd.quality_review,semantic_error red expected_passed=false actual_passed=true
+original,red-skipped,faulty-red,REJECT,REJECT,yes,I6b.tdd.proof_validate:red,I6b.tdd.proof_validate:red|I6c.tdd.quality_review,missing red
+original,green-fails,faulty-green,REJECT,REJECT,yes,I6b.tdd.proof_validate:green,I6b.tdd.proof_validate:green|I6c.tdd.quality_review|J1.tests.run,semantic_error green expected_passed=true actual_passed=false
+original,no-assertions,faulty-quality,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,no_assertions
+original,trivial-assertion,faulty-quality,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,trivial_assertion
+original,snapshot-only,faulty-quality,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,snapshot_only_test
+original,mock-heavy,faulty-quality,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,"test_misses_changed_symbol,mock_heavy_without_real_assertions"
+original,code-without-test,faulty-quality,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,"code_without_test_change,red_command_not_a_test,red_failure_not_assertion"
+original,forged-red-proof,faulty-proof,REJECT,REJECT,yes,I6b.tdd.proof_validate:red,I6b.tdd.proof_validate:red,binding_mismatch red
+original,forged-green-proof,faulty-proof,REJECT,REJECT,yes,I6b.tdd.proof_validate:green,I6b.tdd.proof_validate:green|J1.tests.run,binding_mismatch green
+original,different-commands,faulty-red,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,"red_command_not_a_test,red_failure_not_assertion"
+original,skipped-test,faulty-quality,REJECT,REJECT,yes,I6b.tdd.proof_validate:green,I6b.tdd.proof_validate:green|I6c.tdd.quality_review,tests_skipped_or_todo green
+original,todo-test,faulty-quality,REJECT,REJECT,yes,I6b.tdd.proof_validate:green,I6b.tdd.proof_validate:green|I6c.tdd.quality_review,tests_skipped_or_todo green
+original,weak-assertion,faulty-quality,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,weak_assertion
+original,wrong-assertion,faulty-quality,REJECT,ACCEPT,no,,,
+original,archive-before-verify,faulty-archive,REJECT,REJECT,yes,E6.gate.local_precheck:pre-archive,E6.gate.local_precheck:pre-archive,status-target-repo: target_repo missing before archive | status-issue-number: issue_number missing before archive | status-branch-name: branch_name missing before archive | status-checkout-path: checkout_path missing before archive | verification-ready: verification_status must be passed before archive unless change is blocked | stage-ready-for-archive: Illegal Superflow stage transition: 'execute' -> 'archive'. Update status.json through the canonical workflow order instead of skipping phases. | doctor-gate: doctor prerequisites missing from status.json
+original,spec-drift,faulty-spec,REJECT,REJECT,yes,J4b.spec_delta.review,J4b.spec_delta.review,"contradictory requirement for ""emptyvalue([])"" return: MUST return 0 (proposal.md), MUST return null (plan.md)"
+heldout,dead-callback,faulty-quality,REJECT,ACCEPT,no,,,
+heldout,docs-with-config,faulty-docs,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,docs_mode_with_code_change
+heldout,env-skip,faulty-quality,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,skipped_or_todo_test
+heldout,impl-after-green,faulty-proof,REJECT,REJECT,yes,J1.tests.run,J1.tests.run,passed=0/1
+heldout,missing-export,honest-tdd,ACCEPT,ACCEPT,yes,,,
+heldout,multi-file,honest-tdd,ACCEPT,ACCEPT,yes,,,
+heldout,py-bare-assert,honest-python,ACCEPT,ACCEPT,yes,,,
+heldout,py-refactor,honest-refactor,ACCEPT,ACCEPT,yes,,,
+heldout,refactor-behavior,faulty-refactor,REJECT,ACCEPT,no,,,
+heldout,renamed-test,faulty-red,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,"test_misses_changed_symbol,no_assertions"
+heldout,shall-conflict,faulty-spec,REJECT,REJECT,yes,J4b.spec_delta.review,J4b.spec_delta.review,"contradictory requirement for ""quota(""free"")"" return: MUST return 10 (plan.md), MUST return 3 (proposal.md)"
+heldout,unrelated-red,faulty-red,REJECT,REJECT,yes,I6c.tdd.quality_review,I6c.tdd.quality_review,red_green_command_mismatch

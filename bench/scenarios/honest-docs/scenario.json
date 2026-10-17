@@ -1,0 +1,42 @@
+{
+  "problem": "The helper is undocumented.",
+  "scope": "Update README.md only.",
+  "requirement": "The README MUST mention add. Production behavior stays as already tested.",
+  "approach": "Edit the README and rerun the existing test to confirm the tree still passes.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "honest-docs",
+  "title": "Document add in the README",
+  "tddMode": "docs",
+  "category": "honest-docs",
+  "expected": "ACCEPT",
+  "description": "Only README.md changes. The existing add test is rerun and passes. The claim does not say a new behavior was test-driven.",
+  "rubricNote": "Docs-only change: no production code change, and the claim does not invent a new red cycle.",
+  "claim": "I only updated README.md to describe add. No production code changed. I ran the existing test/add.test.js and it passed. I am not claiming a new red/green cycle for a behavior change.",
+  "verifyCommand": "node --test test/add.test.js",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/add.js": "export function add(a, b) {\n  return a + b;\n}\n",
+    "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add } from '../src/add.js';\n\ntest('adds two integers', () => {\n  assert.equal(add(2, 2), 4);\n});\n",
+    "README.md": "# Fixture\n\nA tiny add helper.\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "README.md": "# Fixture\n\n`add(a, b)` returns the sum of two numbers.\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

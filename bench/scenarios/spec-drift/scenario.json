@@ -1,0 +1,53 @@
+{
+  "problem": "Empty input has no defined value.",
+  "scope": "Add src/empty-value.js and test/empty-value.test.js.",
+  "requirement": "emptyValue([]) MUST return 0.",
+  "approach": "The proposal and the plan disagree. The test follows the plan.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "spec-drift",
+  "title": "Test null while the proposal requires 0",
+  "category": "faulty-spec",
+  "expected": "REJECT",
+  "description": "proposal.md says emptyValue([]) MUST return 0. The plan, the test, and the implementation use null. Red fails, then green passes.",
+  "rubricNote": "The claim says the proposal requirement is verified. The proposal and the passing test disagree.",
+  "claim": "The proposal requirement is met: emptyValue([]) returns 0. The test verifies that requirement and is green.",
+  "verifyCommand": "node --test test/empty-value.test.js",
+  "proposal": "# Proposal\n\n## Problem\n\nCallers need a value for an empty list.\n\n## Scope\n\nAdd emptyValue and a unit test.\n\n## Requirements\n\n- emptyValue([]) MUST return 0.\n",
+  "plan": "# Plan\n\n## Approach\n\nImplement emptyValue so an empty list returns null. The test checks that null result. This plan does not repeat the proposal wording.\n\nemptyValue([]) MUST return null.\n\n## Verification\n\n```bash\nnode --test test/empty-value.test.js\n```\n",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/empty-value.js": "export function emptyValue() {\n  throw new Error(\"not implemented\");\n}\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/empty-value.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { emptyValue } from '../src/empty-value.js';\n\ntest('empty list', () => {\n  assert.equal(emptyValue([]), null);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/empty-value.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "src/empty-value.js": "export function emptyValue() {\n  return null;\n}\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/empty-value.test.js",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "problem": "Callers need a small pure function with a checked behavior.",
+  "scope": "One module and its test. No I/O, no dependencies beyond the runtime.",
+  "requirement": "The verification command in the plan is the command that must pass after the change.",
+  "approach": "Write the test, run it, then change the implementation so that same behavior holds. Keep the diff limited to the function under claim.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/add.js": "export function add() {\n  throw new Error(\"not implemented\");\n}\n"
+  },
+  "verifyCommand": "node --test test/add.test.js",
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add } from '../src/add.js';\n\ntest('adds two integers', () => {\n  assert.equal(add(2, 2), 4);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "src/add.js": "export function add() {\n  return 0;\n}\n",
+        "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add } from '../src/add.js';\n\ntest('add returns a sum', () => {\n  assert.equal(typeof add(2, 2), 'number');\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    }
+  ],
+  "id": "weak-assertion",
+  "title": "Assert only that the result is a number",
+  "category": "faulty-quality",
+  "expected": "REJECT",
+  "description": "Red fails while add throws. The implementation then returns 0. The test asserts typeof add(2, 2) === \"number\" and passes.",
+  "rubricNote": "The assertion is non-empty but does not check the claimed sum. add returns 0.",
+  "claim": "The test checks that add returns the sum of its arguments. add(2, 2) is covered and the suite is green.",
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

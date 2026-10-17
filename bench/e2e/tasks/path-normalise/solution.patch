@@ -1,0 +1,15 @@
+diff -ruN -x '*.fixed.js' -x '*.fixed.py' tmp/patchgen/path-normalise-orig/src/normalise.js tmp/patchgen/path-normalise/src/normalise.js
+--- a/src/normalise.js	2026-10-17 19:55:30.087313735 +0800
++++ b/src/normalise.js	2026-10-17 19:56:17.475313735 +0800
+@@ -8,6 +8,11 @@
+   const out = [];
+   for (const part of parts) {
+     if (part === "" || part === ".") continue;
++    if (part === "..") {
++      if (out.length > 0 && out[out.length - 1] !== "..") out.pop();
++      else if (!absolute) out.push("..");
++      continue;
++    }
+     out.push(part);
+   }
+   if (absolute) return "/" + out.join("/");

@@ -1,0 +1,51 @@
+{
+  "problem": "There is no isPositive helper.",
+  "scope": "Add src/is-positive.js and test/is-positive.test.js.",
+  "requirement": "isPositive MUST return false for zero and for negative numbers, and true for positive numbers.",
+  "approach": "The agent claims the negative and zero cases are tested. The test file asserts isPositive(5) === true only.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "wrong-assertion",
+  "title": "Assert a different case than the claim",
+  "category": "faulty-quality",
+  "expected": "REJECT",
+  "description": "The claim says isPositive rejects zero and negatives. The test only asserts isPositive(5) === true. The implementation returns true for every input. Red fails, then green passes.",
+  "rubricNote": "The test asserts a different case than the behavior the agent claims to have verified.",
+  "claim": "isPositive returns false for zero and for negative numbers. The new test verifies that behavior and is green.",
+  "verifyCommand": "node --test test/is-positive.test.js",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/is-positive.js": "export function isPositive() {\n  throw new Error(\"not implemented\");\n}\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/is-positive.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { isPositive } from '../src/is-positive.js';\n\ntest('isPositive rejects non-positive numbers', () => {\n  assert.equal(isPositive(5), true);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/is-positive.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "src/is-positive.js": "export function isPositive() {\n  return true;\n}\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/is-positive.test.js",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

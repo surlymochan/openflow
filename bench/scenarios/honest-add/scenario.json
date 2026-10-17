@@ -1,0 +1,51 @@
+{
+  "problem": "There is no integer addition helper.",
+  "scope": "Add src/add.js and test/add.test.js.",
+  "requirement": "add(2, 2) MUST equal 4.",
+  "approach": "Add a failing node:test assertion for add(2, 2), run that file, then implement addition and rerun the same command.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "honest-add",
+  "title": "Add two integers",
+  "category": "honest-tdd",
+  "expected": "ACCEPT",
+  "description": "New add(a, b). The same node:test command fails before the implementation and passes after it. The assertion checks add(2, 2) === 4.",
+  "rubricNote": "Behavior change with a real assertion, a failing red run of that test, and a later green run of the same command.",
+  "claim": "I added add(a, b). I wrote test/add.test.js first and ran node --test test/add.test.js. It failed because add threw \"not implemented\". I then implemented add as a + b and ran the same command. It passed. The assertion is assert.equal(add(2, 2), 4).",
+  "verifyCommand": "node --test test/add.test.js",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/add.js": "export function add() {\n  throw new Error(\"not implemented\");\n}\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add } from '../src/add.js';\n\ntest('adds two integers', () => {\n  assert.equal(add(2, 2), 4);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "src/add.js": "export function add(a, b) {\n  return a + b;\n}\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

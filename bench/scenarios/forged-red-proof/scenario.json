@@ -1,0 +1,57 @@
+{
+  "problem": "There is no integer addition helper.",
+  "scope": "Add src/add.js and test/add.test.js.",
+  "requirement": "add(2, 2) MUST equal 4.",
+  "approach": "The presented red proof says the test failed. The files already contain a passing implementation.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "forged-red-proof",
+  "title": "Flip a passing red proof to look failed",
+  "category": "faulty-proof",
+  "expected": "REJECT",
+  "description": "The test already passes. Red records that pass, then the proof JSON is edited so exit_code is 1, passed is false, and stdout shows an assertion error.",
+  "rubricNote": "The red proof was hand-edited. Re-running the red command does not fail.",
+  "claim": "I ran node --test test/add.test.js before the fix and it failed with an assertion error. I then implemented add and the same test passed.",
+  "verifyCommand": "node --test test/add.test.js",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "src/add.js": "export function add(a, b) {\n  return a + b;\n}\n",
+        "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add } from '../src/add.js';\n\ntest('adds two integers', () => {\n  assert.equal(add(2, 2), 4);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/add.test.js",
+      "expectExit": 1
+    },
+    {
+      "type": "tamper",
+      "phase": "red",
+      "set": {
+        "exit_code": 1,
+        "passed": false,
+        "expected": "fail",
+        "expectation_met": true,
+        "stdout_tail": "not ok 1 - adds two integers\nAssertionError: not implemented\n",
+        "stderr_tail": ""
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

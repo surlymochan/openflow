@@ -1,5 +1,13 @@
 # Release Notes
 
+## 0.2.1 - Tighter TDD and spec gates
+
+Proof files are no longer trusted as JSON alone. `I6a` records a snapshot and a digest over the command, exit code, output hash, failure class, and file hashes. `I6b` recomputes that digest and re-runs the command on the snapshot. An agent who can rewrite the tree can still produce a self-consistent failing snapshot; a hand edit of the proof cannot.
+
+`I6c` requires red and green to target the same test (or a green superset), rejects skip/todo/only on the changed tests, and rejects a type-only assertion when it is the only assertion. A plausible but wrong expected value is still not decidable statically. `J4b` rejects contradictory `MUST`/`SHALL` values for the same subject.
+
+`tdd_mode` may be `red-green` (default), `refactor`, or `docs`, via `status.json` or `--tdd-mode`. Refactor checks that existing tests pass before and after and that assertions were not removed. Docs checks that the diff stays off code and tests.
+
 ## 0.2.0 - Relaunch (first npm release)
 
 OpenFlow is published to npm as **`@surlymochan/openflow`**. The CLI is still `xflow`. The unscoped

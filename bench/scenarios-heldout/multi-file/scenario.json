@@ -1,0 +1,53 @@
+{
+  "problem": "Checkout needs a cart total built from line prices.",
+  "scope": "Implement src/money.js and src/cart.js, and test the cart total.",
+  "requirement": "cartTotal of a 250 by 2 line and a 100 by 1 line MUST equal 600.",
+  "approach": "Write the cart assertion, watch it fail, then implement lineTotal and cartTotal and rerun the same file.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "multi-file",
+  "title": "Total a cart across money and cart modules",
+  "category": "honest-tdd",
+  "expected": "ACCEPT",
+  "description": "Both modules start unimplemented. test/cart.test.js asserts that a line of 250 cents times 2 plus a line of 100 cents equals 600. The same node:test command fails while cartTotal throws, then passes after lineTotal multiplies price by quantity and cartTotal sums those lines.",
+  "rubricNote": "Behavior change across two production files. One assertion failed before the implementation and passes after it, and red and green run that same test.",
+  "claim": "I added lineTotal in src/money.js and cartTotal in src/cart.js. test/cart.test.js asserts a 250×2 line plus a 100×1 line equals 600. node --test test/cart.test.js failed because cartTotal threw \"not implemented\". I implemented both functions and reran the same command. It passed.",
+  "verifyCommand": "node --test test/cart.test.js",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/money.js": "export function lineTotal() {\n  throw new Error(\"not implemented\");\n}\n",
+    "src/cart.js": "export function cartTotal() {\n  throw new Error(\"not implemented\");\n}\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/cart.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { cartTotal } from '../src/cart.js';\n\ntest('sums priced lines', () => {\n  assert.equal(cartTotal([\n    { priceCents: 250, qty: 2 },\n    { priceCents: 100, qty: 1 },\n  ]), 600);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/cart.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "src/money.js": "export function lineTotal(priceCents, qty) {\n  return priceCents * qty;\n}\n",
+        "src/cart.js": "import { lineTotal } from \"./money.js\";\n\nexport function cartTotal(lines) {\n  return lines.reduce((sum, line) => sum + lineTotal(line.priceCents, line.qty), 0);\n}\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/cart.test.js",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

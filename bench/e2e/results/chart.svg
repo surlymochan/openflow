@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="340" viewBox="0 0 980 340">
+<rect width="980" height="340" fill="#ffffff"/>
+<text x="16" y="22" font-family="sans-serif" font-size="16" fill="#1d1d1d">Task completion by arm</text>
+<rect x="16" y="36" width="300" height="280" fill="#ffffff" stroke="#d0d0d0"/>
+<text x="28" y="58" font-family="sans-serif" font-size="14" fill="#1d1d1d">Success %</text>
+<text x="28" y="308" font-family="sans-serif" font-size="11" fill="#555">percent</text>
+<rect x="66.0" y="98.3" width="34.1" height="175.7" fill="#3d5a80"/>
+<text x="83.0" y="290.0" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#1d1d1d">baseline</text>
+<rect x="128.0" y="98.3" width="34.1" height="175.7" fill="#ee6c4d"/>
+<text x="145.0" y="290.0" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#1d1d1d">superpowers</text>
+<rect x="189.9" y="113.0" width="34.1" height="161.0" fill="#2a9d8f"/>
+<text x="207.0" y="290.0" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#1d1d1d">openflow</text>
+<rect x="251.9" y="98.3" width="34.1" height="175.7" fill="#e9c46a"/>
+<text x="269.0" y="290.0" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#1d1d1d">openswarm</text>
+<rect x="336" y="36" width="300" height="280" fill="#ffffff" stroke="#d0d0d0"/>
+<text x="348" y="58" font-family="sans-serif" font-size="14" fill="#1d1d1d">Median minutes</text>
+<text x="348" y="308" font-family="sans-serif" font-size="11" fill="#555">minutes, whisker = IQR</text>
+<rect x="385.9" y="266.0" width="34.1" height="8.0" fill="#3d5a80"/>
+<line x1="403.0" y1="267.3" x2="403.0" y2="254.5" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="398.0" y1="267.3" x2="408.0" y2="267.3" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="398.0" y1="254.5" x2="408.0" y2="254.5" stroke="#1d1d1d" stroke-width="1.4"/>
+<text x="403.0" y="290.0" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#1d1d1d">baseline</text>
+<rect x="447.9" y="246.5" width="34.1" height="27.5" fill="#ee6c4d"/>
+<line x1="465.0" y1="256.3" x2="465.0" y2="230.1" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="460.0" y1="256.3" x2="470.0" y2="256.3" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="460.0" y1="230.1" x2="470.0" y2="230.1" stroke="#1d1d1d" stroke-width="1.4"/>
+<text x="465.0" y="290.0" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#1d1d1d">superpowers</text>
+<rect x="509.9" y="129.2" width="34.1" height="144.8" fill="#2a9d8f"/>
+<line x1="527.0" y1="138.8" x2="527.0" y2="98.3" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="522.0" y1="138.8" x2="532.0" y2="138.8" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="522.0" y1="98.3" x2="532.0" y2="98.3" stroke="#1d1d1d" stroke-width="1.4"/>
+<text x="527.0" y="290.0" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#1d1d1d">openflow</text>
+<rect x="572.0" y="241.7" width="34.1" height="32.3" fill="#e9c46a"/>
+<line x1="589.0" y1="253.9" x2="589.0" y2="221.6" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="584.0" y1="253.9" x2="594.0" y2="253.9" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="584.0" y1="221.6" x2="594.0" y2="221.6" stroke="#1d1d1d" stroke-width="1.4"/>
+<text x="589.0" y="290.0" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#1d1d1d">openswarm</text>
+<rect x="656" y="36" width="300" height="280" fill="#ffffff" stroke="#d0d0d0"/>
+<text x="668" y="58" font-family="sans-serif" font-size="14" fill="#1d1d1d">Median total tokens</text>
+<text x="668" y="308" font-family="sans-serif" font-size="11" fill="#555">tokens, whisker = IQR</text>
+<rect x="706.0" y="270.6" width="34.1" height="3.4" fill="#3d5a80"/>
+<line x1="723.0" y1="271.2" x2="723.0" y2="270.3" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="718.0" y1="271.2" x2="728.0" y2="271.2" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="718.0" y1="270.3" x2="728.0" y2="270.3" stroke="#1d1d1d" stroke-width="1.4"/>
+<text x="723.0" y="290.0" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#1d1d1d">baseline</text>
+<rect x="768.0" y="263.9" width="34.1" height="10.1" fill="#ee6c4d"/>
+<line x1="785.0" y1="265.3" x2="785.0" y2="259.8" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="780.0" y1="265.3" x2="790.0" y2="265.3" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="780.0" y1="259.8" x2="790.0" y2="259.8" stroke="#1d1d1d" stroke-width="1.4"/>
+<text x="785.0" y="290.0" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#1d1d1d">superpowers</text>
+<rect x="830.0" y="103.3" width="34.1" height="170.7" fill="#2a9d8f"/>
+<line x1="847.0" y1="119.1" x2="847.0" y2="98.3" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="842.0" y1="119.1" x2="852.0" y2="119.1" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="842.0" y1="98.3" x2="852.0" y2="98.3" stroke="#1d1d1d" stroke-width="1.4"/>
+<text x="847.0" y="290.0" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#1d1d1d">openflow</text>
+<rect x="892.0" y="267.3" width="34.1" height="6.7" fill="#e9c46a"/>
+<line x1="909.0" y1="267.8" x2="909.0" y2="266.0" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="904.0" y1="267.8" x2="914.0" y2="267.8" stroke="#1d1d1d" stroke-width="1.4"/>
+<line x1="904.0" y1="266.0" x2="914.0" y2="266.0" stroke="#1d1d1d" stroke-width="1.4"/>
+<text x="909.0" y="290.0" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#1d1d1d">openswarm</text>
+</svg>

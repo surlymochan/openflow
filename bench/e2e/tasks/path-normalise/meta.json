@@ -1,0 +1,8 @@
+{
+  "id": "path-normalise",
+  "language": "javascript",
+  "difficulty": "medium",
+  "visible_command": "node --test test/normalise.test.js",
+  "hidden_command": "node --test _hidden_acceptance/normalise.test.js",
+  "hidden_dest": "_hidden_acceptance"
+}

@@ -1,0 +1,1 @@
+add already existed and its test still asserts add(2, 2) === 4. I added multiply and a new assertion multiply(3, 4) === 12 in the same test file. I ran node --test test/add.test.js and the new assertion failed. I implemented multiply and reran the same command. Both assertions passed.

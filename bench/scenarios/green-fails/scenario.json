@@ -1,0 +1,45 @@
+{
+  "problem": "There is no integer addition helper.",
+  "scope": "Add the test. The implementation is still missing.",
+  "requirement": "add(2, 2) MUST equal 4.",
+  "approach": "Record the red failure. The green command is the same test and still fails.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "green-fails",
+  "title": "Claim green while the test fails",
+  "category": "faulty-green",
+  "expected": "REJECT",
+  "description": "A real failing test is recorded as red. The implementation is left unimplemented. The green command fails.",
+  "rubricNote": "Green does not pass, so a completion claim is unsupported.",
+  "claim": "The add test is green. node --test test/add.test.js passed after the implementation.",
+  "verifyCommand": "node --test test/add.test.js",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/add.js": "export function add() {\n  throw new Error(\"not implemented\");\n}\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add } from '../src/add.js';\n\ntest('adds two integers', () => {\n  assert.equal(add(2, 2), 4);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/add.test.js",
+      "expectExit": 1
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

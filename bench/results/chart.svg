@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="460" viewBox="0 0 840 460" role="img">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="32" y="32" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="700">Detection rate and false-positive rate</text>
+<text x="32" y="52" fill="#44515c" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">Detection: faulty scenarios judged REJECT. False positive: honest scenarios judged REJECT.</text>
+<line x1="64" y1="352" x2="808" y2="352" stroke="#d0d7de" stroke-width="1"/>
+<text x="56" y="356" text-anchor="end" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">0%</text>
+<line x1="64" y1="280" x2="808" y2="280" stroke="#d0d7de" stroke-width="1"/>
+<text x="56" y="284" text-anchor="end" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">25%</text>
+<line x1="64" y1="208" x2="808" y2="208" stroke="#d0d7de" stroke-width="1"/>
+<text x="56" y="212" text-anchor="end" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">50%</text>
+<line x1="64" y1="136" x2="808" y2="136" stroke="#d0d7de" stroke-width="1"/>
+<text x="56" y="140" text-anchor="end" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">75%</text>
+<line x1="64" y1="64" x2="808" y2="64" stroke="#d0d7de" stroke-width="1"/>
+<text x="56" y="68" text-anchor="end" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">100%</text>
+<line x1="64" y1="64" x2="64" y2="352" stroke="#172026" stroke-width="1.5"/>
+<line x1="64" y1="352" x2="808" y2="352" stroke="#172026" stroke-width="1.5"/>
+<rect x="106" y="80.94117647058823" width="46" height="271.05882352941177" fill="#1d4e89"/>
+<rect x="162" y="352" width="46" height="0" fill="#b45309"/>
+<text x="129" y="74.94117647058823" text-anchor="middle" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">94.1%</text>
+<text x="185" y="346" text-anchor="middle" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">0.0%</text>
+<text x="157" y="374" text-anchor="middle" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700">openflow-original</text>
+<text x="157" y="392" text-anchor="middle" fill="#44515c" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">original</text>
+<rect x="292" y="136" width="46" height="216" fill="#1d4e89"/>
+<rect x="348" y="352" width="46" height="0" fill="#b45309"/>
+<text x="315" y="130" text-anchor="middle" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">75.0%</text>
+<text x="371" y="346" text-anchor="middle" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">0.0%</text>
+<text x="343" y="374" text-anchor="middle" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700">openflow-heldout</text>
+<text x="343" y="392" text-anchor="middle" fill="#44515c" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">held-out</text>
+<rect x="478" y="64" width="46" height="288" fill="#1d4e89"/>
+<rect x="534" y="352" width="46" height="0" fill="#b45309"/>
+<text x="501" y="58" text-anchor="middle" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">100.0%</text>
+<text x="557" y="346" text-anchor="middle" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">0.0%</text>
+<text x="529" y="374" text-anchor="middle" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700">baseline</text>
+<text x="529" y="392" text-anchor="middle" fill="#44515c" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">grok-4.7-high</text>
+<rect x="664" y="64" width="46" height="288" fill="#1d4e89"/>
+<rect x="720" y="325.8181818181818" width="46" height="26.181818181818183" fill="#b45309"/>
+<text x="687" y="58" text-anchor="middle" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">100.0%</text>
+<text x="743" y="319.8181818181818" text-anchor="middle" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">9.1%</text>
+<text x="715" y="374" text-anchor="middle" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700">superpowers</text>
+<text x="715" y="392" text-anchor="middle" fill="#44515c" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11">grok-4.7-high</text>
+<rect x="32" y="422" width="14" height="14" fill="#1d4e89"/>
+<text x="52" y="434" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">Detection rate</text>
+<rect x="180" y="422" width="14" height="14" fill="#b45309"/>
+<text x="200" y="434" fill="#172026" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">False-positive rate</text>
+</svg>

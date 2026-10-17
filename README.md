@@ -7,6 +7,40 @@
 
 **Executable delivery workflow for AI coding agents.**
 
+## Benchmarks: OpenFlow vs superpowers (2026-10-17)
+
+Same model (`grok-4.7-high` via local `cursor-agent`) and same harness for every arm. Pinned: OpenFlow 0.2.1,
+[superpowers](https://github.com/obra/superpowers) v7.0.0 (`bb92a77`). Scripts, raw results and methodology:
+[`bench/`](bench/README.md) and [`bench/e2e/`](bench/e2e/README.md). Losses are shown as measured.
+
+**End-to-end tasks.** 8 small real tasks (4 JS, 4 Python), hidden acceptance tests applied only after the agent exits, 20-minute cap per run.
+
+| Arm | Success (hidden tests) | Median wall time (IQR) | Median tokens: total / input+output | n |
+| --- | --- | --- | --- | --- |
+| Plain agent (baseline) | 24/24 (100%) | 55 s (46–132) | 105k / 28k | 24 |
+| superpowers v7.0.0 | 24/24 (100%) | 187 s (121–299) | 312k / 59k | 24 |
+| OpenFlow 0.2.1 | 11/12 (92%) | 985 s (920–1195) | 5.29M / 233k ¹ | 12 ² |
+
+On tasks this small the plain agent already succeeds every time, and OpenFlow's full ceremony is the slowest and most
+token-hungry arm. 3 of 12 OpenFlow runs hit the 20-minute cap while still running the workflow; their code already passed.
+¹ Tokens counted only for runs that reported usage (not the 3 capped runs). Most of "total" is cache reads.
+² 3 repeats on 2 tasks, 1 on the other 6, to save quota. Matched repeat-1 view (n=8 each): baseline 8/8, 57 s, 104k; superpowers 8/8, 154 s, 289k; OpenFlow 8/8, 1008 s, 5.32M.
+
+**Catching fake TDD / verification evidence.** 36 scripted episodes: 25 faulty (red proof recorded after the fix, forged
+proofs, skipped tests, weak or wrong assertions, contradictory specs, …) and 11 honest ones. Of these, 12 are a held-out set written after the fixes.
+
+| Checker | Faulty caught | Honest wrongly rejected | Cost per check |
+| --- | --- | --- | --- |
+| OpenFlow 0.2.1 gates (deterministic code) | 22/25 (88%): original 16/17, held-out 6/8 | 0/11 | ~0.1–0.2 s, no model tokens |
+| superpowers v7.0.0 skills + LLM judge | 25/25 (100%) | 1/11 | one agent call per check |
+| LLM judge, no skills | 25/25 (100%) ³ | 0/11 | one agent call per check |
+| OpenFlow 0.2.0 (before this benchmark, original 24 only) | 10/17 (59%) | 3/7 | – |
+
+An LLM reviewer that is explicitly asked to audit an episode, and is allowed to rerun the tests, caught more than OpenFlow's static gates did.
+OpenFlow's gates are deterministic and cost no model calls, but they still miss plausible-but-wrong expected values,
+assertions in callbacks that never run, and behavior changes hidden inside a declared refactor.
+³ 1 of the 11 honest runs timed out and counts as incorrect. LLM arms used 1 run per scenario.
+
 Prompt-based workflows *ask* an agent to write the failing test first, run the suite and keep notes. OpenFlow
 *checks* that it did. Workflows are YAML phases made of small deterministic "atoms". Gates are code: a
 red/green TDD proof, a test-quality review, artifact checks, and archive ordering. The `xflow` CLI runs the
@@ -25,12 +59,15 @@ finished. OpenFlow adds a harder layer underneath:
 
 - **Workflow as data.** `workflows/yolo.yaml` and `workflows/corps.yaml` are validated against an atom registry before they run.
 - **TDD proof checked by code.**
-  - The red proof must fail before implementation and the green proof must pass after it.
+  - `I6a` snapshots the tree and binds the command, exit code, output hash, and failure class. `I6b` recomputes that binding and re-runs the command on the snapshot. A hand-edited proof does not pass unless that snapshot really exits as claimed.
+  - Red and green must target the same test, or green must be a superset of the red test. Skipped, todo, and focused tests do not count as red or green.
   - `I6c.tdd.quality_review` rejects code changes that have:
     - no meaningful test changes,
     - empty assertions,
     - snapshot-only tests,
-    - mock-heavy tests without real assertions.
+    - mock-heavy tests without real assertions,
+    - only a type or existence assertion (`typeof`, `!== undefined`).
+  - `tdd_mode` in `status.json` (or `--tdd-mode`) may be `red-green` (default), `refactor`, or `docs`. Refactor requires the existing tests to pass before and after, with no assertion removed. Docs allows a non-code diff and does not require a red proof. Declaring docs while changing code, or refactor while deleting assertions, fails.
 - **Context that survives sessions.**
   - The `.xflow/GOAL.md` project anchor.
   - `HANDOFF.md` and `AHA.md`.

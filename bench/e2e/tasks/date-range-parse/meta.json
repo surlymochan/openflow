@@ -1,0 +1,8 @@
+{
+  "id": "date-range-parse",
+  "language": "python",
+  "difficulty": "medium",
+  "visible_command": "python3 -m unittest tests/test_daterange.py",
+  "hidden_command": "python3 -m unittest _hidden_acceptance/test_daterange.py",
+  "hidden_dest": "_hidden_acceptance"
+}

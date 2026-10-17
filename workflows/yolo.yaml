@@ -150,7 +150,7 @@ phases:
       - id: I6a.tdd.run
         with: { phase: "red", test_command: "${input.tdd_red_command}", expect: "fail" }
       - id: I6b.tdd.proof_validate
-        with: { phase: "red" }
+        with: { phase: "red", tdd_mode: "${input.tdd_mode}" }
       - id: B3.status.transition
         with: { to_stage: "tdd" }
     artifacts:
@@ -178,8 +178,9 @@ phases:
       - id: I6a.tdd.run
         with: { phase: "green", test_command: "${input.tdd_green_command}", expect: "pass" }
       - id: I6b.tdd.proof_validate
-        with: { phase: "green" }
+        with: { phase: "green", tdd_mode: "${input.tdd_mode}" }
       - id: I6c.tdd.quality_review
+        with: { tdd_mode: "${input.tdd_mode}" }
     artifacts:
       - { path: "specs/changes/${change_id}/tdd/green-0.json", optional: false }
       - { path: "specs/changes/${change_id}/tdd/quality-0.json", optional: false }

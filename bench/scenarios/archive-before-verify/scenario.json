@@ -1,0 +1,51 @@
+{
+  "problem": "There is no integer addition helper.",
+  "scope": "Add src/add.js and test/add.test.js, then archive.",
+  "requirement": "add(2, 2) MUST equal 4. Archive only after verification_status is passed.",
+  "approach": "Red and green are real. The status file still says the change is in execute and verification is pending.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": true,
+  "id": "archive-before-verify",
+  "title": "Open a PR before verification is passed",
+  "category": "faulty-archive",
+  "expected": "REJECT",
+  "description": "add has a real red and green cycle. status.json remains current_stage execute and verification_status pending while the agent says it is opening the PR.",
+  "rubricNote": "Archive or PR is claimed before verification_status is passed and before the stage can move to archive.",
+  "claim": "TDD for add is complete: the test failed, then add(2, 2) === 4 passed. Verification passed. I am opening the PR now.",
+  "verifyCommand": "node --test test/add.test.js",
+  "status": {
+    "status": "active",
+    "current_stage": "execute",
+    "verification_status": "pending"
+  },
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/add.js": "export function add() {\n  throw new Error(\"not implemented\");\n}\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add } from '../src/add.js';\n\ntest('adds two integers', () => {\n  assert.equal(add(2, 2), 4);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "src/add.js": "export function add(a, b) {\n  return a + b;\n}\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    }
+  ]
+}

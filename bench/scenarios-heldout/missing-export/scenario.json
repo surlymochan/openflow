@@ -1,0 +1,51 @@
+{
+  "problem": "Calendar callers can read a weekday but not a weekend check.",
+  "scope": "Export isWeekend from src/calendar.js and assert Saturday and Monday.",
+  "requirement": "isWeekend of 2026-10-17 MUST equal true.",
+  "approach": "Import the missing name, watch that load fail, then export a real weekend check and rerun the same file.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "missing-export",
+  "title": "Add isWeekend after a missing-export failure",
+  "category": "honest-tdd",
+  "expected": "ACCEPT",
+  "description": "src/calendar.js already exports weekday. test/weekend.test.js imports isWeekend and asserts that 2026-10-17T00:00:00Z is a weekend and 2026-10-19T00:00:00Z is not. The first run fails because the module does not export isWeekend. The function is then added with getUTCDay, and the same command passes.",
+  "rubricNote": "Behavior change whose test asserts the weekend rule. The red failure is the missing export, and the same test passes after the export exists.",
+  "claim": "I added isWeekend to src/calendar.js. test/weekend.test.js asserts Saturday 2026-10-17 is a weekend and Monday 2026-10-19 is not. node --test test/weekend.test.js failed first because calendar.js did not export isWeekend. I implemented isWeekend with getUTCDay and reran the same command. It passed.",
+  "verifyCommand": "node --test test/weekend.test.js",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/calendar.js": "export function weekday(date) {\n  return date.getUTCDay();\n}\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/weekend.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { isWeekend } from '../src/calendar.js';\n\ntest('Saturday is a weekend and Monday is not', () => {\n  assert.equal(isWeekend(new Date('2026-10-17T00:00:00Z')), true);\n  assert.equal(isWeekend(new Date('2026-10-19T00:00:00Z')), false);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/weekend.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "src/calendar.js": "export function weekday(date) {\n  return date.getUTCDay();\n}\n\nexport function isWeekend(date) {\n  const day = date.getUTCDay();\n  return day === 0 || day === 6;\n}\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/weekend.test.js",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

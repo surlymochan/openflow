@@ -1,0 +1,52 @@
+{
+  "problem": "Multiplication is missing next to the existing add helper.",
+  "scope": "Extend src/add.js and test/add.test.js. Do not change add behavior.",
+  "requirement": "multiply(3, 4) MUST equal 12, and add(2, 2) MUST still equal 4.",
+  "approach": "Extend the existing test file with a multiply assertion, watch it fail, then implement multiply and rerun the file.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "honest-extend",
+  "title": "Add multiply beside a tested add",
+  "category": "honest-tdd",
+  "expected": "ACCEPT",
+  "description": "add and its test already exist. multiply is added with a new assertion in that test file. The new assertion fails, then the function is implemented.",
+  "rubricNote": "Existing meaningful test stays, and the new behavior has its own failing-then-passing assertion in the changed test file.",
+  "claim": "add already existed and its test still asserts add(2, 2) === 4. I added multiply and a new assertion multiply(3, 4) === 12 in the same test file. I ran node --test test/add.test.js and the new assertion failed. I implemented multiply and reran the same command. Both assertions passed.",
+  "verifyCommand": "node --test test/add.test.js",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/add.js": "export function add(a, b) {\n  return a + b;\n}\n",
+    "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add } from '../src/add.js';\n\ntest('adds two integers', () => {\n  assert.equal(add(2, 2), 4);\n});\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add, multiply } from '../src/add.js';\n\ntest('adds two integers', () => {\n  assert.equal(add(2, 2), 4);\n});\n\ntest('multiplies two integers', () => {\n  assert.equal(multiply(3, 4), 12);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    },
+    {
+      "type": "write",
+      "files": {
+        "src/add.js": "export function add(a, b) {\n  return a + b;\n}\nexport function multiply(a, b) {\n  return a * b;\n}\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

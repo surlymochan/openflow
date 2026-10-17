@@ -1,0 +1,198 @@
+{
+  "all_runs": {
+    "baseline": {
+      "n": 24,
+      "success": 24,
+      "success_pct": 100.0,
+      "timed_out": 0,
+      "wall_s": {
+        "median": 54.7,
+        "q1": 45.7,
+        "q3": 132.4,
+        "min": 24.94,
+        "max": 262.07
+      },
+      "tokens_n": 24,
+      "total_tokens": {
+        "median": 104700.0,
+        "q1": 87344.2,
+        "q3": 112659.2
+      },
+      "in_out_tokens": {
+        "median": 27542.5,
+        "q1": 15497.2,
+        "q3": 39575.2
+      }
+    },
+    "openflow": {
+      "n": 12,
+      "success": 11,
+      "success_pct": 91.7,
+      "timed_out": 3,
+      "wall_s": {
+        "median": 985.3,
+        "q1": 919.5,
+        "q3": 1195.0,
+        "min": 774.225,
+        "max": 1200.983
+      },
+      "tokens_n": 8,
+      "total_tokens": {
+        "median": 5294856.0,
+        "q1": 5069621.8,
+        "q3": 5414698.0
+      },
+      "in_out_tokens": {
+        "median": 233459.5,
+        "q1": 189383.8,
+        "q3": 241830.0
+      }
+    },
+    "openswarm": {
+      "n": 24,
+      "success": 24,
+      "success_pct": 100.0,
+      "timed_out": 0,
+      "wall_s": {
+        "median": 219.7,
+        "q1": 136.6,
+        "q3": 356.4,
+        "min": 89.133,
+        "max": 687.103
+      },
+      "tokens_n": 24,
+      "total_tokens": {
+        "median": 207194.0,
+        "q1": 191056.2,
+        "q3": 245895.0
+      },
+      "in_out_tokens": {
+        "median": 63514.0,
+        "q1": 51123.2,
+        "q3": 82605.2
+      }
+    },
+    "superpowers": {
+      "n": 24,
+      "success": 24,
+      "success_pct": 100.0,
+      "timed_out": 0,
+      "wall_s": {
+        "median": 186.9,
+        "q1": 120.7,
+        "q3": 298.6,
+        "min": 89.908,
+        "max": 766.617
+      },
+      "tokens_n": 24,
+      "total_tokens": {
+        "median": 311921.5,
+        "q1": 267209.0,
+        "q3": 436317.5
+      },
+      "in_out_tokens": {
+        "median": 59265.0,
+        "q1": 47635.0,
+        "q3": 74033.0
+      }
+    }
+  },
+  "matched_repeat1": {
+    "baseline": {
+      "n": 8,
+      "success": 8,
+      "success_pct": 100.0,
+      "timed_out": 0,
+      "wall_s": {
+        "median": 56.7,
+        "q1": 42.9,
+        "q3": 136.6,
+        "min": 24.94,
+        "max": 205.884
+      },
+      "tokens_n": 8,
+      "total_tokens": {
+        "median": 104084.5,
+        "q1": 86839.8,
+        "q3": 115727.5
+      },
+      "in_out_tokens": {
+        "median": 24706.5,
+        "q1": 14391.8,
+        "q3": 44051.8
+      }
+    },
+    "openflow": {
+      "n": 8,
+      "success": 8,
+      "success_pct": 100.0,
+      "timed_out": 2,
+      "wall_s": {
+        "median": 1007.7,
+        "q1": 888.8,
+        "q3": 1195.0,
+        "min": 774.225,
+        "max": 1200.983
+      },
+      "tokens_n": 6,
+      "total_tokens": {
+        "median": 5324282.5,
+        "q1": 4883528.0,
+        "q3": 5443668.0
+      },
+      "in_out_tokens": {
+        "median": 214694.0,
+        "q1": 187693.2,
+        "q3": 240540.5
+      }
+    },
+    "openswarm": {
+      "n": 8,
+      "success": 8,
+      "success_pct": 100.0,
+      "timed_out": 0,
+      "wall_s": {
+        "median": 218.2,
+        "q1": 136.6,
+        "q3": 356.4,
+        "min": 89.133,
+        "max": 687.103
+      },
+      "tokens_n": 8,
+      "total_tokens": {
+        "median": 202918.0,
+        "q1": 198866.8,
+        "q3": 243059.8
+      },
+      "in_out_tokens": {
+        "median": 74598.0,
+        "q1": 62482.8,
+        "q3": 92787.8
+      }
+    },
+    "superpowers": {
+      "n": 8,
+      "success": 8,
+      "success_pct": 100.0,
+      "timed_out": 0,
+      "wall_s": {
+        "median": 154.4,
+        "q1": 120.7,
+        "q3": 260.8,
+        "min": 113.45,
+        "max": 314.835
+      },
+      "tokens_n": 8,
+      "total_tokens": {
+        "median": 288705.0,
+        "q1": 272464.2,
+        "q3": 341738.8
+      },
+      "in_out_tokens": {
+        "median": 59057.0,
+        "q1": 55287.5,
+        "q3": 66932.5
+      }
+    }
+  }
+}

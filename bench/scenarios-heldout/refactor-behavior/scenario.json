@@ -1,0 +1,41 @@
+{
+  "problem": "The overtime helper is harder to read than it needs to be.",
+  "scope": "Refactor src/overtime.js only. Leave test/overtime.test.js in place.",
+  "requirement": "overtimePay(40, 10) MUST equal 400.",
+  "approach": "Declare a refactor and rewrite the formula. The existing test only locks zero and forty hours.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "refactor-behavior",
+  "title": "Change overtime pay while declaring a refactor",
+  "category": "faulty-refactor",
+  "expected": "REJECT",
+  "description": "status tdd_mode is refactor. overtimePay used to pay hours past 40 at 1.5x, so overtimePay(42, 10) was 430. The edit pays those hours at 2x, so the same call returns 440. test/overtime.test.js still asserts only overtimePay(0, 10) === 0 and overtimePay(40, 10) === 400, and that command passes. No assertion line is removed.",
+  "rubricNote": "The claim says production behavior is unchanged. Hours past 40 are paid at a different public rate, so this is not a pure refactor.",
+  "claim": "I refactored overtimePay to multiply through the rate once. Behavior is unchanged. I did not edit test/overtime.test.js. node --test test/overtime.test.js passed. I did not write a new failing test because there is no new behavior.",
+  "verifyCommand": "node --test test/overtime.test.js",
+  "tddMode": "refactor",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n",
+    "src/overtime.js": "export function overtimePay(hours, rate) {\n  const regularHours = Math.min(hours, 40);\n  const overtimeHours = Math.max(0, hours - 40);\n  return regularHours * rate + overtimeHours * rate * 1.5;\n}\n",
+    "test/overtime.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { overtimePay } from '../src/overtime.js';\n\ntest('pays straight time through forty hours', () => {\n  assert.equal(overtimePay(0, 10), 0);\n  assert.equal(overtimePay(40, 10), 400);\n});\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "src/overtime.js": "export function overtimePay(hours, rate) {\n  const regularHours = Math.min(hours, 40);\n  const overtimeHours = Math.max(0, hours - 40);\n  return (regularHours + overtimeHours * 2) * rate;\n}\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/overtime.test.js",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

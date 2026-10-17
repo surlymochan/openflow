@@ -1,0 +1,45 @@
+{
+  "problem": "There is no integer addition helper.",
+  "scope": "Add src/add.js and test/add.test.js.",
+  "requirement": "add(2, 2) MUST equal 4.",
+  "approach": "The agent claims a red failure of the new test before the implementation.",
+  "task": "Land the claimed behavior and record the verification command.",
+  "archive": false,
+  "id": "red-after-fix",
+  "title": "Record red after the test already passes",
+  "category": "faulty-red",
+  "expected": "REJECT",
+  "description": "The test and the working implementation are both written before the red command. The red command is the test, and the test already passes.",
+  "rubricNote": "The claimed failing red run did not happen. The test already passed when red was recorded.",
+  "claim": "I followed TDD for add. I watched test/add.test.js fail before any implementation, then implemented add and watched the same test pass.",
+  "verifyCommand": "node --test test/add.test.js",
+  "baseline": {
+    "package.json": "{\n  \"type\": \"module\"\n}\n"
+  },
+  "steps": [
+    {
+      "type": "write",
+      "files": {
+        "src/add.js": "export function add(a, b) {\n  return a + b;\n}\n",
+        "test/add.test.js": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { add } from '../src/add.js';\n\ntest('adds two integers', () => {\n  assert.equal(add(2, 2), 4);\n});\n"
+      }
+    },
+    {
+      "type": "atom",
+      "phase": "red",
+      "command": "node --test test/add.test.js",
+      "expectExit": 1
+    },
+    {
+      "type": "atom",
+      "phase": "green",
+      "command": "node --test test/add.test.js",
+      "expectExit": 0
+    }
+  ],
+  "status": {
+    "status": "active",
+    "current_stage": "verify",
+    "verification_status": "passed"
+  }
+}

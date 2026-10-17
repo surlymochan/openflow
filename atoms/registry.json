@@ -205,7 +205,7 @@
       "track": "lite",
       "type": "python",
       "script": "xflow/atoms/i6a_tdd_run.py",
-      "description": "Run test command, capture raw result, and enforce phase expectation for TDD proof",
+      "description": "Run test command, snapshot the tree, and bind the exit code, output hash, and failure class into a TDD proof",
       "input_schema": {
         "project_root": "string",
         "change_id": "string",
@@ -218,22 +218,24 @@
       "track": "lite",
       "type": "python",
       "script": "xflow/atoms/i6b_tdd_proof_validate.py",
-      "description": "Validate tdd proof schema and semantics: red fails, green/refactor passes",
+      "description": "Recompute the TDD proof binding, re-run the command on its snapshot, and check red/green semantics. refactor and docs modes can omit a red proof.",
       "input_schema": {
         "project_root": "string",
         "change_id": "string",
-        "phase": "string?"
+        "phase": "string?",
+        "tdd_mode": "red-green|refactor|docs?"
       }
     },
     "I6c.tdd.quality_review": {
       "track": "lite",
       "type": "python",
       "script": "xflow/atoms/i6c_tdd_quality_review.py",
-      "description": "Review TDD changed-test quality and reject code changes without meaningful test changes",
+      "description": "Review changed-test quality, red/green command identity, skip/todo markers, and weak assertions. tdd_mode refactor or docs replaces the red-proof requirement.",
       "input_schema": {
         "project_root": "string",
         "change_id": "string",
-        "diff_ref": "string?"
+        "diff_ref": "string?",
+        "tdd_mode": "red-green|refactor|docs?"
       }
     },
     "J4a.spec_consistency.structural": {
