@@ -1,0 +1,18 @@
+{
+ "resolved": false,
+ "f2p": [
+  0,
+  2
+ ],
+ "p2p": [
+  433,
+  433
+ ],
+ "f2p_failed": [
+  "test_MatrixElement_printing",
+  "test_MatrixSymbol_printing"
+ ],
+ "p2p_failed": [],
+ "test_rc": 1,
+ "test_cmd": "PYTHONWARNINGS='ignore::UserWarning,ignore::SyntaxWarning' <run>/10172331/openswarm/sympy__sympy-14248/r1/venv/bin/python bin/test -C --verbose sympy/printing/pretty/tests/test_pretty.py sympy/printing/tests/test_ccode.py sympy/printing/tests/test_fcode.py sympy/printing/tests/test_jscode.py sympy/printing/tests/test_julia.py sympy/printing/tests/test_latex.py sympy/printing/tests/test_octave.py sympy/printing/tests/test_rcode.py sympy/printing/tests/test_str.py"
+}

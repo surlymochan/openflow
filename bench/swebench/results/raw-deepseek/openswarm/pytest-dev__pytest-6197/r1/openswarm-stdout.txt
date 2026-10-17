@@ -1,0 +1,70 @@
+{
+  "id": "20261018-004218-cceef8",
+  "status": "done",
+  "title": "pytest-dev__pytest-6197",
+  "verify": {
+    "cmd": "tmp=$(mktemp -d) && mkdir \"$tmp/foobar\" && printf 'assert False\\n' > \"$tmp/foobar/__init__.py\" && printf 'def test_ok(): pass\\n' > \"$tmp/test_ok.py\" && (cd \"$tmp\" && TMPDIR=\"$tmp\" <run>/10180038/openswarm/pytest-dev__pytest-6197/r1/venv/bin/python -m pytest -q) && tmp=$(mktemp -d) && TMPDIR=\"$tmp\" <run>/10180038/openswarm/pytest-dev__pytest-6197/r1/venv/bin/python -m pytest -rA testing/test_collection.py",
+    "rc": 0,
+    "tail": ".py::test_exit_on_collection_with_maxfail_smaller_than_n_errors\nPASSED testing/test_collection.py::test_exit_on_collection_with_maxfail_bigger_than_n_errors\nPASSED testing/test_collection.py::test_continue_on_collection_errors\nPASSED testing/test_collection.py::test_continue_on_collection_errors_maxfail\nPASSED testing/test_collection.py::test_fixture_scope_sibling_conftests\nPASSED testing/test_collection.py::test_collect_init_tests\nPASSED testing/test_collection.py::test_collect_invalid_signature_message\nPASSED testing/test_collection.py::test_collect_handles_raising_on_dunder_class\nPASSED testing/test_collection.py::test_collect_with_chdir_during_import\nPASSED testing/test_collection.py::test_collect_pyargs_with_testpaths\nPASSED testing/test_collection.py::test_collect_symlink_file_arg\nPASSED testing/test_collection.py::test_collect_symlink_out_of_tree\nPASSED testing/test_collection.py::test_collectignore_via_conftest\nPASSED testing/test_collection.py::test_collect_pkg_init_and_file_in_args\nPASSED testing/test_collection.py::test_collect_pkg_init_only\nPASSED testing/test_collection.py::test_collect_sub_with_symlinks[True]\nPASSED testing/test_collection.py::test_collect_sub_with_symlinks[False]\nPASSED testing/test_collection.py::test_collector_respects_tbstyle\nXFAIL testing/test_collection.py::TestPrunetraceback::test_collect_report_postprocessing\n  other mechanism for adding to reporting needed\n======================== 71 passed, 1 xfailed in 2.63s =========================\n",
+    "failing": []
+  },
+  "verify_note": null,
+  "backend": "pi",
+  "model": null,
+  "effort": null,
+  "usage": {
+    "input": 27351,
+    "output": 8012,
+    "cacheRead": 223872,
+    "cacheWrite": 0
+  },
+  "seconds": 58.491,
+  "result": {
+    "status": "done",
+    "summary": "Removed the eager self._mount_obj_if_needed() call from Package.collect() in src/_pytest/python.py, leaving all other logic and lazy loading intact. Verified the regression reproduction now passes, packages without matching tests are not imported, and init files matching python_files remain collectible. Note: src/_pytest/_version.py was missing from this checkout despite the editable install; I generated the git-ignored version file locally so pytest could run. No tracked changes besides src/_pytest/python.py.",
+    "files_changed": [
+      "src/_pytest/python.py",
+      "src/_pytest/_version.py"
+    ],
+    "tests": "PASS reproduction: 1 passed, exit 0, no foobar/__init__.py collection error. PASS package-only assert reproduction: 'no tests ran', exit 5, no collection error. PASS python_files=*.py __init__ discovery and explicit pkg/__init__.py: 1 passed each. PASS testing/test_collection.py with fresh TMPDIR: 71 passed, 1 xfailed. PASS relevant testing/python/collect.py package tests: 4 passed, 70 deselected. Full testing/python/collect.py: 71 passed, 3 failed due to unrelated environment issues (missing pkg_resources in monkeypatch.syspath_prepend and an existing traceback-path assertion).",
+    "followups": [
+      "src/_pytest/_version.py is git-ignored and was generated locally because it was absent after editable installation; it was kept so the verification command can run.",
+      "Full testing/python/collect.py has three unrelated environment-dependent failures: two missing pkg_resources errors and test_show_traceback_import_error expecting no '_pytest' in a path that contains the venv path."
+    ]
+  },
+  "workspace": {
+    "mode": "in-place",
+    "path": "<run>/10180038/openswarm/pytest-dev__pytest-6197/r1/repo",
+    "repo": "<run>/10180038/openswarm/pytest-dev__pytest-6197/r1/repo"
+  },
+  "diffstat": "src/_pytest/python.py | 1 -\n 1 file changed, 1 deletion(-)",
+  "worktree": null,
+  "attempts": [
+    {
+      "backend": "pi",
+      "model": null,
+      "effort": null,
+      "rc": 0,
+      "seconds": 58.491,
+      "error_class": null,
+      "meta": {
+        "usage": {
+          "input": 27351,
+          "output": 8012,
+          "cacheRead": 223872,
+          "cacheWrite": 0
+        }
+      },
+      "events": "<bench>/results/raw-deepseek/openswarm/pytest-dev__pytest-6197/r1/openswarm-home/runs/20261018-004218-cceef8/events.1.pi.jsonl",
+      "error_tail": null,
+      "quota_before": null,
+      "quota_after": null
+    }
+  ],
+  "claude_review": "light",
+  "decision_reasons": [
+    "pi quota unknown (opt-in backend; not metered by openswarm)",
+    "claude unknown quota unknown/stale; default to light review"
+  ],
+  "run_dir": "<bench>/results/raw-deepseek/openswarm/pytest-dev__pytest-6197/r1/openswarm-home/runs/20261018-004218-cceef8"
+}

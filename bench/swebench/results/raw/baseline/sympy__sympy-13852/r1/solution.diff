@@ -1,0 +1,100 @@
+diff --git a/sympy/functions/special/tests/test_zeta_functions.py b/sympy/functions/special/tests/test_zeta_functions.py
+index 3911dad..b911c7d 100644
+--- a/sympy/functions/special/tests/test_zeta_functions.py
++++ b/sympy/functions/special/tests/test_zeta_functions.py
+@@ -128,12 +128,25 @@ def test_polylog_expansion():
+     assert polylog(s, 1) == zeta(s)
+     assert polylog(s, -1) == -dirichlet_eta(s)
+ 
+-    assert myexpand(polylog(1, z), -log(1 + exp_polar(-I*pi)*z))
++    assert myexpand(polylog(1, z), -log(1 - z))
+     assert myexpand(polylog(0, z), z/(1 - z))
+     assert myexpand(polylog(-1, z), z**2/(1 - z)**2 + z/(1 - z))
+     assert myexpand(polylog(-5, z), None)
+ 
+ 
++def test_polylog_half():
++    import mpmath
++    mpmath.mp.dps = 40
++    assert polylog(1, S.Half) == log(2)
++    assert polylog(2, S.Half) == pi**2/12 - log(2)**2/2
++    assert polylog(3, S.Half) == 7*zeta(3)/8 - pi**2*log(2)/12 + log(2)**3/6
++    # no closed form implemented for higher orders
++    assert polylog(4, S.Half) == polylog(4, S.Half)
++    for n in [1, 2, 3]:
++        assert abs(polylog(n, S.Half).evalf(30) -
++                mpmath.polylog(n, mpmath.mpf('0.5'))) < 1e-25
++
++
+ def test_lerchphi_expansion():
+     assert myexpand(lerchphi(1, s, a), zeta(s, a))
+     assert myexpand(lerchphi(z, s, 1), polylog(s, z)/z)
+diff --git a/sympy/functions/special/zeta_functions.py b/sympy/functions/special/zeta_functions.py
+index b8e2b66..dab2f87 100644
+--- a/sympy/functions/special/zeta_functions.py
++++ b/sympy/functions/special/zeta_functions.py
+@@ -253,10 +253,21 @@ class polylog(Function):
+     >>> from sympy import expand_func
+     >>> from sympy.abc import z
+     >>> expand_func(polylog(1, z))
+-    -log(z*exp_polar(-I*pi) + 1)
++    -log(-z + 1)
+     >>> expand_func(polylog(0, z))
+     z/(-z + 1)
+ 
++    Special values at :math:`z = \frac{1}{2}` are evaluated automatically
++    when :math:`s` is a small positive integer:
++
++    >>> from sympy import S
++    >>> polylog(1, S.Half)
++    log(2)
++    >>> polylog(2, S.Half)
++    -log(2)**2/2 + pi**2/12
++    >>> polylog(3, S.Half)
++    -pi**2*log(2)/12 + log(2)**3/6 + 7*zeta(3)/8
++
+     The derivative with respect to :math:`z` can be computed in closed form:
+ 
+     >>> polylog(s, z).diff(z)
+@@ -277,6 +288,8 @@ def eval(cls, s, z):
+             return -dirichlet_eta(s)
+         elif z == 0:
+             return 0
++        elif z == S.Half and s.is_Integer and s.is_positive:
++            return _polylog_at_half(s)
+ 
+     def fdiff(self, argindex=1):
+         s, z = self.args
+@@ -288,10 +301,10 @@ def _eval_rewrite_as_lerchphi(self, s, z):
+         return z*lerchphi(z, s, 1)
+ 
+     def _eval_expand_func(self, **hints):
+-        from sympy import log, expand_mul, Dummy, exp_polar, I
++        from sympy import log, expand_mul, Dummy
+         s, z = self.args
+         if s == 1:
+-            return -log(1 + exp_polar(-I*pi)*z)
++            return -log(1 - z)
+         if s.is_Integer and s <= 0:
+             u = Dummy('u')
+             start = u/(1 - u)
+@@ -300,6 +313,19 @@ def _eval_expand_func(self, **hints):
+             return expand_mul(start).subs(u, z)
+         return polylog(s, z)
+ 
++
++def _polylog_at_half(s):
++    """Return a closed form of polylog(s, 1/2) for small positive integer s."""
++    from sympy import log
++    if s == 1:
++        return log(2)
++    elif s == 2:
++        return pi**2/12 - log(2)**2/2
++    elif s == 3:
++        return 7*zeta(3)/8 - pi**2*log(2)/12 + log(2)**3/6
++    return None
++
++
+ ###############################################################################
+ ###################### HURWITZ GENERALIZED ZETA FUNCTION ######################
+ ###############################################################################

@@ -1,0 +1,54 @@
+cd <run>/10180038/openswarm/pytest-dev__pytest-5787/r1/repo && PYTHONDONTWRITEBYTECODE=1 <run>/10180038/openswarm/pytest-dev__pytest-5787/r1/venv/bin/python -m pytest -rA -p no:cacheprovider --basetemp=/tmp/pytest-5787-verify testing/test_reports.py && PYTHONDONTWRITEBYTECODE=1 <run>/10180038/openswarm/pytest-dev__pytest-5787/r1/venv/bin/python - <<'PY'
+from _pytest._code import ExceptionInfo
+from _pytest._code.code import ExceptionChainRepr
+from _pytest.reports import CollectReport
+from _pytest.reports import TestReport
+
+
+def current_chain(use_from):
+    try:
+        try:
+            raise ValueError(11)
+        except Exception as e1:
+            if use_from:
+                raise ValueError(12) from e1
+            raise ValueError(12)
+    except Exception:
+        return ExceptionInfo.from_current().getrepr()
+
+
+expected_descriptions = {
+    True: "The above exception was the direct cause of the following exception:",
+    False: "During handling of the above exception, another exception occurred:",
+}
+for use_from, expected_description in expected_descriptions.items():
+    longrepr = current_chain(use_from)
+    assert isinstance(longrepr, ExceptionChainRepr), type(longrepr)
+    assert len(longrepr.chain) == 2, len(longrepr.chain)
+    for report_cls in (TestReport, CollectReport):
+        if report_cls is TestReport:
+            report = TestReport(
+                nodeid="test_chain.py::test_chain",
+                location=("test_chain.py", 1, "test_chain"),
+                keywords={},
+                outcome="failed",
+                longrepr=longrepr,
+                when="call",
+            )
+        else:
+            report = CollectReport(
+                nodeid="test_chain.py",
+                outcome="failed",
+                longrepr=longrepr,
+                result=[],
+            )
+        loaded = report_cls._from_json(report._to_json())
+        assert isinstance(loaded.longrepr, ExceptionChainRepr), type(loaded.longrepr)
+        assert len(loaded.longrepr.chain) == 2, len(loaded.longrepr.chain)
+        assert [entry[2] for entry in loaded.longrepr.chain] == [
+            expected_description,
+            None,
+        ]
+
+print("chained exception serialization OK")
+PY

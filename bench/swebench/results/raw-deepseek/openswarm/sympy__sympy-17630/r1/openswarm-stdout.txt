@@ -1,0 +1,66 @@
+{
+  "id": "20261018-004213-a9e0e2",
+  "status": "done",
+  "title": "sympy__sympy-17630",
+  "verify": {
+    "cmd": "cd <run>/10180038/openswarm/sympy__sympy-17630/r1/repo && <run>/10180038/openswarm/sympy__sympy-17630/r1/venv/bin/python -m pytest -q sympy/matrices/expressions/tests/test_blockmatrix.py sympy/matrices/expressions/tests/test_matexpr.py::test_MatAdd_postprocessor sympy/matrices/expressions/tests/test_matexpr.py::test_simplify_matrix_expressions && <run>/10180038/openswarm/sympy__sympy-17630/r1/venv/bin/python -c \"from sympy import MatrixSymbol, ZeroMatrix, BlockMatrix, block_collapse; a = MatrixSymbol('a', 2, 2); z = ZeroMatrix(2, 2); b = BlockMatrix([[a, z], [z, z]]); assert block_collapse(b * b) == BlockMatrix([[a**2, z], [z, z]]); assert block_collapse(b * b * b) == BlockMatrix([[a**3, z], [z, z]]); q = b._blockmul(b); assert all(q.blocks[i, j].is_ZeroMatrix for i in range(2) for j in range(2) if (i, j) != (0, 0))\"",
+    "rc": 0,
+    "tail": ".................                                                        [100%]\n=============================== warnings summary ===============================\n../venv/lib/python3.9/site-packages/_pytest/config/__init__.py:1474\n  <run>/10180038/openswarm/sympy__sympy-17630/r1/venv/lib/python3.9/site-packages/_pytest/config/__init__.py:1474: PytestConfigWarning: Unknown config option: doctestplus\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n17 passed, 1 warning in 0.28s\n",
+    "failing": []
+  },
+  "verify_note": null,
+  "backend": "pi",
+  "model": null,
+  "effort": null,
+  "usage": {
+    "input": 5151,
+    "output": 1102,
+    "cacheRead": 20992,
+    "cacheWrite": 0
+  },
+  "seconds": 12.636,
+  "result": {
+    "status": "done",
+    "summary": "Fixed get_postprocessor in matexpr.py so matrix-only Add expressions construct MatAdd directly from matrix terms instead of injecting the scalar Add identity. This preserves ZeroMatrix blocks through BlockMatrix multiplication.",
+    "files_changed": [
+      "sympy/matrices/expressions/matexpr.py"
+    ],
+    "tests": "Ran the provided acceptance command: pytest selected blockmatrix/matexpr tests reported '17 passed, 1 warning in 0.57s'; the subsequent python assertion script exited successfully with no output, confirming block_collapse(b*b), block_collapse(b*b*b), and _blockmul ZeroMatrix block checks pass. Also ran a check: Add(ZeroMatrix(2,2), ZeroMatrix(2,2)) printed '0 <class 'sympy.matrices.expressions.matexpr.ZeroMatrix'> True', confirming it remains a ZeroMatrix with is_ZeroMatrix True.",
+    "followups": []
+  },
+  "workspace": {
+    "mode": "in-place",
+    "path": "<run>/10180038/openswarm/sympy__sympy-17630/r1/repo",
+    "repo": "<run>/10180038/openswarm/sympy__sympy-17630/r1/repo"
+  },
+  "diffstat": "sympy/matrices/expressions/matexpr.py | 2 ++\n 1 file changed, 2 insertions(+)",
+  "worktree": null,
+  "attempts": [
+    {
+      "backend": "pi",
+      "model": null,
+      "effort": null,
+      "rc": 0,
+      "seconds": 12.636,
+      "error_class": null,
+      "meta": {
+        "usage": {
+          "input": 5151,
+          "output": 1102,
+          "cacheRead": 20992,
+          "cacheWrite": 0
+        }
+      },
+      "events": "<bench>/results/raw-deepseek/openswarm/sympy__sympy-17630/r1/openswarm-home/runs/20261018-004213-a9e0e2/events.1.pi.jsonl",
+      "error_tail": null,
+      "quota_before": null,
+      "quota_after": null
+    }
+  ],
+  "claude_review": "light",
+  "decision_reasons": [
+    "pi quota unknown (opt-in backend; not metered by openswarm)",
+    "claude unknown quota unknown/stale; default to light review"
+  ],
+  "run_dir": "<bench>/results/raw-deepseek/openswarm/sympy__sympy-17630/r1/openswarm-home/runs/20261018-004213-a9e0e2"
+}

@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "~/.local/share/uv/python/cpython-3.9-linux-x86_64-gnu/lib/python3.9/runpy.py", line 197, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "~/.local/share/uv/python/cpython-3.9-linux-x86_64-gnu/lib/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "<run>/10172331/openswarm/pytest-dev__pytest-6197/r1/repo/src/pytest.py", line 6, in <module>
+    from _pytest.assertion import register_assert_rewrite
+  File "<run>/10172331/openswarm/pytest-dev__pytest-6197/r1/repo/src/_pytest/assertion/__init__.py", line 7, in <module>
+    from _pytest.assertion import rewrite
+  File "<run>/10172331/openswarm/pytest-dev__pytest-6197/r1/repo/src/_pytest/assertion/rewrite.py", line 25, in <module>
+    from _pytest._version import version
+ModuleNotFoundError: No module named '_pytest._version'

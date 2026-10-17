@@ -1,0 +1,152 @@
+diff --git a/changelog/9288.bugfix.rst b/changelog/9288.bugfix.rst
+new file mode 100644
+index 0000000..9c7489e
+--- /dev/null
++++ b/changelog/9288.bugfix.rst
+@@ -0,0 +1 @@
++Fixed loss of marks when a class inherits from multiple marked base classes: the marks of all classes in the MRO are now taken into account (previously only the first found mark attribute won).
+diff --git a/src/_pytest/mark/structures.py b/src/_pytest/mark/structures.py
+index 800a25c..f0796df 100644
+--- a/src/_pytest/mark/structures.py
++++ b/src/_pytest/mark/structures.py
+@@ -357,10 +357,41 @@ class MarkDecorator:
+ 
+ def get_unpacked_marks(obj: object) -> Iterable[Mark]:
+     """Obtain the unpacked marks that are stored on an object."""
+-    mark_list = getattr(obj, "pytestmark", [])
+-    if not isinstance(mark_list, list):
+-        mark_list = [mark_list]
+-    return normalize_mark_list(mark_list)
++    if isinstance(obj, type):
++        # Might be a class: collect the marks stored on all the classes of its
++        # MRO, so that marks from multiple base classes are not lost (#9288).
++        mark_list: List[Mark] = []
++        seen: Set[int] = set()
++        for base in obj.__mro__:
++            marks = _get_own_marks(base)
++            for mark in normalize_mark_list(marks):
++                # The same mark can be reached more than once, e.g. when a
++                # class is decorated after having inherited marks; only keep
++                # the first occurrence (MRO order).
++                if id(mark) not in seen:
++                    seen.add(id(mark))
++                    mark_list.append(mark)
++        return mark_list
++    return normalize_mark_list(_get_own_marks(obj))
++
++
++def _get_own_marks(obj: object) -> List[Union[Mark, MarkDecorator]]:
++    """Return the marks stored on *obj* itself, ignoring attribute inheritance.
++
++    For classes this means the ``pytestmark`` in the class' own ``__dict__``;
++    if there is none (e.g. the attribute is provided by a metaclass property),
++    fall back to a normal attribute lookup.
++    """
++    marks: object
++    if isinstance(obj, type):
++        marks = vars(obj).get("pytestmark", NOTSET)
++        if marks is NOTSET:
++            marks = getattr(obj, "pytestmark", [])
++    else:
++        marks = getattr(obj, "pytestmark", [])
++    if isinstance(marks, list):
++        return marks
++    return [marks]
+ 
+ 
+ def normalize_mark_list(
+@@ -388,7 +419,7 @@ def store_mark(obj, mark: Mark) -> None:
+     assert isinstance(mark, Mark), mark
+     # Always reassign name to avoid updating pytestmark in a reference that
+     # was only borrowed.
+-    obj.pytestmark = [*get_unpacked_marks(obj), mark]
++    obj.pytestmark = [*_get_own_marks(obj), mark]
+ 
+ 
+ # Typing for builtin pytest marks. This is cheating; it gives builtin marks
+diff --git a/testing/test_mark.py b/testing/test_mark.py
+index 65f2581..2701441 100644
+--- a/testing/test_mark.py
++++ b/testing/test_mark.py
+@@ -1109,3 +1109,81 @@ def test_marker_expr_eval_failure_handling(pytester: Pytester, expr) -> None:
+     result = pytester.runpytest(foo, "-m", expr)
+     result.stderr.fnmatch_lines([expected])
+     assert result.ret == ExitCode.USAGE_ERROR
++
++
++def test_mark_inheritance_from_multiple_classes(pytester: Pytester) -> None:
++    """Marks of all classes in the MRO are taken into account (#9288)."""
++    pytester.makepyfile(
++        """
++        import pytest
++
++        @pytest.mark.foo
++        class Foo:
++            pass
++
++        @pytest.mark.bar
++        class Bar:
++            pass
++
++        class TestMarks(Foo, Bar):
++            def test_marks(self):
++                pass
++
++        @pytest.mark.baz
++        class TestMarks2(TestMarks):
++            pass
++
++        class TestPlain:
++            def test_plain(self):
++                pass
++        """
++    )
++    result = pytester.runpytest("-m", "foo and bar")
++    result.assert_outcomes(passed=2, deselected=1)
++
++    result = pytester.runpytest("-m", "baz")
++    result.assert_outcomes(passed=1, deselected=2)
++
++    result = pytester.runpytest("-m", "not foo")
++    result.assert_outcomes(passed=1, deselected=2)
++
++
++def test_mark_inheritance_keeps_metaclass_marks(pytester: Pytester) -> None:
++    """Marks provided by a metaclass property are still taken into account."""
++    pytester.makepyfile(
++        """
++        import itertools
++        import pytest
++
++        class BaseMeta(type):
++            @property
++            def pytestmark(self):
++                return (
++                    getattr(self, "_pytestmark", []) +
++                    list(itertools.chain.from_iterable(
++                        getattr(x, "_pytestmark", []) for x in self.__mro__
++                    ))
++                )
++
++            @pytestmark.setter
++            def pytestmark(self, value):
++                self._pytestmark = value
++
++        class Base(metaclass=BaseMeta):
++            pass
++
++        @pytest.mark.foo
++        class Foo(Base):
++            pass
++
++        @pytest.mark.bar
++        class Bar(Base):
++            pass
++
++        class TestMarks(Foo, Bar):
++            def test_marks(self):
++                pass
++        """
++    )
++    result = pytester.runpytest("-m", "foo and bar")
++    result.assert_outcomes(passed=1)

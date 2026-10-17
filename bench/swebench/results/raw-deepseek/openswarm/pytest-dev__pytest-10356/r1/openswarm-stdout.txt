@@ -1,0 +1,74 @@
+{
+  "id": "20261018-004025-b15f39",
+  "status": "done",
+  "title": "pytest-dev__pytest-10356",
+  "verify": {
+    "cmd": "cd <run>/10180038/openswarm/pytest-dev__pytest-10356/r1/repo && PYTHONDONTWRITEBYTECODE=1 <run>/10180038/openswarm/pytest-dev__pytest-10356/r1/venv/bin/python -c \"import pytest; from _pytest.mark.structures import get_unpacked_marks; Base=type('Base',(object,),{}); Foo=pytest.mark.foo(type('Foo',(Base,),{})); Bar=pytest.mark.bar(type('Bar',(Base,),{})); T=type('TestDings',(Foo,Bar),{}); assert {m.name for m in get_unpacked_marks(T)} == {'foo','bar'}, [m.name for m in get_unpacked_marks(T)]; R=type('TestReverse',(Bar,Foo),{}); assert {m.name for m in get_unpacked_marks(R)} == {'foo','bar'}, [m.name for m in get_unpacked_marks(R)]\" && PYTHONDONTWRITEBYTECODE=1 <run>/10180038/openswarm/pytest-dev__pytest-10356/r1/venv/bin/python -m pytest -rA -p no:cacheprovider testing/test_mark.py",
+    "rc": 0,
+    "tail": ">: [Errno 39] Directory not empty: 'test_cache_failure_warns0'\n  warnings.warn(\n<run>/10180038/openswarm/pytest-dev__pytest-10356/r1/repo/src/_pytest/pathlib.py:79: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-655273d0-bd45-4eaa-ac6b-86ece18a5d21\n<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-655273d0-bd45-4eaa-ac6b-86ece18a5d21'\n  warnings.warn(\n<run>/10180038/openswarm/pytest-dev__pytest-10356/r1/repo/src/_pytest/pathlib.py:79: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-e510006e-a113-498c-8cd8-4408a5f3c614/test_cache_writefail_permissions0\n<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'\n  warnings.warn(\n<run>/10180038/openswarm/pytest-dev__pytest-10356/r1/repo/src/_pytest/pathlib.py:79: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-e510006e-a113-498c-8cd8-4408a5f3c614/test_cache_failure_warns0\n<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'\n  warnings.warn(\n<run>/10180038/openswarm/pytest-dev__pytest-10356/r1/repo/src/_pytest/pathlib.py:79: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-e510006e-a113-498c-8cd8-4408a5f3c614\n<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-e510006e-a113-498c-8cd8-4408a5f3c614'\n  warnings.warn(\n",
+    "failing": [
+      "test_keyword_extra.py::test_one",
+      "test_select_simple.py::TestClass::test_method_one",
+      "test_select_simple.py::test_one"
+    ]
+  },
+  "verify_note": null,
+  "backend": "pi",
+  "model": null,
+  "effort": null,
+  "usage": {
+    "input": 26164,
+    "output": 6716,
+    "cacheRead": 218496,
+    "cacheWrite": 0
+  },
+  "seconds": 46.774,
+  "result": {
+    "status": "done",
+    "summary": "Implemented MRO-aware class mark collection in get_unpacked_marks with a keyword-only consider_mro flag using itertools.chain, and updated store_mark to avoid folding inherited marks into the decorated class. Added the changelog fragment. The checkout lacked the gitignored generated src/_pytest/_version.py, so I created it locally to allow pytest imports; it is not part of the tracked patch.",
+    "files_changed": [
+      "src/_pytest/mark/structures.py",
+      "changelog/10356.bugfix.rst",
+      "src/_pytest/_version.py"
+    ],
+    "tests": "Acceptance command exited 0: inline multiple-inheritance assertions passed for both base orderings, and testing/test_mark.py reported 88 passed, 1 xfailed. A targeted script for single-inheritance merging and sibling isolation also passed. Initial acceptance run failed only because generated src/_pytest/_version.py was absent; after generating it, the full command passed. black and mypy are not installed in the provided virtualenv.",
+    "followups": [
+      "src/_pytest/_version.py is gitignored/generated; it was created because the checkout lacked setuptools_scm output and is required for imports during host acceptance."
+    ]
+  },
+  "workspace": {
+    "mode": "in-place",
+    "path": "<run>/10180038/openswarm/pytest-dev__pytest-10356/r1/repo",
+    "repo": "<run>/10180038/openswarm/pytest-dev__pytest-10356/r1/repo"
+  },
+  "diffstat": "src/_pytest/mark/structures.py | 24 +++++++++++++++++++-----\n 1 file changed, 19 insertions(+), 5 deletions(-)",
+  "worktree": null,
+  "attempts": [
+    {
+      "backend": "pi",
+      "model": null,
+      "effort": null,
+      "rc": 0,
+      "seconds": 46.774,
+      "error_class": null,
+      "meta": {
+        "usage": {
+          "input": 26164,
+          "output": 6716,
+          "cacheRead": 218496,
+          "cacheWrite": 0
+        }
+      },
+      "events": "<bench>/results/raw-deepseek/openswarm/pytest-dev__pytest-10356/r1/openswarm-home/runs/20261018-004025-b15f39/events.1.pi.jsonl",
+      "error_tail": null,
+      "quota_before": null,
+      "quota_after": null
+    }
+  ],
+  "claude_review": "light",
+  "decision_reasons": [
+    "pi quota unknown (opt-in backend; not metered by openswarm)",
+    "claude unknown quota unknown/stale; default to light review"
+  ],
+  "run_dir": "<bench>/results/raw-deepseek/openswarm/pytest-dev__pytest-10356/r1/openswarm-home/runs/20261018-004025-b15f39"
+}

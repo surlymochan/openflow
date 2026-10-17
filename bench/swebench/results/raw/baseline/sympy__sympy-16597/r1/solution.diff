@@ -1,0 +1,13 @@
+diff --git a/sympy/core/assumptions.py b/sympy/core/assumptions.py
+index ce4dd30..7b69b21 100644
+--- a/sympy/core/assumptions.py
++++ b/sympy/core/assumptions.py
+@@ -174,6 +174,8 @@
+ 
+     'odd            ==  integer & !even',
+     'even           ==  integer & !odd',
++    'odd            ->  finite',
++    'even           ->  finite',
+ 
+     'real           ==  negative | zero | positive',
+     'transcendental ==  complex & !algebraic',

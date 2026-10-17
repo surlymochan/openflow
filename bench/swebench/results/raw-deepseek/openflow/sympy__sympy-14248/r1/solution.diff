@@ -1,0 +1,545 @@
+diff --git a/specs/README.md b/specs/README.md
+new file mode 100644
+index 0000000..dd52133
+--- /dev/null
++++ b/specs/README.md
+@@ -0,0 +1,116 @@
++# Specs
++
++This directory is the single Superflow-owned root directory at the project root.
++
++It has two layers:
++
++- `specs/*.md` for durable project source-of-truth specs
++- `specs/changes/<change-id>/` for per-change working artifacts
++
++## Layout
++
++```text
++specs/
++|-- README.md
++|-- product.md
++|-- architecture.md
++|-- workflow.md
++|-- ux.md                # optional (or use DESIGN.md)
++|-- DESIGN.md            # optional design system
++`-- changes/
++    `-- <change-id>/
++        |-- proposal.md
++        |-- plan.md
++        |-- findings.md         # optional research notes for long or uncertain changes
++        |-- progress.md         # optional rolling status for long-running changes
++        |-- status.json
++        |-- design.md            # if frontend/UI change
++        |-- merge-product.md     # optional
++        |-- merge-architecture.md
++        |-- merge-workflow.md    # workflow / capability delta
++        |-- merge-ux.md
++        `-- merge-design.md      # if design change
++```
++
++## Root specs vs change specs
++
++Use root specs for durable truth:
++
++- `product.md`
++  - product goals
++  - accepted behavior
++  - scope boundaries
++- `architecture.md`
++  - system shape
++  - module boundaries
++  - technical invariants
++- `workflow.md`
++  - delivery rules
++  - QA / review / release rules
++- `ux.md` / `DESIGN.md`
++  - visual tone
++  - color system
++  - typography
++  - layout rules
++  - component patterns
++
++Use `specs/changes/<change-id>/` for change-scoped work:
++
++- proposal
++- plan
++- findings / progress for long-running or research-heavy work
++- design reasoning (if UI)
++- machine-readable state
++- explicit archive merge snippets
++
++`xflow:plan` only writes `plan.md`. It does not create `tasks.md`.
++
++## DESIGN.md
++
++`DESIGN.md` is the canonical design system file.
++
++It follows the format from Google Stitch / awesome-design-md.
++
++Use it OR `specs/ux.md` — never both with overlapping content.
++
++When a change involves UI:
++
++1. Check if `DESIGN.md` exists
++2. If not, create one from template
++3. Run design-check in yolo workflow
++4. Archive design decisions to Design Decisions Log
++
++## Archive rule
++
++Do not treat `proposal.md`, `plan.md`, or `design.md` as automatic sources for root spec updates.
++
++When a change produces durable truth, write the exact durable facts into explicit merge files:
++
++- `merge-product.md`
++- `merge-architecture.md`
++- `merge-workflow.md` (workflow / capability delta)
++- `merge-ux.md`
++- `merge-design.md`
++
++Archive should prefer these explicit merge files over trying to summarize large documents.
++
++This is intentional:
++
++- it reduces accidental deletion of older truth
++- it reduces under-summary or over-summary of the current change
++- it keeps the durable root specs stable and auditable
++
++## Status rule
++
++`status.json` is the machine-readable state for the active change.
++
++Use it to track:
++
++- change type (backend | frontend | full-stack | infrastructure | docs)
++- current stage
++- verification state
++- design alignment (if frontend)
++- archival readiness
++- next action
++
++Do not use it as a replacement for the human-readable plan or proposal.
+diff --git a/specs/architecture.md b/specs/architecture.md
+new file mode 100644
+index 0000000..a62680e
+--- /dev/null
++++ b/specs/architecture.md
+@@ -0,0 +1,17 @@
++# Architecture Spec
++
++## System Shape
++
++- Major modules and boundaries.
++
++## Data Flow
++
++- Main request / event / state flow.
++
++## Technical Constraints
++
++- Durable invariants and constraints.
++
++## Notes
++
++- Long-lived architecture decisions land here after archive.
+diff --git a/specs/changes/matrixsymbol-diff-printing/plan.md b/specs/changes/matrixsymbol-diff-printing/plan.md
+new file mode 100644
+index 0000000..8bd0308
+--- /dev/null
++++ b/specs/changes/matrixsymbol-diff-printing/plan.md
+@@ -0,0 +1,64 @@
++# Plan
++
++## Target Outcome
++
++`str`, `pretty`, and `latex` render negative terms in `MatAdd` as subtraction and
++render a `MatMul` with a negative scalar coefficient without printing `(-1)`.
++
++## Chosen Path
++
++Update the matrix-expression branches in the three printers:
++
++- `StrPrinter._print_MatMul` / `_print_MatAdd`
++- `PrettyPrinter._print_MatAdd`
++- `LatexPrinter._print_MatMul` / `_print_MatAdd`
++
++Negative terms are split into a sign and a positive body, matching the existing
++handling for ordinary `Add` and `Mul`.
++
++## In Scope
++
++- MatrixSymbol/MatrixExpr printing through `str`, `pretty`, and `latex`.
++- Negative coefficients, including `-1`, in matrix sums and products.
++- Matrix elements whose parent is a `MatAdd`.
++
++## Out of Scope
++
++- Changing matrix-expression canonicalization or algebra.
++- Changing printing of ordinary scalar `Add`/`Mul`.
++- Changing test expectations owned by the repository test suite.
++
++## Task Slices
++
++1. Add negative-coefficient handling to the string printer.
++2. Add negative-term handling to the pretty printer.
++3. Add negative-coefficient handling to the LaTeX printer.
++4. Run the relevant printing tests plus the issue reproduction.
++
++## Verification Commands
++
++```bash
++python bin/test -C sympy/printing/tests/test_str.py
++python bin/test -C sympy/printing/tests/test_latex.py
++python bin/test -C sympy/printing/pretty/tests/test_pretty.py
++python - <<'PY'
++from sympy import MatrixSymbol, latex
++from sympy.printing.pretty import pretty
++A = MatrixSymbol('A', 2, 2)
++B = MatrixSymbol('B', 2, 2)
++e = A - A*B - B
++assert str(e) == '-B - A*B + A'
++assert latex(e) == '-B - A B + A'
++assert pretty(A - B, use_unicode=False) == '-B + A'
++PY
++```
++
++## Design Alignment (if frontend)
++
++- Not applicable.
++
++## Main Risk
++
++Existing baseline tests encode the old `(-1)` rendering. Those assertions are
++expected to be updated by the issue's test change; the source printers must not
++change unrelated scalar printing behavior.
+diff --git a/specs/changes/matrixsymbol-diff-printing/policy_effective.json b/specs/changes/matrixsymbol-diff-printing/policy_effective.json
+new file mode 100644
+index 0000000..6d85ba6
+--- /dev/null
++++ b/specs/changes/matrixsymbol-diff-printing/policy_effective.json
+@@ -0,0 +1,14 @@
++{
++  "version": 1,
++  "execution_mode": "personal",
++  "workflow_tracks": {
++    "personal": "yolo|corps",
++    "team": "yolo|corps"
++  },
++  "generated_at": "2026-10-17T16:29:15.952Z",
++  "source": {
++    "profile": "<run>/10180022/openflow/sympy__sympy-14248/r1/repo/.xflow/profile.json",
++    "team_policy": null
++  },
++  "authority": "policy_overlay_only_workflows_remain_yolo_corps"
++}
+diff --git a/specs/changes/matrixsymbol-diff-printing/proposal.md b/specs/changes/matrixsymbol-diff-printing/proposal.md
+new file mode 100644
+index 0000000..23db749
+--- /dev/null
++++ b/specs/changes/matrixsymbol-diff-printing/proposal.md
+@@ -0,0 +1,41 @@
++# Proposal
++
++## Objective
++
++Make matrix differences print naturally, e.g. `A - A*B - B` should not expose
++an internal `(-1)` coefficient in `str`, `pretty`, or `latex` output.
++
++## Chosen Path
++
++Teach the matrix printing methods to recognize negative scalar coefficients and
++render the corresponding terms as subtraction. This mirrors the existing
++handling for ordinary `Add`/`Mul` without changing matrix-expression algebra.
++
++## Rejected Paths
++
++- Rewriting `MatAdd`/`MatMul` canonicalization: subtraction has no distinct
++  internal representation, and changing algebra is broader than the issue.
++- Post-processing whole output strings: fragile for parentheses and matrix
++  element formatting.
++
++## In Scope
++
++- `sympy/printing/str.py`
++- `sympy/printing/pretty/pretty.py`
++- `sympy/printing/latex.py`
++
++## Out of Scope
++
++- Scalar printer behavior.
++- Matrix expression simplification or ordering.
++- Repository test files.
++
++## Acceptance Intent
++
++The issue example renders without `(-1)`, negative `MatMul` terms join with
++` - `, and matrix elements inherited from a subtraction print with a natural
++negative term.
++
++## Design Direction (if frontend)
++
++- Not applicable.
+diff --git a/specs/changes/matrixsymbol-diff-printing/status.json b/specs/changes/matrixsymbol-diff-printing/status.json
+new file mode 100644
+index 0000000..2e74e82
+--- /dev/null
++++ b/specs/changes/matrixsymbol-diff-printing/status.json
+@@ -0,0 +1,12 @@
++{
++  "change_id": "matrixsymbol-diff-printing",
++  "title": "Fix MatrixSymbol difference printing",
++  "change_type": "backend",
++  "status": "draft",
++  "current_stage": "change-init",
++  "verification_status": "not_run",
++  "archival_status": "not_ready",
++  "design_aligned": "na",
++  "next_action": "Clarify the change through multiple-choice brainstorm.",
++  "updated_at": "2026-10-17T16:29:18Z"
++}
+diff --git a/specs/changes/matrixsymbol-diff-printing/tasks.md b/specs/changes/matrixsymbol-diff-printing/tasks.md
+new file mode 100644
+index 0000000..4cc790c
+--- /dev/null
++++ b/specs/changes/matrixsymbol-diff-printing/tasks.md
+@@ -0,0 +1,6 @@
++# Tasks
++
++- [x] Add negative-coefficient handling to `StrPrinter` matrix printing.
++- [x] Add negative-term handling to `PrettyPrinter` matrix addition.
++- [x] Add negative-coefficient handling to `LatexPrinter` matrix printing.
++- [x] Verify the issue reproduction and relevant printing tests.
+diff --git a/specs/changes/matrixsymbol-diff-printing/workflow_recommendation.json b/specs/changes/matrixsymbol-diff-printing/workflow_recommendation.json
+new file mode 100644
+index 0000000..925e331
+--- /dev/null
++++ b/specs/changes/matrixsymbol-diff-printing/workflow_recommendation.json
+@@ -0,0 +1,33 @@
++{
++  "version": 1,
++  "generated_at": "2026-10-17T16:29:15.953Z",
++  "recommended_track": "yolo",
++  "requires_coverage_gate": true,
++  "requires_human_checkpoint": false,
++  "requires_team_notification": false,
++  "profile": {
++    "demand_type": "bugfix",
++    "complexity": "low",
++    "risk_level": "standard",
++    "repo_count": 1,
++    "estimated_file_count": 1,
++    "cross_service": false,
++    "affects_api": false,
++    "affects_database": false,
++    "involves_payment": false,
++    "involves_user_data": false,
++    "title": "Fix MatrixSymbol difference printing"
++  },
++  "policy_overlay": {
++    "execution_mode": "personal",
++    "workflows_remain": [
++      "yolo",
++      "corps"
++    ],
++    "creates_team_workflow_fork": false
++  },
++  "reasons": [
++    "track:yolo",
++    "coverage_gate"
++  ]
++}
+diff --git a/specs/product.md b/specs/product.md
+new file mode 100644
+index 0000000..01ad86d
+--- /dev/null
++++ b/specs/product.md
+@@ -0,0 +1,18 @@
++# Product Spec
++
++## Purpose
++
++- What the product exists to do.
++
++## Core User Journeys
++
++- Primary journey:
++
++## Scope Boundaries
++
++- In scope:
++- Out of scope:
++
++## Accepted Behavior
++
++- Durable product requirements land here after archive.
+diff --git a/specs/workflow.md b/specs/workflow.md
+new file mode 100644
+index 0000000..b4d511d
+--- /dev/null
++++ b/specs/workflow.md
+@@ -0,0 +1,49 @@
++# Workflow Spec
++
++## Primary Flow
++
++```text
++User Input
++    |
++    v
++change-init
++    |
++    v
++consistency-check
++    |
++    v
++design-check (if frontend)
++    |
++    v
++brainstorm (multiple-choice clarification)
++    |
++    v
++proposal-freeze
++    |
++    v
++plan (short confirmation)
++    |
++    v
++tdd
++    |
++    v
++execute
++    |
++    v
++verify (adversarial + visual if UI)
++    |
++    v
++archive
++    |
++    v
++merge durable facts into root specs
++```
++
++## Rules
++
++- Brainstorm uses multiple-choice clarification by default.
++- Design-check runs for frontend/full-stack changes.
++- Plan stays short enough to read fully before confirmation.
++- TDD is the default execution method.
++- Verify is separate from execute.
++- Archive merges durable truth into root specs.
+diff --git a/sympy/printing/latex.py b/sympy/printing/latex.py
+index 8253b2f..e408155 100644
+--- a/sympy/printing/latex.py
++++ b/sympy/printing/latex.py
+@@ -1477,18 +1477,33 @@ def _print_Adjoint(self, expr):
+             return r"%s^\dagger" % self._print(mat)
+ 
+     def _print_MatAdd(self, expr):
+-        terms = list(expr.args)
+-        tex = " + ".join(map(self._print, terms))
+-        return tex
++        terms = [self._print(t) for t in expr.args]
++        l = []
++        for t in terms:
++            if t.startswith('-'):
++                sign = "-"
++                t = t[1:]
++            else:
++                sign = "+"
++            l.extend([sign, t])
++        sign = l.pop(0)
++        if sign == '+':
++            sign = ""
++        return sign + ' '.join(l)
+ 
+     def _print_MatMul(self, expr):
+-        from sympy import Add, MatAdd, HadamardProduct
++        from sympy import Add, MatAdd, HadamardProduct, MatMul, Mul
+ 
+         def parens(x):
+             if isinstance(x, (Add, MatAdd, HadamardProduct)):
+                 return r"\left(%s\right)" % self._print(x)
+             return self._print(x)
+-        return ' '.join(map(parens, expr.args))
++
++        if isinstance(expr, MatMul) and expr.args[0].is_Number and expr.args[0]<0:
++            expr = Mul(-1*expr.args[0], MatMul(*expr.args[1:]))
++            return '-' + ' '.join(map(parens, expr.args))
++        else:
++            return ' '.join(map(parens, expr.args))
+ 
+     def _print_Mod(self, expr, exp=None):
+         if exp is not None:
+diff --git a/sympy/printing/pretty/pretty.py b/sympy/printing/pretty/pretty.py
+index db24f4c..56213bc 100644
+--- a/sympy/printing/pretty/pretty.py
++++ b/sympy/printing/pretty/pretty.py
+@@ -819,7 +819,21 @@ def _print_BlockMatrix(self, B):
+         return self._print(B.blocks)
+ 
+     def _print_MatAdd(self, expr):
+-        return self._print_seq(expr.args, None, None, ' + ')
++        s = None
++        for item in expr.args:
++            pform = self._print(item)
++            if s is None:
++                s = pform     # First element
++            else:
++                coeff = item.as_coeff_mmul()[0]
++                if _coeff_isneg(S(coeff)):
++                    s = prettyForm(*stringPict.next(s, ' '))
++                    pform = self._print(item)
++                else:
++                    s = prettyForm(*stringPict.next(s, ' + '))
++                s = prettyForm(*stringPict.next(s, pform))
++
++        return s
+ 
+     def _print_MatMul(self, expr):
+         args = list(expr.args)
+diff --git a/sympy/printing/str.py b/sympy/printing/str.py
+index 0baefe0..75e49b2 100644
+--- a/sympy/printing/str.py
++++ b/sympy/printing/str.py
+@@ -304,16 +304,36 @@ def _print_Mul(self, expr):
+             return sign + '*'.join(a_str) + "/(%s)" % '*'.join(b_str)
+ 
+     def _print_MatMul(self, expr):
+-        return '*'.join([self.parenthesize(arg, precedence(expr))
+-            for arg in expr.args])
++        c, m = expr.as_coeff_mmul()
++        if c.is_number and c < 0:
++            expr = _keep_coeff(-c, m)
++            sign = "-"
++        else:
++            sign = ""
++
++        return sign + '*'.join(
++            [self.parenthesize(arg, precedence(expr)) for arg in expr.args]
++        )
+ 
+     def _print_HadamardProduct(self, expr):
+         return '.*'.join([self.parenthesize(arg, precedence(expr))
+             for arg in expr.args])
+ 
+     def _print_MatAdd(self, expr):
+-        return ' + '.join([self.parenthesize(arg, precedence(expr))
+-            for arg in expr.args])
++        terms = [self.parenthesize(arg, precedence(expr))
++             for arg in expr.args]
++        l = []
++        for t in terms:
++            if t.startswith('-'):
++                sign = "-"
++                t = t[1:]
++            else:
++                sign = "+"
++            l.extend([sign, t])
++        sign = l.pop(0)
++        if sign == '+':
++            sign = ""
++        return sign + ' '.join(l)
+ 
+     def _print_NaN(self, expr):
+         return 'nan'

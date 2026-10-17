@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform linux -- Python 3.9.25, pytest-6.2.5, py-1.11.0, pluggy-1.6.0
+benchmark: 3.4.1 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+rootdir: <run>/10172331/baseline/pylint-dev__pylint-4551/r1/repo, configfile: setup.cfg
+plugins: benchmark-3.4.1
+collected 0 items / 1 error
+
+==================================== ERRORS ====================================
+_____________ ERROR collecting tests/unittest_pyreverse_writer.py ______________
+ImportError while importing test module '<run>/10172331/baseline/pylint-dev__pylint-4551/r1/repo/tests/unittest_pyreverse_writer.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+~/.local/share/uv/python/cpython-3.9-linux-x86_64-gnu/lib/python3.9/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests/unittest_pyreverse_writer.py:32: in <module>
+    from pylint.pyreverse.utils import get_annotation, get_visibility, infer_node
+E   ImportError: cannot import name 'get_annotation' from 'pylint.pyreverse.utils' (<run>/10172331/baseline/pylint-dev__pylint-4551/r1/repo/pylint/pyreverse/utils.py)
+=========================== short test summary info ============================
+ERROR tests/unittest_pyreverse_writer.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+=============================== 1 error in 0.09s ===============================

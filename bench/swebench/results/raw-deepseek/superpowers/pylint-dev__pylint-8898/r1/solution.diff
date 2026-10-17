@@ -1,0 +1,70 @@
+diff --git a/pylint/config/argument.py b/pylint/config/argument.py
+index 30a5fd1..3a1ca0a 100644
+--- a/pylint/config/argument.py
++++ b/pylint/config/argument.py
+@@ -111,10 +111,64 @@ def _regex_transformer(value: str) -> Pattern[str]:
+         raise argparse.ArgumentTypeError(msg) from e
+ 
+ 
++def _split_regexp_csv(value: str) -> list[str]:
++    """Split a comma separated list of regular expressions.
++
++    Commas that are escaped or that appear inside a group, a character
++    class or a quantifier are part of the regular expression and not
++    separators.
++    """
++    patterns: list[str] = []
++    current: list[str] = []
++    closing_brackets = {"(": ")", "[": "]", "{": "}"}
++    brackets: list[str] = []
++    escaped = False
++    for char in value:
++        if escaped:
++            current.append(char)
++            escaped = False
++            continue
++        if char == "\\":
++            current.append(char)
++            escaped = True
++            continue
++        if brackets and brackets[-1] == "[":
++            current.append(char)
++            if char == "]":
++                # A closing bracket directly after the opening bracket (or
++                # after a negation) is a literal and does not end the class.
++                if len(current) >= 2 and current[-2] == "[":
++                    continue
++                if (
++                    len(current) >= 3
++                    and current[-2] == "^"
++                    and current[-3] == "["
++                ):
++                    continue
++                brackets.pop()
++            continue
++        if char in closing_brackets:
++            brackets.append(char)
++        elif char in closing_brackets.values():
++            if brackets and closing_brackets[brackets[-1]] == char:
++                brackets.pop()
++        elif char == "," and not brackets:
++            pattern = "".join(current).strip()
++            if pattern:
++                patterns.append(pattern)
++            current = []
++            continue
++        current.append(char)
++    pattern = "".join(current).strip()
++    if pattern:
++        patterns.append(pattern)
++    return patterns
++
++
+ def _regexp_csv_transfomer(value: str) -> Sequence[Pattern[str]]:
+     """Transforms a comma separated list of regular expressions."""
+     patterns: list[Pattern[str]] = []
+-    for pattern in _csv_transformer(value):
++    for pattern in _split_regexp_csv(value):
+         patterns.append(_regex_transformer(pattern))
+     return patterns
+ 

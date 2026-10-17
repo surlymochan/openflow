@@ -1,0 +1,251 @@
+============================= test session starts ==============================
+platform linux -- Python 3.9.25, pytest-7.4.4, pluggy-1.6.0
+benchmark: 4.0.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+rootdir: <run>/10172331/openflow/pylint-dev__pylint-8898/r1/repo
+configfile: pyproject.toml
+plugins: timeout-2.4.0, benchmark-4.0.0
+collected 20 items
+
+tests/config/test_config.py ...........F.F......                         [100%]
+
+=================================== FAILURES ===================================
+_________ test_csv_regex_comma_in_quantifier[foo, bar{1,3}-expected3] __________
+
+in_string = 'foo, bar{1,3}', expected = ['foo', 'bar{1,3}']
+
+    @pytest.mark.parametrize("in_string,expected", CSV_REGEX_COMMA_CASES)
+    def test_csv_regex_comma_in_quantifier(in_string: str, expected: list[str]) -> None:
+        """Check that we correctly parse a comma-separated regex when there are one
+        or more commas within quantifier expressions.
+        """
+    
+        def _template_run(in_string: str) -> list[re.Pattern[Any]]:
+            r = Run(
+                [str(EMPTY_MODULE), rf"--bad-names-rgx={in_string}"],
+                exit=False,
+            )
+            bad_names_rgxs: list[re.Pattern[Any]] = r.linter.config.bad_names_rgxs
+            return bad_names_rgxs
+    
+>       assert _template_run(in_string) == [re.compile(regex) for regex in expected]
+E       AssertionError: assert [re.compile('...compile('3}')] == [re.compile('...e('bar{1,3}')]
+E         At index 1 diff: re.compile('bar{1') != re.compile('bar{1,3}')
+E         Left contains one more item: re.compile('3}')
+E         Use -v to get more diff
+
+tests/config/test_config.py:142: AssertionError
+_____________________________ test_csv_regex_error _____________________________
+
+capsys = <_pytest.capture.CaptureFixture object at 0x7fb19aa600d0>
+
+    def test_csv_regex_error(capsys: CaptureFixture) -> None:
+        """Check that we correctly error when an option is passed and one
+        of its comma-separated regular expressions values is an invalid regular expression.
+        """
+        with pytest.raises(SystemExit):
+            Run(
+                [str(EMPTY_MODULE), r"--bad-names-rgx=(foo{1,}, foo{1,3}})"],
+                exit=False,
+            )
+        output = capsys.readouterr()
+>       assert (
+            r"Error in provided regular expression: (foo{1,} beginning at index 0: missing ), unterminated subpattern"
+            in output.err
+        )
+E       AssertionError: assert 'Error in provided regular expression: (foo{1,} beginning at index 0: missing ), unterminated subpattern' in 'usage: pylint [options]\npylint: error: argument --bad-names-rgxs: Error in provided regular expression: (foo{1 beginning at index 0: missing ), unterminated subpattern\n'
+E        +  where 'usage: pylint [options]\npylint: error: argument --bad-names-rgxs: Error in provided regular expression: (foo{1 beginning at index 0: missing ), unterminated subpattern\n' = CaptureResult(out='', err='usage: pylint [options]\npylint: error: argument --bad-names-rgxs: Error in provided regular expression: (foo{1 beginning at index 0: missing ), unterminated subpattern\n').err
+
+tests/config/test_config.py:171: AssertionError
+==================================== PASSES ====================================
+__________________________ test_clear_cache_post_run ___________________________
+----------------------------- Captured stdout call -----------------------------
+************* Module changing
+/tmp/tmpqpulx3f4/changing.py:1:0: W0104: Statement seems to have no effect (pointless-statement)
+/tmp/tmpqpulx3f4/changing.py:1:0: E0602: Undefined variable 'undefined' (undefined-variable)
+
+------------------------------------------------------------------
+Your code has been rated at 0.00/10 (previous run: 0.00/10, +0.00)
+
+_________________ test_disable_before_enable_all_takes_effect __________________
+----------------------------- Captured stdout call -----------------------------
+************* Module pylint.testutils.configuration_test
+pylint/testutils/configuration_test.py:113:0: I0011: Locally disabling broad-exception-caught (W0718) (locally-disabled)
+pylint/testutils/configuration_test.py:113:0: I0020: Suppressed 'broad-exception-caught' (from line 113) (suppressed-message)
+
+--------------------------------------------------------------------
+Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
+
+_________________ test_enable_before_disable_all_takes_effect __________________
+----------------------------- Captured stdout call -----------------------------
+************* Module fixme
+tests/regrtest_data/fixme.py:1:1: W0511: TODO: implement (fixme)
+
+--------------------------------------------------------------------
+Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
+
+=========================== short test summary info ============================
+PASSED tests/config/test_config.py::test_can_read_toml_env_variable
+PASSED tests/config/test_config.py::test_unknown_message_id
+PASSED tests/config/test_config.py::test_unknown_option_name
+PASSED tests/config/test_config.py::test_unknown_short_option_name
+PASSED tests/config/test_config.py::test_unknown_confidence
+PASSED tests/config/test_config.py::test_empty_confidence
+PASSED tests/config/test_config.py::test_unknown_yes_no
+PASSED tests/config/test_config.py::test_unknown_py_version
+PASSED tests/config/test_config.py::test_csv_regex_comma_in_quantifier[foo-expected0]
+PASSED tests/config/test_config.py::test_csv_regex_comma_in_quantifier[foo,bar-expected1]
+PASSED tests/config/test_config.py::test_csv_regex_comma_in_quantifier[foo, bar-expected2]
+PASSED tests/config/test_config.py::test_regex_error
+PASSED tests/config/test_config.py::test_short_verbose
+PASSED tests/config/test_config.py::test_argument_separator
+PASSED tests/config/test_config.py::test_clear_cache_post_run
+PASSED tests/config/test_config.py::test_enable_all_disable_all_mutually_exclusive
+PASSED tests/config/test_config.py::test_disable_before_enable_all_takes_effect
+PASSED tests/config/test_config.py::test_enable_before_disable_all_takes_effect
+FAILED tests/config/test_config.py::test_csv_regex_comma_in_quantifier[foo, bar{1,3}-expected3]
+FAILED tests/config/test_config.py::test_csv_regex_error - AssertionError: as...
+========================= 2 failed, 18 passed in 2.31s =========================
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-62bfef01-d247-4731-865d-6e4d0f0578ff/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-62bfef01-d247-4731-865d-6e4d0f0578ff/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-62bfef01-d247-4731-865d-6e4d0f0578ff
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-62bfef01-d247-4731-865d-6e4d0f0578ff'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-ab266ba8-9686-4690-9f3a-7fd3cc165797/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-ab266ba8-9686-4690-9f3a-7fd3cc165797/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-ab266ba8-9686-4690-9f3a-7fd3cc165797
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-ab266ba8-9686-4690-9f3a-7fd3cc165797'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-0ae7aff4-e9c0-4185-bf93-094363ca62b0/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-0ae7aff4-e9c0-4185-bf93-094363ca62b0/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-0ae7aff4-e9c0-4185-bf93-094363ca62b0
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-0ae7aff4-e9c0-4185-bf93-094363ca62b0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-d3709e9a-0d4b-4add-b5f1-952cf7708996/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-d3709e9a-0d4b-4add-b5f1-952cf7708996/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-d3709e9a-0d4b-4add-b5f1-952cf7708996
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-d3709e9a-0d4b-4add-b5f1-952cf7708996'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-43db0a65-8ce6-49c4-a347-ed1841b5cebf/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-43db0a65-8ce6-49c4-a347-ed1841b5cebf/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-43db0a65-8ce6-49c4-a347-ed1841b5cebf
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-43db0a65-8ce6-49c4-a347-ed1841b5cebf'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-6371c162-b041-417d-8027-2f72eeba1228/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-6371c162-b041-417d-8027-2f72eeba1228/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-6371c162-b041-417d-8027-2f72eeba1228
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-6371c162-b041-417d-8027-2f72eeba1228'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-fffd1272-a5d8-44b6-b792-4d292b02ef1d/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-fffd1272-a5d8-44b6-b792-4d292b02ef1d/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-fffd1272-a5d8-44b6-b792-4d292b02ef1d
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-fffd1272-a5d8-44b6-b792-4d292b02ef1d'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-6b8cd34b-d7b1-4fab-8c43-219169e29537/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-6b8cd34b-d7b1-4fab-8c43-219169e29537/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-6b8cd34b-d7b1-4fab-8c43-219169e29537
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-6b8cd34b-d7b1-4fab-8c43-219169e29537'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-9af015e9-c5fb-497f-93ab-142d34a0eca5/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-9af015e9-c5fb-497f-93ab-142d34a0eca5/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-9af015e9-c5fb-497f-93ab-142d34a0eca5
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-9af015e9-c5fb-497f-93ab-142d34a0eca5'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-59c401aa-a081-4d7c-ab3a-448f68895fff/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-59c401aa-a081-4d7c-ab3a-448f68895fff/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-59c401aa-a081-4d7c-ab3a-448f68895fff
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-59c401aa-a081-4d7c-ab3a-448f68895fff'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-cb7fd758-73d3-494b-bb58-e08dbe653e34/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-cb7fd758-73d3-494b-bb58-e08dbe653e34/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-cb7fd758-73d3-494b-bb58-e08dbe653e34
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-cb7fd758-73d3-494b-bb58-e08dbe653e34'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-9e3522df-1c29-4e14-8dcd-1b5f9cbe43c3/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-9e3522df-1c29-4e14-8dcd-1b5f9cbe43c3/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-9e3522df-1c29-4e14-8dcd-1b5f9cbe43c3
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-9e3522df-1c29-4e14-8dcd-1b5f9cbe43c3'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-20cba1f9-eaa5-41b1-8099-e0a57dc0fca3/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-20cba1f9-eaa5-41b1-8099-e0a57dc0fca3/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-20cba1f9-eaa5-41b1-8099-e0a57dc0fca3
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-20cba1f9-eaa5-41b1-8099-e0a57dc0fca3'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-33efbf29-419e-47f2-b424-c777d1c06c9b/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-33efbf29-419e-47f2-b424-c777d1c06c9b/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-33efbf29-419e-47f2-b424-c777d1c06c9b
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-33efbf29-419e-47f2-b424-c777d1c06c9b'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-178e56f2-764f-436a-84d1-7895856dd67e/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-178e56f2-764f-436a-84d1-7895856dd67e/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-178e56f2-764f-436a-84d1-7895856dd67e
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-178e56f2-764f-436a-84d1-7895856dd67e'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-ab987efb-b19b-490d-a2dc-07480fa12fec/test_cache_writefail_permissions0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_writefail_permissions0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-ab987efb-b19b-490d-a2dc-07480fa12fec/test_cache_failure_warns0
+<class 'OSError'>: [Errno 39] Directory not empty: 'test_cache_failure_warns0'
+  warnings.warn(
+<run>/10172331/openflow/pylint-dev__pylint-8898/r1/venv/lib/python3.9/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /tmp/pytest-of-box/garbage-ab987efb-b19b-490d-a2dc-07480fa12fec
+<class 'OSError'>: [Errno 39] Directory not empty: '/tmp/pytest-of-box/garbage-ab987efb-b19b-490d-a2dc-07480fa12fec'
+  warnings.warn(

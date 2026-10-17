@@ -1,0 +1,350 @@
+{
+ "source": "runs-deepseek.jsonl",
+ "harness_errors": 0,
+ "arms": {
+  "baseline": {
+   "n": 6,
+   "resolved": 1,
+   "resolved_rate": 0.16666666666666666,
+   "instances": 6,
+   "wall_s_q1_med_q3": [
+    110.275,
+    124.45,
+    174.55
+   ],
+   "timed_out": 0,
+   "tokens_in_out_median": 78779.0,
+   "tokens_total_incl_cache_median": 1214047.5,
+   "tokens_total_incl_cache_sum": 10404800,
+   "guard_blocked": 1,
+   "runs_with_model_errors": 0,
+   "cost": {
+    "deepseek": {
+     "median_per_run": 0.023376416999999997,
+     "total": 0.16426221,
+     "per_resolved": 0.16426221
+    },
+    "minimax": {
+     "median_per_run": 0.10416077999999998,
+     "total": 0.8658632999999999,
+     "per_resolved": 0.8658632999999999
+    },
+    "sonnet5": {
+     "median_per_run": 0.5141888,
+     "total": 4.076936,
+     "per_resolved": 4.076936
+    },
+    "gpt61sol": {
+     "median_per_run": 0.4095424,
+     "total": 3.081864,
+     "per_resolved": 3.081864
+    }
+   },
+   "rate_limit_retries_total": 0,
+   "runs_with_rate_limit_retries": 0,
+   "runs_ended_in_error": 0
+  },
+  "superpowers": {
+   "n": 6,
+   "resolved": 0,
+   "resolved_rate": 0.0,
+   "instances": 6,
+   "wall_s_q1_med_q3": [
+    136.225,
+    154.4,
+    340.20000000000005
+   ],
+   "timed_out": 0,
+   "tokens_in_out_median": 85122.0,
+   "tokens_total_incl_cache_median": 1468327.5,
+   "tokens_total_incl_cache_sum": 33159378,
+   "guard_blocked": 1,
+   "runs_with_model_errors": 0,
+   "cost": {
+    "deepseek": {
+     "median_per_run": 0.02853729,
+     "total": 0.31347230400000003,
+     "per_resolved": null
+    },
+    "minimax": {
+     "median_per_run": 0.12709503,
+     "total": 2.3796964800000002,
+     "per_resolved": null
+    },
+    "sonnet5": {
+     "median_per_run": 0.6263,
+     "total": 9.8660616,
+     "per_resolved": null
+    },
+    "gpt61sol": {
+     "median_per_run": 0.506492,
+     "total": 6.6202248,
+     "per_resolved": null
+    }
+   },
+   "rate_limit_retries_total": 0,
+   "runs_with_rate_limit_retries": 0,
+   "runs_ended_in_error": 0
+  },
+  "openflow": {
+   "n": 6,
+   "resolved": 2,
+   "resolved_rate": 0.3333333333333333,
+   "instances": 6,
+   "wall_s_q1_med_q3": [
+    199.75,
+    230.14999999999998,
+    266.475
+   ],
+   "timed_out": 0,
+   "tokens_in_out_median": 105793.0,
+   "tokens_total_incl_cache_median": 3148993.0,
+   "tokens_total_incl_cache_sum": 18510405,
+   "guard_blocked": 2,
+   "runs_with_model_errors": 0,
+   "cost": {
+    "deepseek": {
+     "median_per_run": 0.041162775,
+     "total": 0.231371358,
+     "per_resolved": 0.115685679
+    },
+    "minimax": {
+     "median_per_run": 0.24665834999999997,
+     "total": 1.42895046,
+     "per_resolved": 0.71447523
+    },
+    "sonnet5": {
+     "median_per_run": 1.10759,
+     "total": 6.3257572,
+     "per_resolved": 3.1628786
+    },
+    "gpt61sol": {
+     "median_per_run": 0.8032699999999999,
+     "total": 4.5364836,
+     "per_resolved": 2.2682418
+    }
+   },
+   "rate_limit_retries_total": 0,
+   "runs_with_rate_limit_retries": 0,
+   "runs_ended_in_error": 0
+  },
+  "openswarm": {
+   "n": 6,
+   "resolved": 3,
+   "resolved_rate": 0.5,
+   "instances": 6,
+   "wall_s_q1_med_q3": [
+    187.10000000000002,
+    228.35,
+    253.925
+   ],
+   "timed_out": 0,
+   "tokens_in_out_median": 105651.0,
+   "tokens_total_incl_cache_median": 1661663.5,
+   "tokens_total_incl_cache_sum": 10060428,
+   "guard_blocked": 0,
+   "runs_with_model_errors": 0,
+   "cost": {
+    "deepseek": {
+     "median_per_run": 0.037652349,
+     "total": 0.208868562,
+     "per_resolved": 0.069622854
+    },
+    "minimax": {
+     "median_per_run": 0.15884313,
+     "total": 0.92693034,
+     "per_resolved": 0.30897678
+    },
+    "sonnet5": {
+     "median_per_run": 0.8198326,
+     "total": 4.6755968,
+     "per_resolved": 1.5585322666666668
+    },
+    "gpt61sol": {
+     "median_per_run": 0.6651317999999999,
+     "total": 3.7326463999999997,
+     "per_resolved": 1.2442154666666665
+    }
+   },
+   "rate_limit_retries_total": 0,
+   "runs_with_rate_limit_retries": 0,
+   "runs_ended_in_error": 0
+  }
+ },
+ "per_instance": {
+  "sympy__sympy-17630": {
+   "baseline": [
+    0,
+    1
+   ],
+   "superpowers": [
+    0,
+    1
+   ],
+   "openflow": [
+    0,
+    1
+   ],
+   "openswarm": [
+    1,
+    1
+   ]
+  },
+  "pytest-dev__pytest-5787": {
+   "baseline": [
+    0,
+    1
+   ],
+   "superpowers": [
+    0,
+    1
+   ],
+   "openflow": [
+    0,
+    1
+   ],
+   "openswarm": [
+    0,
+    1
+   ]
+  },
+  "pytest-dev__pytest-10356": {
+   "baseline": [
+    0,
+    1
+   ],
+   "superpowers": [
+    0,
+    1
+   ],
+   "openflow": [
+    0,
+    1
+   ],
+   "openswarm": [
+    0,
+    1
+   ]
+  },
+  "sympy__sympy-14248": {
+   "baseline": [
+    1,
+    1
+   ],
+   "openflow": [
+    1,
+    1
+   ],
+   "superpowers": [
+    0,
+    1
+   ],
+   "openswarm": [
+    1,
+    1
+   ]
+  },
+  "pylint-dev__pylint-8898": {
+   "baseline": [
+    0,
+    1
+   ],
+   "superpowers": [
+    0,
+    1
+   ],
+   "openflow": [
+    1,
+    1
+   ],
+   "openswarm": [
+    1,
+    1
+   ]
+  },
+  "pytest-dev__pytest-6197": {
+   "baseline": [
+    0,
+    1
+   ],
+   "superpowers": [
+    0,
+    1
+   ],
+   "openflow": [
+    0,
+    1
+   ],
+   "openswarm": [
+    0,
+    1
+   ]
+  }
+ },
+ "leak_scan": {
+  "baseline/pytest-dev__pytest-10356/r1": [
+   ".cache/uv"
+  ],
+  "baseline/pytest-dev__pytest-5787/r1": [
+   ".cache/uv"
+  ],
+  "baseline/sympy__sympy-14248/r1": [
+   "api.github.com",
+   "site-packages/sympy"
+  ],
+  "baseline/pytest-dev__pytest-6197/r1": [
+   ".cache/uv",
+   "pip download"
+  ],
+  "baseline/pylint-dev__pylint-8898/r1": [
+   ".cache/pip",
+   ".cache/uv",
+   "pip download",
+   "raw.githubusercontent.com",
+   "site-packages/pylint"
+  ],
+  "superpowers/sympy__sympy-14248/r1": [
+   ".cache/uv",
+   "bench-swe/results",
+   "pip download",
+   "site-packages/sympy"
+  ],
+  "superpowers/pytest-dev__pytest-10356/r1": [
+   ".cache/pip",
+   ".cache/uv"
+  ],
+  "superpowers/pytest-dev__pytest-6197/r1": [
+   ".cache/uv",
+   "pip download"
+  ],
+  "openflow/sympy__sympy-14248/r1": [
+   "raw.githubusercontent.com"
+  ],
+  "openflow/sympy__sympy-17630/r1": [
+   "site-packages/sympy"
+  ],
+  "openflow/pytest-dev__pytest-10356/r1": [
+   ".cache/uv"
+  ],
+  "openflow/pytest-dev__pytest-6197/r1": [
+   ".cache/uv",
+   "pip download",
+   "pypi.org"
+  ],
+  "openswarm/sympy__sympy-17630/r1": [
+   "raw.githubusercontent.com"
+  ],
+  "openswarm/pytest-dev__pytest-10356/r1": [
+   "raw.githubusercontent.com"
+  ],
+  "openswarm/pytest-dev__pytest-5787/r1": [
+   ".cache/uv",
+   "bench-swe/results",
+   "github.com/pytest-dev"
+  ],
+  "openswarm/pytest-dev__pytest-6197/r1": [
+   ".cache/uv",
+   "pip download"
+  ]
+ }
+}

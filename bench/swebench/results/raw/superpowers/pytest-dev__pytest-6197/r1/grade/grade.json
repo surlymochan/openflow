@@ -1,0 +1,39 @@
+{
+ "resolved": false,
+ "f2p": [
+  0,
+  2
+ ],
+ "p2p": [
+  2,
+  145
+ ],
+ "f2p_failed": [
+  "testing/test_collection.py::test_does_not_eagerly_collect_packages",
+  "testing/test_collection.py::test_does_not_put_src_on_path"
+ ],
+ "p2p_failed": [
+  "testing/test_collection.py::TestCollector::test_check_equality",
+  "testing/test_collection.py::TestCollector::test_getparent",
+  "testing/test_collection.py::TestCollector::test_getcustomfile_roundtrip",
+  "testing/test_collection.py::TestCollector::test_can_skip_class_with_test_attr",
+  "testing/test_collection.py::TestCollectFS::test_ignored_certain_directories",
+  "testing/test_collection.py::TestCollectFS::test_ignored_virtualenvs[activate]",
+  "testing/test_collection.py::TestCollectFS::test_ignored_virtualenvs[activate.csh]",
+  "testing/test_collection.py::TestCollectFS::test_ignored_virtualenvs[activate.fish]",
+  "testing/test_collection.py::TestCollectFS::test_ignored_virtualenvs[Activate]",
+  "testing/test_collection.py::TestCollectFS::test_ignored_virtualenvs[Activate.bat]",
+  "testing/test_collection.py::TestCollectFS::test_ignored_virtualenvs[Activate.ps1]",
+  "testing/test_collection.py::TestCollectFS::test_ignored_virtualenvs_norecursedirs_precedence[activate]",
+  "testing/test_collection.py::TestCollectFS::test_ignored_virtualenvs_norecursedirs_precedence[activate.csh]",
+  "testing/test_collection.py::TestCollectFS::test_ignored_virtualenvs_norecursedirs_precedence[activate.fish]",
+  "testing/test_collection.py::TestCollectFS::test_ignored_virtualenvs_norecursedirs_precedence[Activate]",
+  "testing/test_collection.py::TestCollectFS::test_ignored_virtualenvs_norecursedirs_precedence[Activate.bat]",
+  "testing/test_collection.py::TestCollectFS::test_ignored_virtualenvs_norecursedirs_precedence[Activate.ps1]",
+  "testing/test_collection.py::TestCollectFS::test__in_venv[activate]",
+  "testing/test_collection.py::TestCollectFS::test__in_venv[activate.csh]",
+  "testing/test_collection.py::TestCollectFS::test__in_venv[activate.fish]"
+ ],
+ "test_rc": 1,
+ "test_cmd": "<run>/10172331/superpowers/pytest-dev__pytest-6197/r1/venv/bin/python -m pytest -rA testing/test_collection.py testing/test_skipping.py"
+}

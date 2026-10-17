@@ -1,0 +1,207 @@
+diff --git a/doc/whatsnew/fragments/7229.bugfix b/doc/whatsnew/fragments/7229.bugfix
+new file mode 100644
+index 0000000..c39e130
+--- /dev/null
++++ b/doc/whatsnew/fragments/7229.bugfix
+@@ -0,0 +1,5 @@
++When parsing comma-separated lists of regular expressions in the config, ignore
++commas that are inside braces since those indicate quantifiers, not delineation
++between expressions.
++
++Closes #7229
+diff --git a/pylint/config/argument.py b/pylint/config/argument.py
+index 30a5fd1..2d2a46a 100644
+--- a/pylint/config/argument.py
++++ b/pylint/config/argument.py
+@@ -114,7 +114,7 @@ def _regex_transformer(value: str) -> Pattern[str]:
+ def _regexp_csv_transfomer(value: str) -> Sequence[Pattern[str]]:
+     """Transforms a comma separated list of regular expressions."""
+     patterns: list[Pattern[str]] = []
+-    for pattern in _csv_transformer(value):
++    for pattern in pylint_utils._check_regexp_csv(value):
+         patterns.append(_regex_transformer(pattern))
+     return patterns
+ 
+diff --git a/pylint/utils/__init__.py b/pylint/utils/__init__.py
+index 61833a5..eecb3cb 100644
+--- a/pylint/utils/__init__.py
++++ b/pylint/utils/__init__.py
+@@ -14,6 +14,7 @@ from pylint.utils.utils import (
+     HAS_ISORT_5,
+     IsortDriver,
+     _check_csv,
++    _check_regexp_csv,
+     _splitstrip,
+     _unquote,
+     decoding_stream,
+@@ -32,6 +33,7 @@ __all__ = [
+     "HAS_ISORT_5",
+     "IsortDriver",
+     "_check_csv",
++    "_check_regexp_csv",
+     "_splitstrip",
+     "_unquote",
+     "decoding_stream",
+diff --git a/pylint/utils/utils.py b/pylint/utils/utils.py
+index fa7f7b9..2ac4708 100644
+--- a/pylint/utils/utils.py
++++ b/pylint/utils/utils.py
+@@ -22,7 +22,8 @@ import sys
+ import textwrap
+ import tokenize
+ import warnings
+-from collections.abc import Sequence
++from collections import deque
++from collections.abc import Iterable, Sequence
+ from io import BufferedReader, BytesIO
+ from typing import (
+     TYPE_CHECKING,
+@@ -253,6 +254,32 @@ def _check_csv(value: list[str] | tuple[str] | str) -> Sequence[str]:
+     return _splitstrip(value)
+ 
+ 
++def _check_regexp_csv(value: list[str] | tuple[str] | str) -> Iterable[str]:
++    r"""Split a comma-separated list of regexps, taking care to avoid splitting
++    a regex employing a comma as quantifier, as in `\d{1,2}`.
++    """
++    if isinstance(value, (list, tuple)):
++        yield from value
++    else:
++        # None is a sentinel value here
++        regexps: deque[deque[str] | None] = deque([None])
++        open_braces = False
++        for char in value:
++            if char == "{":
++                open_braces = True
++            elif char == "}" and open_braces:
++                open_braces = False
++
++            if char == "," and not open_braces:
++                regexps.append(None)
++            elif regexps[-1] is None:
++                regexps.pop()
++                regexps.append(deque([char]))
++            else:
++                regexps[-1].append(char)
++        yield from ("".join(regexp).strip() for regexp in regexps if regexp is not None)
++
++
+ def _comment(string: str) -> str:
+     """Return string as a comment."""
+     lines = [line.strip() for line in string.splitlines()]
+diff --git a/specs/changes/fix-regexp-csv-commas/plan.md b/specs/changes/fix-regexp-csv-commas/plan.md
+new file mode 100644
+index 0000000..ffc7006
+--- /dev/null
++++ b/specs/changes/fix-regexp-csv-commas/plan.md
+@@ -0,0 +1,51 @@
++# Plan: Fix regexp_csv parsing for regular expressions containing commas
++
++## Goal alignment
++
++This change directly supports the project goal in `.xflow/GOAL.md`: fix
++`regexp_csv` parsing so valid regular expressions containing commas are not
++mangled.
++
++## Objective
++
++Allow pylint options backed by the `regexp_csv` argument type (for example
++`bad-names-rgxs`) to contain comma-separated regular expressions where a comma
++is part of a `{m,n}` quantifier.
++
++## Scope
++
++- Add a regex-aware CSV splitter in `pylint/utils/utils.py`.
++- Use the splitter from the `regexp_csv` argument transformer.
++- Export the helper through `pylint/utils/__init__.py`.
++- Add a changelog fragment.
++
++## Non-goals
++
++- Changing how ordinary `csv` options are split.
++- Changing regex compilation or error reporting.
++- Changing `regexp_paths_csv` behaviour.
++
++## Implementation approach
++
++Track whether a comma occurs inside a `{...}` quantifier. Split only on commas
++outside braces, then strip each resulting expression. Keep the existing
++transformer responsible for compiling each expression so invalid regex errors
++are still reported with the existing message.
++
++## Verification strategy
++
++- Exercise `_check_regexp_csv` with plain expressions, comma-separated
++  expressions, quantifiers such as `{1,3}`, and a full expression wrapping a
++  quantifier.
++- Exercise the `--bad-names-rgx` option through the linter and compare compiled
++  patterns.
++- Confirm the relevant existing config and utility tests, accounting for the
++  old `test_csv_regex_error` case that asserted the buggy split.
++
++## Risks and failure modes
++
++- An unmatched `{` keeps the splitter in quantifier mode; this matches the
++  upstream fix and preserves the expression instead of truncating it.
++- Braces used outside quantifiers may prevent a later comma from splitting; this
++  is an acceptable limitation for the parser-level fix and no regression for
++  existing comma-separated values.
+diff --git a/specs/changes/fix-regexp-csv-commas/policy_effective.json b/specs/changes/fix-regexp-csv-commas/policy_effective.json
+new file mode 100644
+index 0000000..b672c2c
+--- /dev/null
++++ b/specs/changes/fix-regexp-csv-commas/policy_effective.json
+@@ -0,0 +1,14 @@
++{
++  "version": 1,
++  "execution_mode": "personal",
++  "workflow_tracks": {
++    "personal": "yolo|corps",
++    "team": "yolo|corps"
++  },
++  "generated_at": "2026-10-17T16:39:51.938Z",
++  "source": {
++    "profile": "<run>/10180038/openflow/pylint-dev__pylint-8898/r1/repo/.xflow/profile.json",
++    "team_policy": null
++  },
++  "authority": "policy_overlay_only_workflows_remain_yolo_corps"
++}
+diff --git a/specs/changes/fix-regexp-csv-commas/workflow_recommendation.json b/specs/changes/fix-regexp-csv-commas/workflow_recommendation.json
+new file mode 100644
+index 0000000..305c39b
+--- /dev/null
++++ b/specs/changes/fix-regexp-csv-commas/workflow_recommendation.json
+@@ -0,0 +1,33 @@
++{
++  "version": 1,
++  "generated_at": "2026-10-17T16:39:51.940Z",
++  "recommended_track": "yolo",
++  "requires_coverage_gate": true,
++  "requires_human_checkpoint": false,
++  "requires_team_notification": false,
++  "profile": {
++    "demand_type": "bugfix",
++    "complexity": "low",
++    "risk_level": "standard",
++    "repo_count": 1,
++    "estimated_file_count": 1,
++    "cross_service": false,
++    "affects_api": false,
++    "affects_database": false,
++    "involves_payment": false,
++    "involves_user_data": false,
++    "title": "Fix regexp_csv comma handling"
++  },
++  "policy_overlay": {
++    "execution_mode": "personal",
++    "workflows_remain": [
++      "yolo",
++      "corps"
++    ],
++    "creates_team_workflow_fork": false
++  },
++  "reasons": [
++    "track:yolo",
++    "coverage_gate"
++  ]
++}

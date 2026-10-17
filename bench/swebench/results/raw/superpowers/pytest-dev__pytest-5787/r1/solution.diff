@@ -1,0 +1,215 @@
+diff --git a/src/_pytest/reports.py b/src/_pytest/reports.py
+index 4682d5b..7e16ecf 100644
+--- a/src/_pytest/reports.py
++++ b/src/_pytest/reports.py
+@@ -3,6 +3,7 @@ from typing import Optional
+ 
+ import py
+ 
++from _pytest._code.code import ExceptionChainRepr
+ from _pytest._code.code import ExceptionInfo
+ from _pytest._code.code import ReprEntry
+ from _pytest._code.code import ReprEntryNative
+@@ -161,35 +162,12 @@ class BaseReport:
+         Experimental method.
+         """
+ 
+-        def disassembled_report(rep):
+-            reprtraceback = rep.longrepr.reprtraceback.__dict__.copy()
+-            reprcrash = rep.longrepr.reprcrash.__dict__.copy()
+-
+-            new_entries = []
+-            for entry in reprtraceback["reprentries"]:
+-                entry_data = {
+-                    "type": type(entry).__name__,
+-                    "data": entry.__dict__.copy(),
+-                }
+-                for key, value in entry_data["data"].items():
+-                    if hasattr(value, "__dict__"):
+-                        entry_data["data"][key] = value.__dict__.copy()
+-                new_entries.append(entry_data)
+-
+-            reprtraceback["reprentries"] = new_entries
+-
+-            return {
+-                "reprcrash": reprcrash,
+-                "reprtraceback": reprtraceback,
+-                "sections": rep.longrepr.sections,
+-            }
+-
+         d = self.__dict__.copy()
+         if hasattr(self.longrepr, "toterminal"):
+             if hasattr(self.longrepr, "reprtraceback") and hasattr(
+                 self.longrepr, "reprcrash"
+             ):
+-                d["longrepr"] = disassembled_report(self)
++                d["longrepr"] = self._report_to_json(self.longrepr)
+             else:
+                 d["longrepr"] = str(self.longrepr)
+         else:
+@@ -201,6 +179,109 @@ class BaseReport:
+                 d[name] = None  # for now
+         return d
+ 
++    @classmethod
++    def _report_to_json(cls, report):
++        if isinstance(report, ExceptionChainRepr):
++            chain = []
++            for repr_traceback, repr_crash, description in report.chain:
++                chain.append(
++                    (
++                        cls._report_to_json(repr_traceback),
++                        cls._report_to_json(repr_crash),
++                        description,
++                    )
++                )
++            return {"chain": chain, "sections": report.sections}
++        else:
++            if report is None or not hasattr(report, "__dict__"):
++                # plain data (e.g. a list of lines, a string, None)
++                return report
++            d = dict(report.__dict__)
++            if hasattr(report, "reprtraceback"):
++                d["reprtraceback"] = cls._report_to_json(report.reprtraceback)
++            if hasattr(report, "reprcrash"):
++                d["reprcrash"] = cls._report_to_json(report.reprcrash)
++            if "reprentries" in d:
++                new_entries = []
++                for entry in report.reprentries:
++                    entry_data = {
++                        "type": type(entry).__name__,
++                        "data": cls._report_to_json(entry),
++                    }
++                    for key, value in entry_data["data"].items():
++                        entry_data["data"][key] = cls._report_to_json(value)
++                    new_entries.append(entry_data)
++                d["reprentries"] = new_entries
++
++            return d
++
++    @classmethod
++    def _report_from_json(cls, reportdict):
++        if isinstance(reportdict, dict):
++            if "chain" in reportdict:
++                repr_chain = []
++                for repr_traceback, repr_crash, description in reportdict["chain"]:
++                    if repr_crash is not None and isinstance(repr_crash, dict):
++                        repr_crash = ReprFileLocation(**repr_crash)
++                    repr_chain.append(
++                        (
++                            cls._report_from_json(repr_traceback),
++                            cls._report_from_json(repr_crash),
++                            description,
++                        )
++                    )
++                exception_info = ExceptionChainRepr(repr_chain)
++                for section in reportdict.get("sections", ()):
++                    exception_info.addsection(*section)
++                return exception_info
++            if "reprtraceback" in reportdict and "reprcrash" in reportdict:
++                reprtraceback = cls._report_from_json(reportdict["reprtraceback"])
++                reprcrash = reportdict["reprcrash"]
++                if reprcrash is not None:
++                    reprcrash = ReprFileLocation(**reprcrash)
++                exception_info = ReprExceptionInfo(
++                    reprtraceback=reprtraceback,
++                    reprcrash=reprcrash,
++                )
++                for section in reportdict.get("sections", ()):
++                    exception_info.addsection(*section)
++                return exception_info
++            if "reprentries" in reportdict:
++                repr_traceback = reportdict.copy()
++                repr_traceback["reprentries"] = [
++                    cls._repr_entry_from_json(entry_data)
++                    for entry_data in reportdict["reprentries"]
++                ]
++                return ReprTraceback(**repr_traceback)
++        return reportdict
++
++    @classmethod
++    def _repr_entry_from_json(cls, entry_data):
++        data = entry_data["data"]
++        entry_type = entry_data["type"]
++        if entry_type == "ReprEntry":
++            reprfuncargs = None
++            reprfileloc = None
++            reprlocals = None
++            if data["reprfuncargs"]:
++                reprfuncargs = ReprFuncArgs(**data["reprfuncargs"])
++            if data["reprfileloc"]:
++                reprfileloc = ReprFileLocation(**data["reprfileloc"])
++            if data["reprlocals"]:
++                reprlocals = ReprLocals(data["reprlocals"]["lines"])
++
++            return ReprEntry(
++                lines=data["lines"],
++                reprfuncargs=reprfuncargs,
++                reprlocals=reprlocals,
++                filelocrepr=reprfileloc,
++                style=data["style"],
++            )
++        elif entry_type == "ReprEntryNative":
++            return ReprEntryNative(data["lines"])
++        else:
++            _report_unserialization_failure(entry_type, cls, entry_data)
++
+     @classmethod
+     def _from_json(cls, reportdict):
+         """
+@@ -212,52 +293,9 @@ class BaseReport:
+         Experimental method.
+         """
+         if reportdict["longrepr"]:
+-            if (
+-                "reprcrash" in reportdict["longrepr"]
+-                and "reprtraceback" in reportdict["longrepr"]
+-            ):
+-
+-                reprtraceback = reportdict["longrepr"]["reprtraceback"]
+-                reprcrash = reportdict["longrepr"]["reprcrash"]
+-
+-                unserialized_entries = []
+-                reprentry = None
+-                for entry_data in reprtraceback["reprentries"]:
+-                    data = entry_data["data"]
+-                    entry_type = entry_data["type"]
+-                    if entry_type == "ReprEntry":
+-                        reprfuncargs = None
+-                        reprfileloc = None
+-                        reprlocals = None
+-                        if data["reprfuncargs"]:
+-                            reprfuncargs = ReprFuncArgs(**data["reprfuncargs"])
+-                        if data["reprfileloc"]:
+-                            reprfileloc = ReprFileLocation(**data["reprfileloc"])
+-                        if data["reprlocals"]:
+-                            reprlocals = ReprLocals(data["reprlocals"]["lines"])
+-
+-                        reprentry = ReprEntry(
+-                            lines=data["lines"],
+-                            reprfuncargs=reprfuncargs,
+-                            reprlocals=reprlocals,
+-                            filelocrepr=reprfileloc,
+-                            style=data["style"],
+-                        )
+-                    elif entry_type == "ReprEntryNative":
+-                        reprentry = ReprEntryNative(data["lines"])
+-                    else:
+-                        _report_unserialization_failure(entry_type, cls, reportdict)
+-                    unserialized_entries.append(reprentry)
+-                reprtraceback["reprentries"] = unserialized_entries
+-
+-                exception_info = ReprExceptionInfo(
+-                    reprtraceback=ReprTraceback(**reprtraceback),
+-                    reprcrash=ReprFileLocation(**reprcrash),
+-                )
+-
+-                for section in reportdict["longrepr"]["sections"]:
+-                    exception_info.addsection(*section)
+-                reportdict["longrepr"] = exception_info
++            longrepr = reportdict["longrepr"]
++            if isinstance(longrepr, dict):
++                reportdict["longrepr"] = cls._report_from_json(longrepr)
+ 
+         return cls(**reportdict)
+ 

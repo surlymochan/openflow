@@ -1,0 +1,34 @@
+diff --git a/changelog/6197.bugfix.rst b/changelog/6197.bugfix.rst
+new file mode 100644
+index 0000000..ce8fd14
+--- /dev/null
++++ b/changelog/6197.bugfix.rst
+@@ -0,0 +1 @@
++Revert "The first test in a package (``__init__.py``) marked with ``@pytest.mark.skip`` is now correctly skipped", which made pytest import (and thus collect) every ``__init__.py`` file it encountered, breaking collection of projects containing packages which cannot be imported on the current platform.
+diff --git a/src/_pytest/python.py b/src/_pytest/python.py
+index 306e5f2..351a66e 100644
+--- a/src/_pytest/python.py
++++ b/src/_pytest/python.py
+@@ -432,14 +432,6 @@ class PyCollector(PyobjMixin, nodes.Collector):
+ class Module(nodes.File, PyCollector):
+     """ Collector for test classes and functions. """
+ 
+-    def __init__(self, fspath, parent=None, config=None, session=None, nodeid=None):
+-        if fspath.basename == "__init__.py":
+-            self._ALLOW_MARKERS = False
+-
+-        nodes.FSCollector.__init__(
+-            self, fspath, parent=parent, config=config, session=session, nodeid=nodeid
+-        )
+-
+     def _getobj(self):
+         return self._importtestmodule()
+ 
+@@ -639,7 +631,6 @@ class Package(Module):
+         return path in self.session._initialpaths
+ 
+     def collect(self):
+-        self._mount_obj_if_needed()
+         this_path = self.fspath.dirpath()
+         init_module = this_path.join("__init__.py")
+         if init_module.check(file=1) and path_matches_patterns(

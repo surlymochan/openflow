@@ -1,0 +1,2 @@
+<pi>/run_pi.sh: line 79: syntax error near unexpected token `)'
+<pi>/run_pi.sh: line 79: `ad,bash,edit,write,grep,find,ls); else ARGS+=(--tools read,grep,find,ls); fi'

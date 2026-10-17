@@ -1,0 +1,164 @@
+{
+ "source": "runs.jsonl",
+ "harness_errors": 0,
+ "arms": {
+  "baseline": {
+   "n": 4,
+   "resolved": 2,
+   "resolved_rate": 0.5,
+   "instances": 4,
+   "wall_s_q1_med_q3": [
+    436.17500000000007,
+    844.9000000000001,
+    1200.9250000000002
+   ],
+   "timed_out": 2,
+   "tokens_in_out_median": 63081.0,
+   "tokens_total_incl_cache_median": 1787144.0,
+   "tokens_total_incl_cache_sum": 7259048,
+   "guard_blocked": 1,
+   "runs_with_model_errors": 2,
+   "cost": {
+    "deepseek": {
+     "median_per_run": 0.026695115999999998,
+     "total": 0.112980546,
+     "per_resolved": 0.056490273
+    },
+    "minimax": {
+     "median_per_run": 0.14669531999999996,
+     "total": 0.60158682,
+     "per_resolved": 0.30079341
+    },
+    "sonnet5": {
+     "median_per_run": 0.6884864000000002,
+     "total": 2.8267504000000003,
+     "per_resolved": 1.4133752000000002
+    },
+    "gpt61sol": {
+     "median_per_run": 0.5156992,
+     "total": 2.1311472,
+     "per_resolved": 1.0655736
+    }
+   },
+   "rate_limit_retries_total": 2,
+   "runs_with_rate_limit_retries": 2,
+   "runs_ended_in_error": 0
+  },
+  "superpowers": {
+   "n": 4,
+   "resolved": 2,
+   "resolved_rate": 0.5,
+   "instances": 4,
+   "wall_s_q1_med_q3": [
+    447.825,
+    561.3,
+    796.9
+   ],
+   "timed_out": 1,
+   "tokens_in_out_median": 66547.5,
+   "tokens_total_incl_cache_median": 1417801.5,
+   "tokens_total_incl_cache_sum": 5862326,
+   "guard_blocked": 1,
+   "runs_with_model_errors": 4,
+   "cost": {
+    "deepseek": {
+     "median_per_run": 0.022421841,
+     "total": 0.08528745,
+     "per_resolved": 0.042643725
+    },
+    "minimax": {
+     "median_per_run": 0.11741276999999999,
+     "total": 0.47280209999999995,
+     "per_resolved": 0.23640104999999997
+    },
+    "sonnet5": {
+     "median_per_run": 0.5464254000000001,
+     "total": 2.1600680000000003,
+     "per_resolved": 1.0800340000000002
+    },
+    "gpt61sol": {
+     "median_per_run": 0.4120382,
+     "total": 1.6003880000000001,
+     "per_resolved": 0.8001940000000001
+    }
+   },
+   "rate_limit_retries_total": 4,
+   "runs_with_rate_limit_retries": 4,
+   "runs_ended_in_error": 0
+  }
+ },
+ "per_instance": {
+  "pytest-dev__pytest-5787": {
+   "baseline": [
+    0,
+    1
+   ],
+   "superpowers": [
+    0,
+    1
+   ]
+  },
+  "pytest-dev__pytest-10356": {
+   "baseline": [
+    0,
+    1
+   ],
+   "superpowers": [
+    0,
+    1
+   ]
+  },
+  "sympy__sympy-17630": {
+   "baseline": [
+    1,
+    1
+   ],
+   "superpowers": [
+    1,
+    1
+   ]
+  },
+  "sympy__sympy-14248": {
+   "baseline": [
+    1,
+    1
+   ],
+   "superpowers": [
+    1,
+    1
+   ]
+  }
+ },
+ "leak_scan": {
+  "baseline/pytest-dev__pytest-5787/r1": [
+   "github.com/pytest-dev"
+  ],
+  "baseline/pytest-dev__pytest-6197/r1": [
+   ".cache/uv",
+   "pip download"
+  ],
+  "baseline/pylint-dev__pylint-4551/r1": [
+   "pip download"
+  ],
+  "baseline/pylint-dev__pylint-8898/r1": [
+   "github.com/pylint-dev",
+   "pip download"
+  ],
+  "superpowers/sympy__sympy-12489/r1": [
+   "github.com/sympy"
+  ],
+  "superpowers/pytest-dev__pytest-6197/r1": [
+   ".cache/pip",
+   ".cache/uv",
+   "pip download"
+  ],
+  "superpowers/pylint-dev__pylint-8898/r1": [
+   "github.com/pylint-dev",
+   "pypi.org",
+   "raw.githubusercontent.com"
+  ],
+  "openflow/sympy__sympy-14248/r1": [
+   "pip download"
+  ]
+ }
+}

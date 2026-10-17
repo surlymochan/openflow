@@ -1,0 +1,15 @@
+{
+ "resolved": true,
+ "f2p": [
+  1,
+  1
+ ],
+ "p2p": [
+  8,
+  8
+ ],
+ "f2p_failed": [],
+ "p2p_failed": [],
+ "test_rc": 0,
+ "test_cmd": "PYTHONWARNINGS='ignore::UserWarning,ignore::SyntaxWarning' <run>/10172331/superpowers/sympy__sympy-12489/r1/venv/bin/python bin/test -C --verbose sympy/combinatorics/tests/test_permutations.py"
+}
