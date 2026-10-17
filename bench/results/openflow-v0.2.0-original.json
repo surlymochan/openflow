@@ -7,11 +7,11 @@
     "platform": "linux",
     "kernel": "6.12.94+",
     "node": "v22.23.3",
-    "nodePath": "/workspace/agents/gity/tools/node-v22.23.3-linux-x64/bin/node",
+    "nodePath": "<node22>",
     "python": "Python 3.13.5",
     "openflowCommit": "58b5a3fa0899f6e639454f0e4a7247dec98f6986",
     "openflowBranch": "bench/head-to-head",
-    "superpowersDir": "/workspace/agents/gity/bench-deps/superpowers",
+    "superpowersDir": "<superpowers-dir>",
     "superpowersCommit": "bb92a77741419a4ab5f06e711a283343f1ada0c3",
     "superpowersTag": "v7.0.0"
   },
@@ -1715,7 +1715,7 @@
     },
     "context": {
       "superpowers": {
-        "hook": "/workspace/agents/gity/bench-deps/superpowers/hooks/session-start",
+        "hook": "<superpowers-dir>/hooks/session-start",
         "shape": "additionalContext",
         "stdoutBytes": 3547,
         "injectedContextBytes": 3417,
@@ -1725,12 +1725,12 @@
         "llmArmSkillApproxTokens": 3306,
         "llmArmSkills": [
           {
-            "path": "/workspace/agents/gity/bench-deps/superpowers/skills/test-driven-development/SKILL.md",
+            "path": "<superpowers-dir>/skills/test-driven-development/SKILL.md",
             "bytes": 9578,
             "approxTokens": 2395
           },
           {
-            "path": "/workspace/agents/gity/bench-deps/superpowers/skills/verification-before-completion/SKILL.md",
+            "path": "<superpowers-dir>/skills/verification-before-completion/SKILL.md",
             "bytes": 3646,
             "approxTokens": 912
           }
@@ -1747,7 +1747,7 @@
     "latency": {
       "runs": 20,
       "i6b": {
-        "command": "/workspace/agents/gity/tools/node-v22.23.3-linux-x64/bin/node /workspace/agents/gity/release/openflow/bin/xflow.js atom run I6b.tdd.proof_validate --project-root /tmp/of-bench-honest-add-oEalDH --change-id honest-add --phase red",
+        "command": "<node22> <openflow-dir>/bin/xflow.js atom run I6b.tdd.proof_validate --project-root /tmp/of-bench-honest-add-oEalDH --change-id honest-add --phase red",
         "lastExitCode": 0,
         "n": 20,
         "medianMs": 73.085,
@@ -1756,7 +1756,7 @@
         "maxMs": 82.794
       },
       "i6c": {
-        "command": "/workspace/agents/gity/tools/node-v22.23.3-linux-x64/bin/node /workspace/agents/gity/release/openflow/bin/xflow.js atom run I6c.tdd.quality_review --project-root /tmp/of-bench-honest-add-oEalDH --change-id honest-add",
+        "command": "<node22> <openflow-dir>/bin/xflow.js atom run I6c.tdd.quality_review --project-root /tmp/of-bench-honest-add-oEalDH --change-id honest-add",
         "lastExitCode": 0,
         "n": 20,
         "medianMs": 83.241,
@@ -1765,7 +1765,7 @@
         "maxMs": 95.206
       },
       "workflowValidate": {
-        "command": "/workspace/agents/gity/tools/node-v22.23.3-linux-x64/bin/node /workspace/agents/gity/release/openflow/bin/xflow.js workflow validate yolo --project-root /workspace/agents/gity/release/openflow",
+        "command": "<node22> <openflow-dir>/bin/xflow.js workflow validate yolo --project-root <openflow-dir>",
         "lastExitCode": 0,
         "n": 20,
         "medianMs": 102.023,
@@ -1774,7 +1774,7 @@
         "maxMs": 135.371
       },
       "sessionStart": {
-        "command": "bash /workspace/agents/gity/bench-deps/superpowers/hooks/session-start",
+        "command": "bash <superpowers-dir>/hooks/session-start",
         "lastExitCode": 0,
         "n": 20,
         "medianMs": 8.488,

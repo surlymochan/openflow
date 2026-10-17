@@ -1,6 +1,6 @@
 # Head-to-head summary
 
-Generated 2026-10-17T13:09:44.873Z. Verdicts for the OpenFlow arm come from the atoms listed below. Rates use the labels in bench/README.md. Scenario set: `all`.
+Generated 2026-10-17T13:41:24.223Z. Verdicts for the OpenFlow arm come from the atoms listed below. Rates use the labels in bench/README.md. Scenario set: `all`.
 
 ## Environment
 
@@ -9,7 +9,7 @@ Generated 2026-10-17T13:09:44.873Z. Verdicts for the OpenFlow arm come from the 
 - Kernel: 6.12.94+
 - Node: v22.23.3 (../../tools/node-v22.23.3-linux-x64/bin/node)
 - Python: Python 3.13.5
-- OpenFlow commit: 58b5a3fa0899f6e639454f0e4a7247dec98f6986 (bench/head-to-head)
+- OpenFlow commit: 967cfd4bde9bd1a9ec1e65536dbeb2bcab8802e3 (bench/head-to-head)
 - superpowers: v7.0.0 bb92a77741419a4ab5f06e711a283343f1ada0c3
 - superpowers checkout: ../../bench-deps/superpowers
 
@@ -142,15 +142,20 @@ Generated 2026-10-17T13:09:44.873Z. Verdicts for the OpenFlow arm come from the 
 - `npm pack --dry-run` bench entries: none.
 - superpowers skills/ + hooks/: 431.9 KiB across 78 files.
 - superpowers shipped plugin payload (skills, hooks, host manifests, package entry): 475.1 KiB across 96 files.
-- I6b.tdd.proof_validate: median 198.878 ms, p95 214.667 ms, n=20, last exit 0
-- I6c.tdd.quality_review: median 113.513 ms, p95 142.83 ms, n=20, last exit 0
-- xflow workflow validate yolo: median 118.231 ms, p95 152.234 ms, n=20, last exit 0
-- superpowers hooks/session-start: median 8.647 ms, p95 15.396 ms, n=20, last exit 0
+- I6b.tdd.proof_validate: median 186.353 ms, p95 209.604 ms, n=20, last exit 0
+- I6c.tdd.quality_review: median 98.529 ms, p95 110.252 ms, n=20, last exit 0
+- xflow workflow validate yolo: median 110.339 ms, p95 118.878 ms, n=20, last exit 0
+- superpowers hooks/session-start: median 8.099 ms, p95 9.443 ms, n=20, last exit 0
 - superpowers session-start injected context: 3417 bytes, about 854 tokens (bytes/4, approximate). Raw stdout 3547 bytes (additionalContext).
 - OpenFlow skill entry xflow/yolo/SKILL.md: 2164 bytes, about 541 tokens (bytes/4, approximate). approximate tokens = bytes/4; OpenFlow has no session-start hook in this package, so this is the yolo skill entry document
 - LLM-arm skill text (test-driven-development + verification-before-completion), not injected at session start: 13224 bytes, about 3306 tokens (bytes/4, approximate).
 
 ## LLM arms
 
-No `llm-*.jsonl` files were present. The superpowers and baseline arms were not run.
+| Arm | Detection | False-positive | Accuracy | Mean repeat agreement |
+| --- | --- | --- | --- | --- |
+| baseline/grok-4.7-high | 25/25 (100.0%) | 0/11 (0.0%) | 35/36 (97.2%) | 97.2% |
+| superpowers/grok-4.7-high | 25/25 (100.0%) | 1/11 (9.1%) | 35/36 (97.2%) | 100.0% |
+
+LLM verdicts are majority votes. A tie is `TIE`, which counts as incorrect and as neither a detection nor a false positive. Agreement is the share of repeats that match the majority (the larger side when the vote ties).
 

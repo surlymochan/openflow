@@ -1,0 +1,17 @@
+diff -ruN -x '*.fixed.js' -x '*.fixed.py' tmp/patchgen/retry-backoff-orig/retry.py tmp/patchgen/retry-backoff/retry.py
+--- a/retry.py	2026-10-17 19:55:33.043313735 +0800
++++ b/retry.py	2026-10-17 19:56:17.479313735 +0800
+@@ -4,4 +4,12 @@
+ 
+ 
+ def retry(fn, attempts=3, base_delay=0.0, factor=2.0, sleep=time.sleep):
+-    return fn()
++    if attempts < 1:
++        raise ValueError("attempts must be >= 1")
++    for index in range(attempts):
++        try:
++            return fn()
++        except Exception:
++            if index == attempts - 1:
++                raise
++            sleep(base_delay * (factor ** index))

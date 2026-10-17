@@ -1,0 +1,22 @@
+diff -ruN -x '*.fixed.js' -x '*.fixed.py' tmp/patchgen/config-deep-merge-orig/deepmerge.py tmp/patchgen/config-deep-merge/deepmerge.py
+--- a/deepmerge.py	2026-10-17 19:55:34.299313735 +0800
++++ b/deepmerge.py	2026-10-17 19:56:17.463313735 +0800
+@@ -1,9 +1,16 @@
+ """Merge two configuration dictionaries."""
+ 
++import copy
++
++
+ def deep_merge(base, override):
+     """Return a new dict with override applied on top of base."""
+     if not isinstance(base, dict) or not isinstance(override, dict):
+         raise TypeError("both arguments must be dicts")
+-    merged = dict(base)
+-    merged.update(override)
++    merged = {key: copy.deepcopy(value) for key, value in base.items()}
++    for key, value in override.items():
++        if key in merged and isinstance(merged[key], dict) and isinstance(value, dict):
++            merged[key] = deep_merge(merged[key], value)
++        else:
++            merged[key] = copy.deepcopy(value)
+     return merged

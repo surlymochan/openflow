@@ -274,5 +274,5 @@ export function measureOverhead({ repoRoot, superpowersDir }) {
 
 export function resolveSuperpowersDir(explicit) {
   if (explicit) return resolve(explicit);
-  return resolve('/workspace/agents/gity/bench-deps/superpowers');
+  return resolve(process.env.SUPERPOWERS_DIR || '../superpowers');
 }

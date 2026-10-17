@@ -137,8 +137,8 @@ The machine, commits, and exact commands for a run are written to `bench/results
 | openflow original | 16/17 (94.1%) | 0/7 (0.0%) | 23/24 (95.8%) |
 | openflow held-out | 6/8 (75.0%) | 0/4 (0.0%) | 10/12 (83.3%) |
 | openflow combined | 22/25 (88.0%) | 0/11 (0.0%) | 33/36 (91.7%) |
-| superpowers | not run | not run | not run |
-| baseline | not run | not run | not run |
+| baseline/grok-4.7-high | 25/25 (100.0%) | 0/11 (0.0%) | 35/36 (97.2%) |
+| superpowers/grok-4.7-high | 25/25 (100.0%) | 1/11 (9.1%) | 35/36 (97.2%) |
 
 Per-scenario OpenFlow outcomes, overhead figures, and the environment block are in [results/summary.md](results/summary.md). The chart is [results/chart.svg](results/chart.svg).
 

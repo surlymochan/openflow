@@ -1,0 +1,8 @@
+{
+  "id": "csv-quoting",
+  "language": "python",
+  "difficulty": "medium",
+  "visible_command": "python3 -m unittest tests/test_csvquote.py",
+  "hidden_command": "python3 -m unittest _hidden_acceptance/test_csvquote.py",
+  "hidden_dest": "_hidden_acceptance"
+}

@@ -1,0 +1,14 @@
+{
+ "subtype": "success",
+ "is_error": false,
+ "duration_ms": 217838,
+ "duration_api_ms": 217838,
+ "session_id": "487118ed-456f-4b8d-a692-2210a7e4a3e2",
+ "request_id": "fe2c2b61-90ff-46f6-8dd6-7be419d3dccc",
+ "usage": {
+  "inputTokens": 58326,
+  "outputTokens": 5099,
+  "cacheReadTokens": 132480,
+  "cacheWriteTokens": 0
+ }
+}

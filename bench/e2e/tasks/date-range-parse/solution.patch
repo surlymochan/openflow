@@ -1,0 +1,12 @@
+diff -ruN -x '*.fixed.js' -x '*.fixed.py' tmp/patchgen/date-range-parse-orig/daterange.py tmp/patchgen/date-range-parse/daterange.py
+--- a/daterange.py	2026-10-17 19:55:27.391313735 +0800
++++ b/daterange.py	2026-10-17 19:56:17.467313735 +0800
+@@ -20,7 +20,7 @@
+         raise ValueError("end before start")
+     days = []
+     cursor = start
+-    while cursor < end:
++    while cursor <= end:
+         days.append(cursor)
+         cursor += timedelta(days=1)
+     return days

@@ -1,0 +1,8 @@
+{
+  "id": "config-deep-merge",
+  "language": "python",
+  "difficulty": "low",
+  "visible_command": "python3 -m unittest tests/test_deepmerge.py",
+  "hidden_command": "python3 -m unittest _hidden_acceptance/test_deepmerge.py",
+  "hidden_dest": "_hidden_acceptance"
+}

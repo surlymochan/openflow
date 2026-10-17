@@ -1,0 +1,12 @@
+diff -ruN -x '*.fixed.js' -x '*.fixed.py' tmp/patchgen/pagination-off-by-one-orig/src/paginate.js tmp/patchgen/pagination-off-by-one/src/paginate.js
+--- a/src/paginate.js	2026-10-17 19:55:26.691313735 +0800
++++ b/src/paginate.js	2026-10-17 19:56:17.471313735 +0800
+@@ -11,7 +11,7 @@
+   }
+   const total = items.length;
+   const totalPages = total === 0 ? 0 : Math.ceil(total / pageSize);
+-  const start = page * pageSize;
++  const start = (page - 1) * pageSize;
+   const slice = items.slice(start, start + pageSize);
+   return { items: slice, page, pageSize, total, totalPages };
+ }
