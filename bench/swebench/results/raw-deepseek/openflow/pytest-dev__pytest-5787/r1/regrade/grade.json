@@ -1,0 +1,18 @@
+{
+ "resolved": false,
+ "f2p": [
+  0,
+  2
+ ],
+ "p2p": [
+  123,
+  123
+ ],
+ "f2p_failed": [
+  "testing/test_reports.py::TestReportSerialization::test_chained_exceptions[TestReport]",
+  "testing/test_reports.py::TestReportSerialization::test_chained_exceptions[CollectReport]"
+ ],
+ "p2p_failed": [],
+ "test_rc": 1,
+ "test_cmd": "<bench>/tmp/regrade/deepseek/openflow/pytest-dev__pytest-5787/r1/venv/bin/python -m pytest -rA testing/code/test_code.py testing/code/test_excinfo.py testing/conftest.py testing/test_reports.py"
+}

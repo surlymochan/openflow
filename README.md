@@ -15,20 +15,25 @@ harness are used for every arm; the SWE-bench block uses DeepSeek via Pi. Pinned
 [`bench/`](bench/README.md) and [`bench/e2e/`](bench/e2e/README.md). Losses are shown as measured.
 
 **Real GitHub issues (SWE-bench Verified), 2026-10-18.** Six hard instances from sympy, pytest and pylint; success
-means the official FAIL_TO_PASS and PASS_TO_PASS tests all pass. Every arm runs on the Pi coding agent with DeepSeek
-`deepseek-flash`, n=1 per cell, 20-minute cap; details and commands are in
+means the official FAIL_TO_PASS and PASS_TO_PASS tests all pass. Every arm runs on the Pi coding agent with
+DeepSeek-V4.1-Flash (`deepseek-flash`), n=1 per cell, 20-minute cap; details and commands are in
 [`bench/swebench/`](bench/swebench/README.md).
 
 | Arm | Resolved (official tests) | Median wall-clock (IQR) | Median $ per task (DeepSeek list price) | Total $ (all runs) | n |
 | --- | --- | --- | --- | --- | --- |
-| Plain agent (baseline) | 1/6 (17%) | 124 s (110–175) | $0.0234 | $0.16 | 6 |
-| superpowers v7.0.0 | 0/6 (0%) | 154 s (136–340) | $0.0285 | $0.31 | 6 |
-| OpenFlow 0.2.1 | 2/6 (33%) | 230 s (200–266) | $0.0412 | $0.23 | 6 |
-| openswarm (Pi executor) | 3/6 (50%) | 228 s (187–254) | $0.0377 | $0.21 | 6 |
+| Plain agent (baseline) | 3/6 (50%) | 124 s (110–175) | $0.0234 | $0.16 | 6 |
+| superpowers v7.0.0 | 2/6 (33%) | 154 s (136–340) | $0.0285 | $0.31 | 6 |
+| OpenFlow 0.2.1 | 4/6 (67%) | 230 s (200–266) | $0.0412 | $0.23 | 6 |
+| openswarm (Pi executor) | 5/6 (83%) | 228 s (187–254) | $0.0377 | $0.21 | 6 |
 
-On the MiniMax-M3.1-Flash-Preview subset, baseline and superpowers both resolved 2/4 on 4 instances; OpenFlow had no
-clean MiniMax run because the plan's usage cap was hit. With n=1 on 6 instances, a difference of one or two resolves is
-within noise.
+**Caveats:** n=1 on 6 instances, so one or two resolves are within noise. The two workflow tools took about 1.8x the
+baseline's median wall-clock and cost 76% (OpenFlow) / 61% (openswarm) more per task. The first published table undercounted
+pytest because of a shared temp-dir race in grading; it is now fixed and regraded
+([regrade notes](bench/swebench/README.md#regrade-2026-10-18)). On the MiniMax-M3.1-Flash-Preview subset, baseline
+resolved 3/4 and superpowers 2/4; OpenFlow had no clean MiniMax run because the plan's usage cap was hit.
+
+Raw per-run records and logs: [`bench/swebench/results/`](bench/swebench/results/). Optimization backlog from these
+results: [#5](https://github.com/surlymochan/openflow/issues/5).
 
 **Synthetic end-to-end tasks.** 8 small real tasks (4 JS, 4 Python), hidden acceptance tests applied only after the agent exits, 20-minute cap per run.
 

@@ -1,0 +1,15 @@
+{
+ "resolved": true,
+ "f2p": [
+  1,
+  1
+ ],
+ "p2p": [
+  18,
+  18
+ ],
+ "f2p_failed": [],
+ "p2p_failed": [],
+ "test_rc": 0,
+ "test_cmd": "<bench>/tmp/regrade/deepseek/openflow/pylint-dev__pylint-8898/r1/venv/bin/python -m pytest -rA tests/config/test_config.py"
+}

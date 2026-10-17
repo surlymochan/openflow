@@ -175,6 +175,10 @@ def grade(inst: dict, repo_dir: Path, venv: Path, out_dir: Path, timeout: int = 
     """Restore test files the agent may have touched, apply the official test_patch, run the
     official directives, parse with the official log parser, and grade F2P/P2P."""
     out_dir.mkdir(parents=True, exist_ok=True)
+    tmp = out_dir / "tmp"
+    if tmp.exists():
+        shutil.rmtree(tmp)
+    tmp.mkdir(parents=True, exist_ok=True)
     tf = test_files(inst)
     base = sh(GIT + ["rev-list", "--max-parents=0", "HEAD"], cwd=repo_dir).stdout.split()[0]
     for f in tf:
@@ -191,6 +195,8 @@ def grade(inst: dict, repo_dir: Path, venv: Path, out_dir: Path, timeout: int = 
     env = dict(os.environ)
     env.pop("VIRTUAL_ENV", None)
     env["PATH"] = f"{venv}/bin:" + env["PATH"]
+    env["TMPDIR"] = str(tmp)
+    env["PYTEST_DEBUG_TEMPROOT"] = str(tmp)
     try:
         p = sh(cmd, cwd=repo_dir, env=env, timeout=timeout, check=False)
         log = p.stdout

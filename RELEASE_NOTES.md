@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.2.2 - Benchmark docs
+
+No CLI or gate changes: this release only updates documentation. The README now leads with the SWE-bench Verified result on DeepSeek-V4.1-Flash: OpenFlow resolved 4/6 and the plain baseline resolved 3/6 (n=1 per cell). It also states the caveats: n=1 on 6 instances puts one or two resolves within noise, and the two workflow tools took about 1.8x the baseline's median wall-clock and cost 76% (OpenFlow) / 61% (openswarm) more per task. The first published table undercounted pytest because of a shared temp-dir race in grading; it is now fixed and regraded, with notes in [bench/swebench/README.md](bench/swebench/README.md#regrade-2026-10-18). The optimization backlog from these results is tracked in [issue #5](https://github.com/surlymochan/openflow/issues/5).
+
 ## 0.2.1 - Tighter TDD and spec gates
 
 Proof files are no longer trusted as JSON alone. `I6a` records a snapshot and a digest over the command, exit code, output hash, failure class, and file hashes. `I6b` recomputes that digest and re-runs the command on the snapshot. An agent who can rewrite the tree can still produce a self-consistent failing snapshot; a hand edit of the proof cannot.

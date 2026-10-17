@@ -1,0 +1,38 @@
+============================= test process starts ==============================
+executable:         <bench>/tmp/regrade/deepseek/openswarm/sympy__sympy-17630/r1/venv/bin/python  (3.9.25-final-0) [CPython]
+architecture:       64-bit
+cache:              no
+ground types:       python 
+numpy:              None
+random seed:        74914263
+hash randomization: on (PYTHONHASHSEED=3137443333)
+
+sympy/matrices/expressions/tests/test_blockmatrix.py[16] 
+test_bc_matmul ok
+test_bc_matadd ok
+test_bc_transpose ok
+test_bc_dist_diag ok
+test_block_plus_ident ok
+test_BlockMatrix ok
+test_block_collapse_explicit_matrices ok
+test_issue_17624 ok
+test_BlockMatrix_trace ok
+test_BlockMatrix_Determinant ok
+test_squareBlockMatrix ok
+test_BlockDiagMatrix ok
+test_blockcut ok
+test_reblock_2x2 ok
+test_deblock ok
+test_block_collapse_type ok                                                 [OK]
+
+sympy/matrices/expressions/tests/test_matadd.py[7] 
+test_sort_key ok
+test_matadd_sympify ok
+test_matadd_of_matrices ok
+test_doit_args ok
+test_generic_identity ok
+test_zero_matrix_add ok
+test_matrix_add_with_scalar f                                               [OK]
+
+
+======== tests finished: 22 passed, 1 expected to fail, in 0.27 seconds ========

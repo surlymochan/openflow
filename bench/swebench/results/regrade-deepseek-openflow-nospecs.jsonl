@@ -1,0 +1,2 @@
+{"instance_id": "pytest-dev__pytest-5787", "arm": "openflow", "rep": 1, "label": "deepseek-filtered", "original_resolved": false, "resolved": true, "f2p": [2, 2], "p2p": [123, 123], "f2p_failed": [], "p2p_failed": [], "patch_applied": true, "error": null}
+{"instance_id": "pytest-dev__pytest-10356", "arm": "openflow", "rep": 1, "label": "deepseek-filtered", "original_resolved": false, "resolved": false, "f2p": [0, 1], "p2p": [79, 79], "f2p_failed": ["testing/test_mark.py::test_mark_mro"], "p2p_failed": [], "patch_applied": true, "error": null}
