@@ -96,6 +96,15 @@ finished. OpenFlow adds a harder layer underneath:
   - Per-change `status.json` and proof files under `specs/changes/<id>/`.
 - **Executable finish.** Verify → archive → commit/push → PR ordering is a tested atom, not a checklist.
 
+## Features
+
+- **YAML workflows, validated before they run** — phases are data (`workflows/*.yaml`), checked against an atom registry before execution.
+- **Red/green TDD proof gates enforced by code** — proofs bind the command, exit code and output hash, and are re-verified on a snapshot; hand-edited or faked proofs are rejected, and skipped, todo or focused tests do not count.
+- **Automatic test-quality review** — changes with no meaningful test changes, empty assertions, snapshot-only tests or mock-heavy tests without real assertions are rejected.
+- **Context that survives sessions** — `.xflow/GOAL.md`, `HANDOFF.md` and per-change `status.json` carry state across sessions and agents.
+- **Executable finish line** — verify → archive → commit/push → PR ordering is a tested workflow atom, not a prose checklist.
+- **One CLI for multiple agents** — the `xflow` CLI drives Codex, Claude Code and Cursor from the same workflow files.
+
 ## 3 Minute Start
 
 Requires Node.js ≥ 22.5 (for `node:sqlite`) and Python 3 (atoms are small Python scripts).
