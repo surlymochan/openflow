@@ -4,6 +4,7 @@
 [![npm](https://img.shields.io/npm/v/@surlymochan/openflow?label=npm)](https://www.npmjs.com/package/@surlymochan/openflow)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![node >= 22.5](https://img.shields.io/badge/node-%E2%89%A522.5-informational)
+[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/surlymochan/badge.svg)](https://hub.xerj.org/contributors/surlymochan)
 
 **Executable delivery workflow for AI coding agents.**
 
