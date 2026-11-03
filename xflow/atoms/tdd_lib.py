@@ -665,7 +665,7 @@ def run_shell(command: str, cwd: Path, timeout: int = 120) -> subprocess.Complet
 
 
 def reexec_snapshot(destination: Path, command: str, timeout: int = 120):
-    temp = Path(tempfile.mkdtemp(prefix="openflow-proof-"))
+    temp = Path(tempfile.mkdtemp(prefix="evalid-proof-"))
     try:
         if any(destination.iterdir()):
             shutil.copytree(destination, temp, dirs_exist_ok=True)

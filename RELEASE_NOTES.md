@@ -1,5 +1,9 @@
 # Release Notes
 
+## 0.3.1 - Renamed: OpenFlow → evalid
+
+Same code as 0.3.0, new name and positioning. The project is now **evalid** — a runtime verification layer for coding agents: it seals each test run and replays it from a clean snapshot, so a claim only ships if the evidence replays green. Repository: `surlymochan/evalid` (old `openflow` links redirect); npm package: `evalid`. The `xflow` CLI name is unchanged in this release.
+
 ## 0.3.0 - Three-stage gates: SPEC, CR, Test
 
 OpenFlow's gates now cover the three stages where agent work usually goes wrong, each with deterministic checks instead of another model's opinion.

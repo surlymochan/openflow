@@ -13,7 +13,7 @@ What delivery situation is not handled today?
 
 ## How would it be verified?
 
-OpenFlow gates are checked by code, not prose — what deterministic check
+evalid gates are checked by code, not prose — what deterministic check
 would prove this works?
 
 ## Alternatives considered

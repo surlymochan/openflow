@@ -1,14 +1,30 @@
-# OpenFlow
+# evalid
 
-[![CI](https://github.com/surlymochan/openflow/actions/workflows/ci.yml/badge.svg)](https://github.com/surlymochan/openflow/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/@surlymochan/openflow?label=npm)](https://www.npmjs.com/package/@surlymochan/openflow)
+[![CI](https://github.com/surlymochan/evalid/actions/workflows/ci.yml/badge.svg)](https://github.com/surlymochan/evalid/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/evalid?label=npm)](https://www.npmjs.com/package/evalid)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![node >= 22.5](https://img.shields.io/badge/node-%E2%89%A522.5-informational)
 [![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/surlymochan/badge.svg)](https://hub.xerj.org/contributors/surlymochan)
 
-**Executable delivery workflow for AI coding agents.**
+**Claimed ≠ verified.**
+
+evalid is a runtime verification layer for coding agents. Your agent says the tests pass — evalid seals the run, replays it from a clean snapshot, and shows you the gap between what was claimed and what actually passed.
+
+- **Sealed evidence, replayed — not re-asked.** When tests run, the whole tree is hashed and sealed together with the command, exit code, and output. Verification copies the sealed snapshot to a clean directory and actually re-runs it, comparing exit codes and failure classes — and in the green phase, test files must hash-match the seal. If the agent edited the tests after the run, the seal breaks.
+- **A zero-judge pipeline.** Spec clarification, code review, and test verification are plain deterministic code — no LLM judge anywhere in the chain, zero tokens spent on checking, every stage leaving an artifact you can inspect. Ambiguous specs are blocked before the loop starts; changes without test follow-through are blocked at review; unproven claims are blocked at replay.
+- **The claim-vs-evidence ledger, with the cost attached.** Every delivery carries one record: what was claimed, what the replay showed, and what each phase cost in time and tokens — and when the phase ledger disagrees with wall-clock time by more than 5%, it flags itself as untrustworthy.
+
+> An LLM judge can be persuaded, is non-deterministic, and bills you for every opinion. A replay can't be talked out of anything: same sealed snapshot, same commands, same exit codes — or the claim doesn't ship.
+
+> **What the seal does and doesn't prove.** The seal is a content hash, not a cryptographic signature. A fully self-consistent forged snapshot could, in theory, still pass — we state this openly rather than oversell. What the seal does guarantee is narrower and real: the tests must actually have run at seal time, the test files at verification time are byte-identical to the ones that ran, and any tampering after the run breaks the hash and shows up. It is built to catch misreporting and test tampering — the failure modes agents actually exhibit — not to defeat a determined forger.
+
+Underneath, a workflow engine (spec → implement → verify loops with per-phase budgets) produces the work that gets verified. It's the chassis, not the headline: verification is the product. The `xflow` CLI runs the same workflows from Codex, Claude Code, Cursor, OpenCode, Gemini or a plain terminal.
+
+_Renamed from OpenFlow in v0.3.1 (2026-11-04); old repository and package links redirect._
 
 ## Benchmarks: OpenFlow vs superpowers (2026-10-17)
+
+_These results were recorded when the project was named OpenFlow; the version labels in this section are kept exactly as measured._
 
 For the synthetic and evidence-check results below, the same model (`grok-4.7-high` via local `cursor-agent`) and same
 harness are used for every arm; the SWE-bench block uses DeepSeek via Pi. Pinned: OpenFlow 0.2.1,
@@ -28,13 +44,13 @@ DeepSeek-V4.1-Flash (`deepseek-flash`), n=1 per cell, 20-minute cap; details and
 | openswarm (Pi executor) | 5/6 (83%) | 228 s (187–254) | $0.0377 | $0.21 | 6 |
 
 **Caveats:** n=1 on 6 instances, so one or two resolves are within noise. The two workflow tools took about 1.8x the
-baseline's median wall-clock and cost 76% (OpenFlow) / 61% (openswarm) more per task. The first published table undercounted
+baseline's median wall-clock and cost 76% (evalid) / 61% (openswarm) more per task. The first published table undercounted
 pytest because of a shared temp-dir race in grading; it is now fixed and regraded
 ([regrade notes](bench/swebench/README.md#regrade-2026-10-18)). On the MiniMax-M3.1-Flash-Preview subset, baseline
-resolved 3/4 and superpowers 2/4; OpenFlow had no clean MiniMax run because the plan's usage cap was hit.
+resolved 3/4 and superpowers 2/4; evalid had no clean MiniMax run because the plan's usage cap was hit.
 
 Raw per-run records and logs: [`bench/swebench/results/`](bench/swebench/results/). Optimization backlog from these
-results: [#5](https://github.com/surlymochan/openflow/issues/5).
+results: [#5](https://github.com/surlymochan/evalid/issues/5).
 
 **Synthetic end-to-end tasks.** 8 small real tasks (4 JS, 4 Python), hidden acceptance tests applied only after the agent exits, 20-minute cap per run.
 
@@ -44,10 +60,10 @@ results: [#5](https://github.com/surlymochan/openflow/issues/5).
 | superpowers v7.0.0 | 24/24 (100%) | 187 s (121–299) | 312k / 59k | 24 |
 | OpenFlow 0.2.1 | 11/12 (92%) | 985 s (920–1195) | 5.29M / 233k ¹ | 12 ² |
 
-On tasks this small the plain agent already succeeds every time, and OpenFlow's full ceremony is the slowest and most
-token-hungry arm. 3 of 12 OpenFlow runs hit the 20-minute cap while still running the workflow; their code already passed.
+On tasks this small the plain agent already succeeds every time, and evalid's full ceremony is the slowest and most
+token-hungry arm. 3 of 12 evalid runs hit the 20-minute cap while still running the workflow; their code already passed.
 ¹ Tokens counted only for runs that reported usage (not the 3 capped runs). Most of "total" is cache reads.
-² 3 repeats on 2 tasks, 1 on the other 6, to save quota. Matched repeat-1 view (n=8 each): baseline 8/8, 57 s, 104k; superpowers 8/8, 154 s, 289k; OpenFlow 8/8, 1008 s, 5.32M.
+² 3 repeats on 2 tasks, 1 on the other 6, to save quota. Matched repeat-1 view (n=8 each): baseline 8/8, 57 s, 104k; superpowers 8/8, 154 s, 289k; evalid 8/8, 1008 s, 5.32M.
 
 **Catching fake TDD / verification evidence.** 36 scripted episodes: 25 faulty (red proof recorded after the fix, forged
 proofs, skipped tests, weak or wrong assertions, contradictory specs, …) and 11 honest ones. Of these, 12 are a held-out set written after the fixes.
@@ -59,17 +75,17 @@ proofs, skipped tests, weak or wrong assertions, contradictory specs, …) and 1
 | LLM judge, no skills | 25/25 (100%) ³ | 0/11 | one agent call per check |
 | OpenFlow 0.2.0 (before this benchmark, original 24 only) | 10/17 (59%) | 3/7 | – |
 
-An LLM reviewer that is explicitly asked to audit an episode, and is allowed to rerun the tests, caught more than OpenFlow's static gates did.
-OpenFlow's gates are deterministic and cost no model calls, but they still miss plausible-but-wrong expected values,
+An LLM reviewer that is explicitly asked to audit an episode, and is allowed to rerun the tests, caught more than evalid's static gates did.
+evalid's gates are deterministic and cost no model calls, but they still miss plausible-but-wrong expected values,
 assertions in callbacks that never run, and behavior changes hidden inside a declared refactor.
 ³ 1 of the 11 honest runs timed out and counts as incorrect. LLM arms used 1 run per scenario.
 
-Prompt-based workflows *ask* an agent to write the failing test first, run the suite and keep notes. OpenFlow
+Prompt-based workflows *ask* an agent to write the failing test first, run the suite and keep notes. evalid
 *checks* that it did. Workflows are YAML phases made of small deterministic "atoms". Gates are code: a
 red/green TDD proof, a test-quality review, artifact checks, and archive ordering. The `xflow` CLI runs the
 same workflows from Codex, Claude Code, Cursor, OpenCode, Gemini or a plain terminal.
 
-![OpenFlow demo: a red proof must fail, a green proof must pass, and a faked red proof is rejected](docs/assets/demo.gif)
+![evalid demo: a red proof must fail, a green proof must pass, and a faked red proof is rejected](docs/assets/demo.gif)
 
 <sub>Recorded from a real run of the CLI in an empty project. The last two commands show an agent "recording" a
 red proof after the fix, and the gate rejecting it.</sub>
@@ -78,7 +94,7 @@ red proof after the fix, and the gate rejecting it.</sub>
 
 Agent workflow kits are good at shaping behaviour, but the checks only live in prose. Agents skip the red
 step, write tests that assert nothing, lose context between sessions, and open PRs before verification has
-finished. OpenFlow adds a harder layer underneath:
+finished. evalid adds a harder layer underneath:
 
 - **Workflow as data.** `workflows/yolo.yaml` and `workflows/corps.yaml` are validated against an atom registry before they run.
 - **TDD proof checked by code.**
@@ -111,7 +127,7 @@ finished. OpenFlow adds a harder layer underneath:
 Requires Node.js ≥ 22.5 (for `node:sqlite`) and Python 3 (atoms are small Python scripts).
 
 ```bash
-npm install -g @surlymochan/openflow     # installs the `xflow` CLI
+npm install -g evalid     # installs the `xflow` CLI
 cd your-project
 xflow init --project-root .               # writes .as-xflow/config.json
 xflow goal set "Ship the next verified change" --project-root .
@@ -124,8 +140,8 @@ xflow guide                               # the delivery loop in one screen
 For a source checkout:
 
 ```bash
-git clone https://github.com/surlymochan/openflow.git
-cd openflow
+git clone https://github.com/surlymochan/evalid.git
+cd evalid
 npm ci && npm test
 node bin/xflow.js quickstart
 node bin/xflow.js evaluate
@@ -211,13 +227,13 @@ workflows/*.yaml ──validate──► atoms/registry.json ──► xflow/ato
 
 ## Compared with other tools
 
-OpenFlow aims to complement prompt-level workflow kits and spec tools, not replace them. `xflow compare
+evalid aims to complement prompt-level workflow kits and spec tools, not replace them. `xflow compare
 <superpowers|openspec|gstack|spec-kit|codex-goal>` prints a side-by-side with sources.
 
 <details>
 <summary>Full capability table</summary>
 
-| Surface | OpenFlow Position |
+| Surface | evalid Position |
 | --- | --- |
 | Goal alignment | Project-level `.xflow/GOAL.md` that yolo, corps, Ralph, handoff, and takein consume |
 | One-shot evaluation | `xflow evaluate` combines quality score, Codex goal / Superpowers / Super-Assistant comparison, ordinary and splash launch blockers, release-owner status, claim boundaries, next actions, and first-run path |
@@ -278,7 +294,7 @@ OpenFlow aims to complement prompt-level workflow kits and spec tools, not repla
 - [Reviewer guide](docs/reviewer-guide.md)
 - [Team adoption operating model](docs/team-adoption.md)
 - [Competitive benchmark](docs/competitive-benchmark.md)
-- [2026-05-25 benchmark report](docs/benchmark-openflow-vs-gstack-superpowers-openspec-2026-05-25.md)
+- [2026-05-25 benchmark report](docs/benchmark-evalid-vs-gstack-superpowers-openspec-2026-05-25.md)
 
 </details>
 

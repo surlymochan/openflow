@@ -177,7 +177,7 @@ def refactor_findings(project_root: Path, diff_ref: str, code_files: list[str], 
     if findings:
         return findings
 
-    temp_root = Path(tempfile.mkdtemp(prefix="openflow-refactor-"))
+    temp_root = Path(tempfile.mkdtemp(prefix="evalid-refactor-"))
     try:
         before = temp_root / "before"
         after = temp_root / "after"

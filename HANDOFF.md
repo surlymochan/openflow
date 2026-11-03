@@ -1,4 +1,4 @@
-# OpenFlow Handoff
+# evalid Handoff
 
 This is a public handoff template for repository continuity. It should not
 contain personal paths, private customer data, secrets, unpublished adoption
@@ -6,9 +6,9 @@ evidence, or maintainer-only release state.
 
 ## Current State
 
-- Project: `openflow`
+- Project: `evalid`
 - Runtime CLI: `xflow`
-- Status: public extraction of the openflow workflow runtime.
+- Status: public extraction of the evalid workflow runtime.
 - Archive discipline: keep verification, handoff refresh, commit/push/close, and
   PR creation ordered and evidence-backed.
 - Next action: run verification and benchmark commands before making release

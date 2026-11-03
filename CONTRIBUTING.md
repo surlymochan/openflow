@@ -1,6 +1,6 @@
-# Contributing to OpenFlow
+# Contributing to evalid
 
-Thanks for helping. OpenFlow is an executable delivery workflow for AI
+Thanks for helping. evalid is an executable delivery workflow for AI
 coding agents: YAML phases made of small deterministic atoms, red/green TDD
 proof gates checked by code, and the `xflow` CLI. Contributions that keep
 the gates deterministic — checked by code, not by prose — are the ones that
@@ -12,8 +12,8 @@ Requires Node.js ≥ 22.5 (for `node:sqlite`) and Python 3 (atoms are small
 Python scripts).
 
 ```bash
-git clone https://github.com/surlymochan/openflow.git
-cd openflow
+git clone https://github.com/surlymochan/evalid.git
+cd evalid
 npm ci && npm test          # full suite; each test file also runs standalone
 node bin/xflow.js quickstart
 node bin/xflow.js doctor --project-root .

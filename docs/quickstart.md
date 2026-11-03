@@ -1,13 +1,13 @@
-# openflow Quickstart
+# evalid Quickstart
 
 Use this path when you want a project to adopt xflow without reading the implementation first.
 
 ## 0. See The Delivery Loop
 
-Use the published package path when `openflow` is available from npm:
+Use the published package path when `evalid` is available from npm:
 
 ```bash
-npm install -g @surlymochan/openflow
+npm install -g evalid
 xflow quickstart
 xflow guide
 xflow evaluate
@@ -20,8 +20,8 @@ xflow launch dossier
 Use source checkout mode before npm publication:
 
 ```bash
-git clone <repo-url> openflow
-cd openflow
+git clone <repo-url> evalid
+cd evalid
 npm install
 npm run release:pack
 node bin/xflow.js quickstart

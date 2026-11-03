@@ -2403,7 +2403,7 @@ phases:
     assert.equal(payload.splash_launch.package_evidence.ok, false);
     assert.ok(payload.claims.allowed.includes('project_goal_beats_thread_goal'));
     assert.ok(payload.claims.blocked.includes('published_package'));
-    assert.ok(payload.claims.forbidden_phrases.includes('openflow is publicly installable from npm'));
+    assert.ok(payload.claims.forbidden_phrases.includes('evalid is publicly installable from npm'));
     assert.ok(payload.splash_claims.allowed.includes('project_goal_beats_thread_goal'));
     assert.ok(payload.splash_claims.blocked.includes('published_package'));
     assert.ok(payload.splash_claims.forbidden_phrases.includes('splash launch complete'));
@@ -2555,7 +2555,7 @@ phases:
     });
 
     assert.equal(result.status, 0, result.stderr || result.stdout || String(result.error));
-    assert.match(result.stdout, /openflow public launch demo/);
+    assert.match(result.stdout, /evalid public launch demo/);
     assert.match(result.stdout, /Goal to yolo/);
     assert.match(result.stdout, /Goal to corps proof/);
 
@@ -2772,11 +2772,11 @@ phases:
     });
 
     assert.equal(result.status, 0, result.stderr || result.stdout || String(result.error));
-    assert.match(result.stdout, /openflow Launch Copy/);
+    assert.match(result.stdout, /evalid Launch Copy/);
     assert.match(result.stdout, /Safe Evaluation Command/);
     assert.match(result.stdout, /Forbidden Until Unblocked/);
-    assert.match(result.stdout, /git clone <repo-url> openflow/);
-    assert.match(result.stdout, /npm install -g @surlymochan\/openflow works now/);
+    assert.match(result.stdout, /git clone <repo-url> evalid/);
+    assert.match(result.stdout, /npm install -g evalid works now/);
 
     result = spawnSync('node', ['bin/xflow.js', 'launch', 'copy', '--json'], {
       cwd: REPO_ROOT,
@@ -2789,10 +2789,10 @@ phases:
     assert.equal(payload.ok, true);
     assert.equal(payload.launch_ready, false);
     assert.match(payload.headline, /executable workflow evidence/);
-    assert.match(payload.install_command, /git clone <repo-url> openflow/);
+    assert.match(payload.install_command, /git clone <repo-url> evalid/);
     assert.ok(payload.proof_points.some((item) => item.id === 'project_goal_beats_thread_goal'));
     assert.ok(payload.hold_until_evidence.some((item) => item.id === 'published_package'));
-    assert.ok(payload.forbidden_phrases.includes('npm install -g @surlymochan/openflow works now'));
+    assert.ok(payload.forbidden_phrases.includes('npm install -g evalid works now'));
     assert.ok(payload.evidence_commands.includes('xflow evaluate --json'));
     assert.ok(payload.evidence_commands.includes('xflow launch claims --json'));
     assert.ok(payload.evidence_commands.includes('xflow launch copy --json'));
@@ -2820,7 +2820,7 @@ phases:
     assert.equal(result.status, 1, result.stderr || result.stdout || String(result.error));
     const strictPayload = JSON.parse(result.stdout);
     assert.equal(strictPayload.launch_ready, false);
-    assert.ok(strictPayload.forbidden_phrases.includes('openflow is publicly installable from npm'));
+    assert.ok(strictPayload.forbidden_phrases.includes('evalid is publicly installable from npm'));
   });
 
   test('launch dossier summarizes score, goal comparison, demo paths, and blockers', () => {
@@ -2847,7 +2847,7 @@ phases:
       assert.equal(payload.splash_audit.launch_ready, false);
       assert.equal(payload.splash_audit.splash, true);
       assert.ok(payload.splash_audit.missing_surfaces.some((item) => item.id === 'third_party_adoption'));
-      assert.match(payload.dossier, /openflow Launch Dossier/);
+      assert.match(payload.dossier, /evalid Launch Dossier/);
       assert.match(payload.dossier, /Codex native goal comparison/);
       assert.match(payload.dossier, /xflow:goal/);
       assert.match(payload.dossier, /xflow goal audit --json/);
@@ -2893,7 +2893,7 @@ phases:
 
       assert.equal(result.status, 0, result.stderr || result.stdout || String(result.error));
       assert.match(result.stdout, /Usage: xflow launch/);
-      assert.doesNotMatch(result.stdout, /openflow Launch Dossier/);
+      assert.doesNotMatch(result.stdout, /evalid Launch Dossier/);
     } finally {
       cleanupProjectRoot(projectRoot);
     }

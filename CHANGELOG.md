@@ -3,6 +3,11 @@
 All notable changes to this project are documented here. Detailed notes live in
 [RELEASE_NOTES.md](RELEASE_NOTES.md).
 
+## [0.3.1] - 2026-11-04
+
+### Changed
+- **Renamed: OpenFlow → evalid.** The repository is now `surlymochan/evalid` (old links redirect) and the npm package is now `evalid`. Same code and behaviour as 0.3.0; the rename matches the repositioned first screen — a runtime verification layer for coding agents ("Claimed ≠ verified"). The `xflow` CLI name is unchanged in this release.
+
 ## [0.3.0] - 2026-11-04
 
 ### Added

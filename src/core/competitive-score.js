@@ -94,7 +94,7 @@ const DIMENSIONS = [
       ['file', 'HANDOFF.md'],
       ['file', 'docs/openspec-migration.md'],
       ['text', 'xflow/atoms/j4b_spec_delta_review.py', /Spec Delta Review/],
-      ['text', 'xflow/atoms/j4c_openspec_migration_map.py', /OpenSpec project to openflow surfaces/],
+      ['text', 'xflow/atoms/j4c_openspec_migration_map.py', /OpenSpec project to evalid surfaces/],
     ],
   },
   {
@@ -210,7 +210,7 @@ const DIMENSIONS = [
       ['file', 'docs/public-release.md'],
       ['file', 'docs/public-benchmark.md'],
       ['file', 'docs/npm-publish-handoff.md'],
-      ['text', 'docs/install-upgrade.md', /npm install -g @surlymochan\/openflow/],
+      ['text', 'docs/install-upgrade.md', /npm install -g evalid/],
       ['text', 'docs/install-upgrade.md', /xflow package preflight --check-registry --check-auth --json/],
       ['file', 'docs/demo-proof.md'],
       ['file', 'docs/fixtures/tracker-item.json'],

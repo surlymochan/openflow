@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * xflow — openflow unified CLI
+ * xflow — evalid unified CLI
  *
  * Commands:
  *   workflow run <yaml>          Execute a workflow (or dry-run with --dry-run)
@@ -1451,7 +1451,7 @@ async function handleRelease(sub, args) {
 }
 
 const LAUNCH_DEMO = {
-  title: 'openflow public launch demo',
+  title: 'evalid public launch demo',
   promise: 'Show that xflow turns a project goal into verified yolo or corps delivery evidence.',
   docs: ['docs/launch-demo.md', 'docs/demo-proof.md', 'docs/quality-assessment.md'],
   paths: [
@@ -1554,12 +1554,12 @@ async function handleCleanDemo(args) {
   }
 
   const parsedArgs = parseCliArgs(args);
-  const projectRoot = resolve(parsedArgs.project_root || mkdtempSync(resolve(tmpdir(), 'openflow-clean-')));
+  const projectRoot = resolve(parsedArgs.project_root || mkdtempSync(resolve(tmpdir(), 'evalid-clean-')));
   const shouldCleanup = !parsedArgs.project_root && !parsedArgs.keep;
   mkdirSync(projectRoot, { recursive: true });
   const packagePath = resolve(projectRoot, 'package.json');
   if (!existsSync(packagePath)) {
-    writeFileSync(packagePath, JSON.stringify({ name: 'openflow-clean-smoke', version: '0.0.0', private: true }, null, 2));
+    writeFileSync(packagePath, JSON.stringify({ name: 'evalid-clean-smoke', version: '0.0.0', private: true }, null, 2));
   }
 
   const cli = resolve(ROOT, 'bin', 'xflow.js');
@@ -1715,7 +1715,7 @@ const LAUNCH_MISSING_SURFACES = {
   third_party_adoption: {
     id: 'third_party_adoption',
     requirement: 'At least one adoption artifact comes from a third-party project, public PR, external repository, or named external team beyond maintainer dogfooding.',
-    why_it_matters: 'An industry-splash claim needs ecosystem evidence, not only a maintainer hardening run inside openflow.',
+    why_it_matters: 'An industry-splash claim needs ecosystem evidence, not only a maintainer hardening run inside evalid.',
     acceptable_evidence: [
       'docs/adoption/<third-party-project>.md with a public PR, external repository, or named external team source',
       'xflow adoption validate --splash --json passes',
@@ -1727,7 +1727,7 @@ const LAUNCH_MISSING_SURFACES = {
     requirement: 'Public npm package ownership confirmed and package published from a green dry run.',
     why_it_matters: 'A launch story is incomplete while users cannot install the advertised package name.',
     acceptable_evidence: [
-      'npm view @surlymochan/openflow name version --json returns this package',
+      'npm view evalid name version --json returns this package',
       'npm publish --access public completed for the intended version',
     ],
   },
@@ -1992,12 +1992,12 @@ function buildLaunchCopyPayload(payload) {
   const claims = buildLaunchClaimsPayload(payload);
   const packageBlocked = claims.blocked_claims.some((item) => item.id === 'published_package');
   const installCommand = packageBlocked
-    ? 'git clone <repo-url> openflow && cd openflow && npm install && node bin/xflow.js quickstart'
-    : 'npm install -g @surlymochan/openflow && xflow quickstart';
+    ? 'git clone <repo-url> evalid && cd evalid && npm install && node bin/xflow.js quickstart'
+    : 'npm install -g evalid && xflow quickstart';
   const forbiddenPhrases = [];
   if (packageBlocked) {
-    forbiddenPhrases.push('npm install -g @surlymochan/openflow works now');
-    forbiddenPhrases.push('openflow is publicly installable from npm');
+    forbiddenPhrases.push('npm install -g evalid works now');
+    forbiddenPhrases.push('evalid is publicly installable from npm');
     forbiddenPhrases.push('splash launch complete');
   }
   if (claims.blocked_claims.some((item) => item.id === 'package_preflight')) {
@@ -2018,8 +2018,8 @@ function buildLaunchCopyPayload(payload) {
     mode: payload.mode,
     splash: payload.splash,
     verdict: claims.verdict,
-    headline: 'openflow turns AI-agent delivery into executable workflow evidence',
-    short_copy: 'openflow packages project goals, yolo delivery, corps product proof, TDD gates, handoff, and launch audits into a local CLI/runtime for AI coding agents.',
+    headline: 'evalid turns AI-agent delivery into executable workflow evidence',
+    short_copy: 'evalid packages project goals, yolo delivery, corps product proof, TDD gates, handoff, and launch audits into a local CLI/runtime for AI coding agents.',
     install_command: installCommand,
     proof_points: claims.allowed_claims.map((item) => ({
       id: item.id,
@@ -2039,7 +2039,7 @@ function buildLaunchCopyPayload(payload) {
 
 function renderLaunchCopy(payload) {
   const lines = [
-    '# openflow Launch Copy',
+    '# evalid Launch Copy',
     '',
     `Generated: ${payload.generated_at}`,
     `Verdict: ${payload.verdict}`,
@@ -2256,7 +2256,7 @@ function pushActionSection(lines, title, actions) {
 
 function renderLaunchDossier(payload, splashPayload = payload) {
   const lines = [
-    '# openflow Launch Dossier',
+    '# evalid Launch Dossier',
     '',
     `Generated: ${payload.generated_at}`,
     `Mode: ${payload.mode}`,
@@ -2674,8 +2674,8 @@ function buildAdoptionTrialPayload(parsedArgs = {}) {
   const source = parsedArgs.source || '<public-pr-or-external-repo>';
   const track = parsedArgs.track || 'yolo';
   const sourceCheckoutCommands = [
-    'git clone <repo-url> openflow',
-    'cd openflow',
+    'git clone <repo-url> evalid',
+    'cd evalid',
     'npm install',
     'node bin/xflow.js quickstart',
     'node bin/xflow.js demo clean',
@@ -3081,7 +3081,7 @@ function validateAdoptionRecord(path, projectRoot) {
 function classifyAdoptionScope({ title, source, markdown }) {
   const text = `${title}\n${source}\n${markdown}`.toLowerCase();
   const maintainerSignals = [
-    'openflow maintainer',
+    'evalid maintainer',
     'maintainer release-hardening',
     'dogfood',
     'self-hosted',
@@ -3219,7 +3219,7 @@ function readPackageMetadata(parsedArgs = {}) {
     projectRoot,
     packagePath,
     packageJson,
-    packageName: parsedArgs.package_name || packageJson.name || 'openflow',
+    packageName: parsedArgs.package_name || packageJson.name || 'evalid',
     expectedVersion: parsedArgs.version || packageJson.version || null,
     issues,
   };
@@ -4811,9 +4811,9 @@ const GUIDE_STAGES = [
 const QUICKSTART = {
   published_package: {
     label: 'Published package first run',
-    intent: 'Copy-paste-safe commands for an evaluator after openflow is available from npm.',
+    intent: 'Copy-paste-safe commands for an evaluator after evalid is available from npm.',
     commands: [
-      'npm install -g @surlymochan/openflow',
+      'npm install -g evalid',
       'xflow guide',
       'xflow evaluate',
       'xflow assess',
@@ -4831,8 +4831,8 @@ const QUICKSTART = {
     label: 'Source checkout evaluation',
     intent: 'Copy-paste-safe commands before npm publication or while developing xflow itself.',
     commands: [
-      'git clone <repo-url> openflow',
-      'cd openflow',
+      'git clone <repo-url> evalid',
+      'cd evalid',
       'npm install',
       'npm run release:pack',
       'node bin/xflow.js assess',
@@ -6540,7 +6540,7 @@ async function handleServe(args) {
     return;
   }
 
-  console.log('Starting openflow HTTP control plane...');
+  console.log('Starting evalid HTTP control plane...');
   // For now, delegate to as-agentos server if available
   const agentosServer = resolve(ROOT, 'src', 'server.js');
   if (existsSync(agentosServer)) {
@@ -7079,7 +7079,7 @@ function printServeHelp() {
   console.log(`
 Usage: xflow serve
 
-Start the openflow HTTP control plane for heavy-track workflows.
+Start the evalid HTTP control plane for heavy-track workflows.
 
 Options:
   help, -h, --help  Show this help message without starting the server
@@ -7088,7 +7088,7 @@ Options:
 
 function printHelp() {
   console.log(`
-xflow — openflow unified workflow CLI
+xflow — evalid unified workflow CLI
 
 Usage:
   xflow workflow run <yaml>      Run a workflow (add --dry-run to preview)

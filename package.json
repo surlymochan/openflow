@@ -1,7 +1,7 @@
 {
-  "name": "@surlymochan/openflow",
-  "version": "0.3.0",
-  "description": "Executable delivery workflows for AI coding agents: YAML phases, red/green TDD proof gates, handoff state and the xflow CLI.",
+  "name": "evalid",
+  "version": "0.3.1",
+  "description": "Claimed != verified: a runtime verification layer for coding agents. It seals each test run and replays it from a clean snapshot, with a zero-judge gate pipeline (spec clarification, code review, TDD proof) and the xflow CLI.",
   "keywords": [
     "ai-agents",
     "coding-agents",
@@ -14,13 +14,13 @@
     "openspec",
     "developer-tools"
   ],
-  "homepage": "https://github.com/surlymochan/openflow#readme",
+  "homepage": "https://github.com/surlymochan/evalid#readme",
   "bugs": {
-    "url": "https://github.com/surlymochan/openflow/issues"
+    "url": "https://github.com/surlymochan/evalid/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/surlymochan/openflow.git"
+    "url": "git+https://github.com/surlymochan/evalid.git"
   },
   "author": "Chao Chen (https://github.com/surlymochan)",
   "license": "MIT",

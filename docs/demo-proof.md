@@ -1,4 +1,4 @@
-# openflow Demo Proof
+# evalid Demo Proof
 
 This page defines what an external evaluator should run before trusting xflow claims.
 
@@ -7,7 +7,7 @@ This page defines what an external evaluator should run before trusting xflow cl
 From an empty temporary project:
 
 ```bash
-npm install -g @surlymochan/openflow
+npm install -g evalid
 xflow demo clean
 xflow guide
 xflow assess
@@ -34,7 +34,7 @@ same init/goal/doctor/yolo validation smoke, and cleans up automatically.
 
 ## Source Checkout Release Proof
 
-From the openflow repository:
+From the evalid repository:
 
 ```bash
 npm run release:pack
