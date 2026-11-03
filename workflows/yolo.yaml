@@ -199,12 +199,15 @@ phases:
       - id: J1.tests.run
       - id: J4a.spec_consistency.structural
       - id: J4b.spec_delta.review
+      - id: J6.cr.review
       - id: B3.status.transition
         with: { to_stage: "verify" }
       - id: B2b.status.write
         with:
           fields:
             verification_status: "running"
+    artifacts:
+      - { path: "specs/changes/${change_id}/cr/review-0.json", optional: false }
     gate:
       type: deterministic
       atom: J4a.spec_consistency.structural

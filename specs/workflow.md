@@ -79,9 +79,9 @@ No workflow may define a phase not listed here. Phase IDs here are authoritative
 
 | # | ID | Source | Description |
 |---|----|--------|-------------|
-| 23 | `verify-consistency` | yolo | Impl vs proposal/plan/specs/AHA.md structural drift check |
+| 23 | `verify-consistency` | yolo | Impl vs proposal/plan/specs/AHA.md structural drift check + deterministic CR gate (`J6.cr.review`: spec alignment, test follow, assertion balance, loop budget) |
 | 24 | `review` | agentos | Adversarial code review + patch-challenge |
-| 25 | `qa` | agentos | Behavior + visual verification, screenshot-backed for strict UI work |
+| 25 | `qa` | agentos | Behavior + visual verification, screenshot-backed for strict UI work; runs the same `J6.cr.review` gate (verdict record `cr/review-0.json`) |
 | 26 | `gate_final` | agentos | Mirror frozen contract; decide pass / fail / needs-human |
 
 ### Archive

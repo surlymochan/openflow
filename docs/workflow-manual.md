@@ -130,7 +130,7 @@
   └──────────────────────────────────────────────────────────────────────────┘
 
   ┌──────────────────────────── Verify / Review ────────────────────────────┐
-  │ 23  verify-consistency  impl vs proposal/plan/specs/AHA.md 漂移检查      │
+  │ 23  verify-consistency  impl vs proposal/plan/specs/AHA.md 漂移检查 + J6 CR 门禁 │
   │ 24  review              对抗性代码评审 + patch-challenge（corps）          │
   │ 25  qa                  行为 + 视觉验证，截图支持（corps）                 │
   │ 26  gate_final          镜像 frozen contract，pass/fail/needs-human       │
