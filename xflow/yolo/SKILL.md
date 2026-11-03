@@ -22,6 +22,10 @@ For a full run:
 xflow workflow run workflows/yolo.yaml --title "<中文标题>" --change-type backend
 ```
 
+When `--change-id` is omitted and the current branch cannot provide one
+(e.g. `main`), the run derives the change id from `--title` and prints it;
+pass `--change-id` explicitly to override.
+
 ## Plan reuse rule
 
 - Read `.xflow/GOAL.md` before execution when present. State whether the current
@@ -45,12 +49,17 @@ xflow workflow run workflows/yolo.yaml --title "<中文标题>" --change-type ba
 4. `proposal-freeze`
 5. `proposal-consistency-check`
 6. `plan`
-7. `openissue`
-8. `set-in-progress`
-9. `tdd`
+7. `tdd` (red proof — sealed in the same pass as the plan, see below)
+8. `openissue`
+9. `set-in-progress`
 10. `execute`
 11. `verify-consistency`
 12. `archive`
+
+On the lite track the red proof is sealed immediately after planning: the
+pass that writes the plan also writes the failing test, so `tdd-red` only
+runs and seals it — no second exploration pass, and the issue/branch
+ceremony no longer sits between planning and the red proof.
 
 The workflow YAML is the canonical execution source for atom order, gates, and
 artifact checks. This skill only explains the contract.

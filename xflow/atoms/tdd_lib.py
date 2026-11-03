@@ -8,6 +8,13 @@ fails unless the snapshot really exits that way and the binding is rebuilt.
 An agent who can write the tree can still record a genuine failing snapshot
 and later replace the working tree; the digest is not a trusted third party.
 Byte-identical stdout is not required, because runners print timings.
+
+Scoped sealing (issue #5 P1-4): inside a git work tree the snapshot copies
+only the files that differ from HEAD plus the files the test command names.
+Every other file is pinned to the recorded HEAD: I6b materializes it from
+`git archive` at replay time, so the replayed tree is byte-identical to the
+sealed one while the stored manifest stays proportional to the change.
+Outside a git work tree the legacy full-tree copy is used unchanged.
 """
 import hashlib
 import json
@@ -44,6 +51,7 @@ BINDING_FIELDS = (
     "stderr_tail",
     "git_head",
     "file_hashes",
+    "snapshot_scope",
     "failure_kind",
     "recorded_at",
 )
@@ -134,9 +142,16 @@ def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+# Optional binding fields join the payload only when present, so proofs
+# sealed before the field existed keep verifying byte-for-byte.
+OPTIONAL_BINDING_FIELDS = {"snapshot_scope"}
+
+
 def binding_payload(proof: dict) -> dict:
     payload = {}
     for field in BINDING_FIELDS:
+        if field in OPTIONAL_BINDING_FIELDS and proof.get(field) is None:
+            continue
         payload[field] = proof.get(field)
     return payload
 
@@ -187,20 +202,128 @@ def iter_project_files(project_root: Path, skip_prefix: str):
             yield rel, full
 
 
-def write_snapshot(project_root: Path, change_id: str, phase: str, attempt: int) -> dict:
+def _git_status_paths(project_root: Path):
+    """(changed, deleted) path sets from `git status --porcelain -z`.
+
+    Returns None when the project is not a git work tree. Renames report the
+    new path as changed and the old path as deleted.
+    """
+    result = subprocess.run(
+        ["git", "status", "--porcelain=v1", "-z", "--untracked-files=all"],
+        cwd=project_root,
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        return None
+    entries = result.stdout.decode("utf-8", errors="replace").split("\0")
+    changed: set[str] = set()
+    deleted: set[str] = set()
+    index = 0
+    while index < len(entries):
+        entry = entries[index]
+        index += 1
+        if len(entry) < 4:
+            continue
+        code, rel = entry[:2], entry[3:]
+        if "R" in code or "C" in code:
+            old = entries[index] if index < len(entries) else ""
+            index += 1
+            if old:
+                deleted.add(old)
+        if "D" in code:
+            deleted.add(rel)
+        elif rel:
+            changed.add(rel)
+    return changed, deleted
+
+
+def changed_since(project_root: Path, ref: str) -> set[str]:
+    """Paths whose working-tree content differs from `ref`, plus untracked."""
+    paths: set[str] = set()
+    diff = subprocess.run(
+        ["git", "diff", "--name-only", "-z", ref],
+        cwd=project_root,
+        capture_output=True,
+    )
+    if diff.returncode == 0:
+        paths.update(p for p in diff.stdout.decode("utf-8", errors="replace").split("\0") if p)
+    others = subprocess.run(
+        ["git", "ls-files", "--others", "--exclude-standard", "-z"],
+        cwd=project_root,
+        capture_output=True,
+    )
+    if others.returncode == 0:
+        paths.update(p for p in others.stdout.decode("utf-8", errors="replace").split("\0") if p)
+    return paths
+
+
+def snapshot_scope(project_root: Path, change_id: str, command: str | None) -> dict | None:
+    """Files the proof actually depends on (issue #5 P1-4).
+
+    Scoped sealing only applies inside a git work tree: every file that
+    differs from HEAD is sealed by copy, and every other file is pinned to
+    the recorded HEAD and materialized from git at replay time. Returns None
+    when no HEAD exists to pin the rest of the tree to (legacy full copy).
+    """
+    if git_head(project_root) is None:
+        return None
+    status = _git_status_paths(project_root)
+    if status is None:
+        return None
+    changed, deleted = status
+    evidence_prefix = (Path("specs") / "changes" / change_id).as_posix() + "/"
+
+    def excluded(rel: str) -> bool:
+        return rel.startswith(evidence_prefix)
+
+    def noise(rel: str) -> bool:
+        return any(part in SKIP_DIR_NAMES for part in rel.split("/"))
+
+    files = {rel for rel in changed if not excluded(rel) and not noise(rel)}
+    for rel in test_paths(command or ""):
+        if not excluded(rel) and (project_root / rel).is_file():
+            files.add(rel)
+    return {
+        "version": 1,
+        "files": sorted(files),
+        "deleted": sorted(rel for rel in deleted if not excluded(rel) and not noise(rel)),
+    }
+
+
+def write_snapshot(project_root: Path, change_id: str, phase: str, attempt: int,
+                   command: str | None = None) -> tuple[dict, dict | None]:
+    """Seal the tree state a proof ran against.
+
+    With a scope (git work tree), only the scoped files are copied and
+    hashed; the manifest stays proportional to the change, not the tree.
+    Without one, the legacy full-tree copy is used.
+    """
     skip_prefix = (Path("specs") / "changes" / change_id / "tdd").as_posix()
     destination = snapshot_dir(project_root, change_id, phase, attempt)
     if destination.exists():
         shutil.rmtree(destination)
     destination.mkdir(parents=True, exist_ok=True)
+    scope = snapshot_scope(project_root, change_id, command)
     hashes = {}
-    for rel, full in iter_project_files(project_root, skip_prefix):
+    if scope is None:
+        for rel, full in iter_project_files(project_root, skip_prefix):
+            data = full.read_bytes()
+            hashes[rel] = sha256_bytes(data)
+            target = destination / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        return hashes, None
+    for rel in scope["files"]:
+        full = project_root / rel
+        if full.is_symlink() or not full.is_file():
+            continue
         data = full.read_bytes()
         hashes[rel] = sha256_bytes(data)
         target = destination / rel
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(data)
-    return hashes
+    scope = {**scope, "files": sorted(hashes)}
+    return hashes, scope
 
 
 def snapshot_tree_hashes(destination: Path):
@@ -667,6 +790,46 @@ def run_shell(command: str, cwd: Path, timeout: int = 120) -> subprocess.Complet
 def reexec_snapshot(destination: Path, command: str, timeout: int = 120):
     temp = Path(tempfile.mkdtemp(prefix="evalid-proof-"))
     try:
+        if any(destination.iterdir()):
+            shutil.copytree(destination, temp, dirs_exist_ok=True)
+        result = run_shell(command, temp, timeout=timeout)
+        text = f"{result.stdout or ''}\n{result.stderr or ''}"
+        return result.returncode, text
+    finally:
+        shutil.rmtree(temp, ignore_errors=True)
+
+
+def reexec_scoped_snapshot(project_root: Path, destination: Path, command: str,
+                           git_head_ref: str, scope: dict, timeout: int = 120):
+    """Replay a scoped proof: rebuild the sealed tree, then re-run.
+
+    Unchanged files come from `git archive` at the recorded HEAD (their
+    seal-time content is HEAD content by construction of the scope), deleted
+    paths stay deleted, and the sealed scoped files are overlaid last so
+    they win over the archive.
+    """
+    temp = Path(tempfile.mkdtemp(prefix="evalid-proof-"))
+    try:
+        archive = subprocess.run(
+            ["git", "archive", git_head_ref],
+            cwd=project_root,
+            capture_output=True,
+        )
+        if archive.returncode != 0:
+            raise RuntimeError(f"git archive {git_head_ref} failed: {archive.stderr.decode('utf-8', errors='replace')[:300]}")
+        extract = subprocess.run(
+            ["tar", "-x", "-C", str(temp)],
+            input=archive.stdout,
+            capture_output=True,
+        )
+        if extract.returncode != 0:
+            raise RuntimeError(f"replay tree extraction failed: {extract.stderr.decode('utf-8', errors='replace')[:300]}")
+        for rel in list(scope.get("deleted", [])) + list(scope.get("files", [])):
+            target = temp / rel
+            if target.is_dir() and not target.is_symlink():
+                shutil.rmtree(target)
+            elif target.exists() or target.is_symlink():
+                target.unlink()
         if any(destination.iterdir()):
             shutil.copytree(destination, temp, dirs_exist_ok=True)
         result = run_shell(command, temp, timeout=timeout)

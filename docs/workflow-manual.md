@@ -195,6 +195,12 @@ CHANGE_ID=<id> xflow workflow run workflows/yolo.yaml
            │ exist
     ▼
 ┌──────────────────────┐
+│  21a tdd-red         │  atoms: I6a(red) + I6b(red) + B3 transition
+│  gate: artifact-verify│◄─── red 必须失败（F2 起紧随 plan 封存，与规划同一轮次）
+└──────────┬───────────┘
+           │ exist
+    ▼
+┌──────────────────────┐
 │  19  openissue       │  atoms: A1 issue + A2 branch + B2b status
 │  gate: deterministic │◄─── E6 post-openissue
 └──────────┬───────────┘
@@ -207,17 +213,16 @@ CHANGE_ID=<id> xflow workflow run workflows/yolo.yaml
            │ pass
     ▼
 ┌──────────────────────┐
-│  21a tdd-red         │  atoms: I6a(red) + I6b(red)
-│  21b tdd-green       │  atoms: I6a(green) + I6b(green) + I6c quality
-│  gate: artifact-verify│◄─── red 必须失败；green/refactor 必须通过
-└──────────┬───────────┘
-           │ exist
-    ▼
-┌──────────────────────┐
 │  22  execute         │  atoms: B3 transition
 │  gate: human ⏸       │◄─── 等待 xflow gate ack execute
 └──────────┬───────────┘
            │ ack
+    ▼
+┌──────────────────────┐
+│  21b tdd-green       │  atoms: I6a(green) + I6b(green) + I6c quality
+│  gate: artifact-verify│◄─── green/refactor 必须通过
+└──────────┬───────────┘
+           │ exist
     ▼
 ┌──────────────────────┐
 │  23  verify-consist. │  atoms: J1 tests.run + J4a structural + J4b delta

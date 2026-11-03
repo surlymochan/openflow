@@ -30,6 +30,15 @@ reuse it instead of rewriting the same plan again.
 If the file is missing or still a scaffold placeholder, create the reusable
 plan once and leave routing to the execution workflow.
 
+## Lite-track merged pass
+
+When the change will run the lite (yolo) track, do the red-proof authoring
+in the same pass as the plan: write the failing test and fix the red test
+command in the plan itself. The yolo workflow seals `tdd-red` immediately
+after `plan`, so a separate test-authoring pass would only re-read the
+same files. This does not apply to the corps track, which keeps planning
+and proof authoring apart.
+
 ## Boundary
 
 - This skill does not open issues.

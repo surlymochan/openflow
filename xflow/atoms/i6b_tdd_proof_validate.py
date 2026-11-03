@@ -95,8 +95,17 @@ def main():
     if found is None or found != proof.get('file_hashes'):
         emit({'ok': False, 'verdict': 'snapshot_mismatch', 'phase': args.phase}, 1)
 
+    scope = proof.get('snapshot_scope')
+    scoped = isinstance(scope, dict) and bool(proof.get('git_head'))
     try:
-        actual_exit, actual_text = tdd_lib.reexec_snapshot(destination, proof.get('command') or '', timeout=120)
+        if scoped:
+            actual_exit, actual_text = tdd_lib.reexec_scoped_snapshot(
+                project, destination, proof.get('command') or '', proof['git_head'], scope, timeout=120
+            )
+        else:
+            actual_exit, actual_text = tdd_lib.reexec_snapshot(destination, proof.get('command') or '', timeout=120)
+    except RuntimeError as exc:
+        emit({'ok': False, 'verdict': 'replay_source_missing', 'phase': args.phase, 'error': str(exc)[:300]}, 1)
     except subprocess.TimeoutExpired:
         emit({'ok': False, 'verdict': 'reexec_timeout', 'phase': args.phase}, 1)
 
@@ -127,6 +136,13 @@ def main():
             path = project / rel
             if not path.is_file() or tdd_lib.sha256_bytes(path.read_bytes()) != digest:
                 mismatched.append(rel)
+        if scoped:
+            # Test files outside the sealed scope were pinned to the recorded
+            # HEAD at seal time; any that have drifted since are unsealed edits.
+            sealed = set(proof.get('file_hashes', {}))
+            for rel in tdd_lib.changed_since(project, proof['git_head']):
+                if rel not in sealed and tdd_lib.is_test_file(rel):
+                    mismatched.append(rel)
         if mismatched:
             emit({
                 'ok': False,

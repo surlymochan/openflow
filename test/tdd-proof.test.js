@@ -492,6 +492,97 @@ describe('TDD proof semantics', () => {
     }
   });
 
+  test('scoped snapshot seals only the change and replays the rest from HEAD (P1-4)', () => {
+    const projectRoot = makeGitChangeRoot();
+    try {
+      mkdirSync(resolve(projectRoot, 'src'), { recursive: true });
+      mkdirSync(resolve(projectRoot, 'test'), { recursive: true });
+      writeFileSync(resolve(projectRoot, 'src', 'add.js'), 'export function add(a, b) { return a + b; }\n');
+      writeFileSync(resolve(projectRoot, 'src', 'untouched.js'), 'export const MARKER = "sealed-by-head";\n');
+      writeFileSync(resolve(projectRoot, 'test', 'add.test.js'), [
+        "import test from 'node:test';",
+        "import assert from 'node:assert/strict';",
+        "import { add } from '../src/add.js';",
+        "import { MARKER } from '../src/untouched.js';",
+        "test('adds', () => { assert.equal(add(2, 2), 4); });",
+        "test('untouched file is materialized from HEAD at replay', () => { assert.equal(MARKER, 'sealed-by-head'); });",
+        '',
+      ].join('\n'));
+      git(projectRoot, ['add', '.']);
+      git(projectRoot, ['commit', '-m', 'baseline product']);
+      // The change: one source file touched, nothing else.
+      writeFileSync(resolve(projectRoot, 'src', 'add.js'), 'export function add(a, b) { return a + b; } // touched\n');
+
+      const run = runAtom('xflow/atoms/i6a_tdd_run.py', projectRoot, [
+        '--phase', 'green', '--test-command', 'node --test test/add.test.js',
+      ]);
+      assert.equal(run.status, 0, run.stderr || run.stdout);
+      const proof = JSON.parse(readFileSync(
+        resolve(projectRoot, 'specs', 'changes', 'chg-tdd', 'tdd', 'green-0.json'),
+        'utf8',
+      ));
+      assert.ok(proof.snapshot_scope, 'git-backed runs record a snapshot scope');
+      assert.deepEqual(Object.keys(proof.file_hashes).sort(), ['src/add.js', 'test/add.test.js']);
+      assert.ok(!('src/untouched.js' in proof.file_hashes), 'untouched files stay out of the manifest');
+      const validate = runAtom('xflow/atoms/i6b_tdd_proof_validate.py', projectRoot, ['--phase', 'green']);
+      assert.equal(validate.status, 0, validate.stderr || validate.stdout);
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('scoped snapshot keeps deletions deleted at replay and catches unsealed test drift', () => {
+    const projectRoot = makeGitChangeRoot();
+    try {
+      mkdirSync(resolve(projectRoot, 'src'), { recursive: true });
+      mkdirSync(resolve(projectRoot, 'test'), { recursive: true });
+      writeFileSync(resolve(projectRoot, 'src', 'keep.js'), 'export const keep = 1;\n');
+      writeFileSync(resolve(projectRoot, 'src', 'gone.js'), 'export const gone = 1;\n');
+      writeFileSync(resolve(projectRoot, 'test', 'keep.test.js'), [
+        "import test from 'node:test';",
+        "import assert from 'node:assert/strict';",
+        "import { existsSync } from 'node:fs';",
+        "test('deleted file stays deleted', () => { assert.equal(existsSync(new URL('../src/gone.js', import.meta.url)), false); });",
+        '',
+      ].join('\n'));
+      writeFileSync(resolve(projectRoot, 'test', 'other.test.js'), [
+        "import test from 'node:test';",
+        "import assert from 'node:assert/strict';",
+        "test('other', () => { assert.ok(true); });",
+        '',
+      ].join('\n'));
+      git(projectRoot, ['add', '.']);
+      git(projectRoot, ['commit', '-m', 'baseline product']);
+      rmSync(resolve(projectRoot, 'src', 'gone.js'));
+
+      const run = runAtom('xflow/atoms/i6a_tdd_run.py', projectRoot, [
+        '--phase', 'green', '--test-command', 'node --test test/keep.test.js',
+      ]);
+      assert.equal(run.status, 0, run.stderr || run.stdout);
+      const proof = JSON.parse(readFileSync(
+        resolve(projectRoot, 'specs', 'changes', 'chg-tdd', 'tdd', 'green-0.json'),
+        'utf8',
+      ));
+      assert.deepEqual(proof.snapshot_scope.deleted, ['src/gone.js']);
+      const validate = runAtom('xflow/atoms/i6b_tdd_proof_validate.py', projectRoot, ['--phase', 'green']);
+      assert.equal(validate.status, 0, validate.stderr || validate.stdout);
+
+      // A test file outside the sealed scope drifts after the proof: the
+      // green check must refuse it even though it was never in file_hashes.
+      writeFileSync(resolve(projectRoot, 'test', 'other.test.js'), [
+        "import test from 'node:test';",
+        "import assert from 'node:assert/strict';",
+        "test('other', () => { assert.ok(false); });",
+        '',
+      ].join('\n'));
+      const drifted = runAtom('xflow/atoms/i6b_tdd_proof_validate.py', projectRoot, ['--phase', 'green']);
+      assert.notEqual(drifted.status, 0);
+      assert.match(drifted.stdout, /green_tree_mismatch/);
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
+
   test('docs mode accepts a documentation-only diff without a red proof', () => {
     const projectRoot = makeGitChangeRoot();
     try {

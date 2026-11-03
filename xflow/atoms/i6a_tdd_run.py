@@ -64,7 +64,9 @@ def main():
 
     passed = exit_code == 0
     combined = f"{stdout}\n{stderr}"
-    file_hashes = tdd_lib.write_snapshot(project, args.change_id, args.phase, args.attempt)
+    file_hashes, snapshot_scope = tdd_lib.write_snapshot(
+        project, args.change_id, args.phase, args.attempt, command=args.test_command
+    )
     proof = {
         'phase': args.phase,
         'attempt': args.attempt,
@@ -79,6 +81,7 @@ def main():
         'output_sha256': tdd_lib.output_digest(stdout, stderr),
         'git_head': tdd_lib.git_head(project),
         'file_hashes': file_hashes,
+        'snapshot_scope': snapshot_scope,
         'failure_kind': 'timeout' if timed_out else tdd_lib.classify_output(combined, passed),
         'recorded_at': datetime.now(timezone.utc).isoformat(),
     }
