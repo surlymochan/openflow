@@ -1,6 +1,6 @@
 {
   "name": "@surlymochan/evalid",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Claimed != verified: a runtime verification layer for coding agents. It seals each test run and replays it from a clean snapshot, with a zero-judge gate pipeline (spec clarification, code review, TDD proof) and the xflow CLI.",
   "keywords": [
     "ai-agents",
