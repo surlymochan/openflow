@@ -5079,13 +5079,53 @@ async function handleInit(args) {
   mkdirSync(configDir, { recursive: true });
   writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`, 'utf8');
 
+  const gitignore = ensureXflowGitignore(projectRoot);
+
   if (parsedArgs.json) {
-    console.log(JSON.stringify({ ok: true, config_path: configPath, config }, null, 2));
+    console.log(JSON.stringify({ ok: true, config_path: configPath, config, gitignore }, null, 2));
     return;
   }
 
   console.log(`xflow init: wrote ${configPath}`);
+  if (gitignore.created) {
+    console.log(`xflow init: wrote ${gitignore.path} (ignores ${gitignore.added.join(', ')})`);
+  } else if (gitignore.added.length > 0) {
+    console.log(`xflow init: updated ${gitignore.path} (+ ${gitignore.added.join(', ')})`);
+  } else {
+    console.log(`xflow init: ${gitignore.path} already covers evalid local state`);
+  }
   console.log('Next: xflow doctor --project-root <path>');
+}
+
+// Local runtime state an evalid project should never commit: the .as-xflow
+// state dir (config, sqlite state, logs, pending gates/tasks, snapshots) and
+// per-change spec artifacts (proofs, status files). These mirror the entries
+// this repository keeps in its own .gitignore.
+const XFLOW_GITIGNORE_ENTRIES = ['.as-xflow/', 'specs/changes/'];
+const XFLOW_GITIGNORE_HEADER = '# evalid local state (added by xflow init)';
+
+function normalizeGitignoreEntry(line) {
+  return line.trim().replace(/^\//, '').replace(/\/$/, '');
+}
+
+function ensureXflowGitignore(projectRoot) {
+  const gitignorePath = resolve(projectRoot, '.gitignore');
+
+  if (!existsSync(gitignorePath)) {
+    writeFileSync(gitignorePath, `${XFLOW_GITIGNORE_HEADER}\n${XFLOW_GITIGNORE_ENTRIES.join('\n')}\n`, 'utf8');
+    return { path: gitignorePath, created: true, added: [...XFLOW_GITIGNORE_ENTRIES] };
+  }
+
+  const original = readFileSync(gitignorePath, 'utf8');
+  const present = new Set(original.split('\n').map(normalizeGitignoreEntry));
+  const missing = XFLOW_GITIGNORE_ENTRIES.filter((entry) => !present.has(normalizeGitignoreEntry(entry)));
+  if (missing.length === 0) {
+    return { path: gitignorePath, created: false, added: [] };
+  }
+
+  const separator = original.length === 0 ? '' : original.endsWith('\n') ? '\n' : '\n\n';
+  writeFileSync(gitignorePath, `${original}${separator}${XFLOW_GITIGNORE_HEADER}\n${missing.join('\n')}\n`, 'utf8');
+  return { path: gitignorePath, created: false, added: missing };
 }
 
 // ─── goal ────────────────────────────────────────────────────────────────────
@@ -6667,7 +6707,10 @@ function printInitHelp() {
 Usage: xflow init [--project-root <path>] [--force] [--json]
 
 Create a project-local .as-xflow/config.json with portable defaults for
-workflow paths, skill sync paths, and issue routing.
+workflow paths, skill sync paths, and issue routing. Also creates or updates
+the project .gitignore so evalid local state (.as-xflow/, specs/changes/)
+stays out of version control; existing entries are never modified and
+re-running init adds nothing twice.
 
 Options:
   --project-root PATH Initialize a specific project root
