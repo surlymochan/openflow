@@ -258,6 +258,17 @@
         "change_id": "string"
       }
     },
+    "J4d.spec_clarify.gate": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/j4d_spec_clarify_gate.py",
+      "description": "Pre-implementation SPEC clarification gate: flag unquantified MUST/SHALL statements, scenarios missing WHEN/THEN, unquantified vague terms (EN/CN), and unresolved placeholders; every finding carries a concrete clarification question. Writes spec_clarify.json/.md.",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string",
+        "files": "string[]?"
+      }
+    },
     "J4c.openspec.migration_map": {
       "track": "lite",
       "type": "python",

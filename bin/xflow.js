@@ -3732,6 +3732,21 @@ async function handleSpec(sub, args) {
       process.exit(result.status ?? 1);
       break;
     }
+    case 'clarify': {
+      const parsedArgs = parseCliArgs(args);
+      const projectRoot = parsedArgs.project_root || process.env.XFLOW_PROJECT_ROOT || process.cwd();
+      const changeId = resolveChangeId({ explicit: parsedArgs.change_id, projectRoot });
+      ensureChangeId(changeId, 'spec clarify', projectRoot);
+      const result = spawnSync('python3', [
+        resolve(ROOT, 'xflow', 'atoms', 'j4d_spec_clarify_gate.py'),
+        '--project-root',
+        projectRoot,
+        '--change-id',
+        changeId,
+      ], { stdio: 'inherit' });
+      process.exit(result.status ?? 1);
+      break;
+    }
     case 'openspec-map': {
       const parsedArgs = parseCliArgs(args);
       const projectRoot = parsedArgs.project_root || process.env.XFLOW_PROJECT_ROOT || process.cwd();
@@ -3748,7 +3763,7 @@ async function handleSpec(sub, args) {
     }
     default:
       console.error(`Unknown spec subcommand: ${sub}`);
-      console.error('Available: start, quick, delta, openspec-map');
+      console.error('Available: start, quick, delta, clarify, openspec-map');
       process.exit(1);
   }
 }

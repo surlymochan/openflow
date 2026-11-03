@@ -11,6 +11,7 @@ import time
 from pathlib import Path
 
 import swe_env as E
+from agent_env import per_run_uv_cache
 
 RUN_PI = os.environ.get("RUN_PI", "<pi>/run_pi.sh")
 DEPS = Path(os.environ.get("BENCH_DEPS", "<agents>/gity/bench-deps"))
@@ -135,6 +136,9 @@ def path_env(venv: Path, *extra: str) -> dict:
     """
     env = {"PATH": ":".join([f"{venv}/bin", *extra, os.environ["PATH"]])}
     env.update(NO_NET_ENV)
+    # P0-3 (issue #5): never let an agent read the shared ~/.cache/uv, where
+    # newer upstream releases may already contain the fix being evaluated.
+    env["UV_CACHE_DIR"] = per_run_uv_cache(venv)
     return env
 
 
