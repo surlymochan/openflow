@@ -131,9 +131,12 @@ phases:
     required: true
     atoms:
       - id: J4a.spec_consistency.structural
+      - id: J4d.spec_clarify.gate
+    artifacts:
+      - { path: "specs/changes/${change_id}/spec_clarify.json", optional: true }
     gate:
       type: deterministic
-      atom: J4a.spec_consistency.structural
+      atom: J4d.spec_clarify.gate
       on_fail: stop
 
   - id: design_contract_freeze
