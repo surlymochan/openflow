@@ -7,7 +7,7 @@ Use this path when you want a project to adopt xflow without reading the impleme
 Use the published package path when `evalid` is available from npm:
 
 ```bash
-npm install -g evalid
+npm install -g @surlymochan/evalid
 xflow quickstart
 xflow guide
 xflow evaluate

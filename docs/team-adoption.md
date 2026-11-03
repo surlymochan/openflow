@@ -78,7 +78,7 @@ xflow workflow validate corps --project-root .
 For consumer projects that only install the CLI, keep a smaller adoption smoke:
 
 ```bash
-npm install -g evalid
+npm install -g @surlymochan/evalid
 xflow guide
 xflow init --project-root .
 xflow doctor --project-root .

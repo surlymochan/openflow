@@ -9,7 +9,7 @@ The package name `evalid` was checked against the npm public registry during the
 Do not treat this as permanent ownership. Re-check before publishing.
 
 ```bash
-npm view evalid name version --json
+npm view @surlymochan/evalid name version --json
 ```
 
 ## Release Check
@@ -120,7 +120,7 @@ Record these in the release note or PR:
 
 ## Failure Rules
 
-- If `npm view evalid` returns an existing package not owned by this project, choose a new package name before publishing.
+- If `npm view @surlymochan/evalid` returns an existing package not owned by this project, choose a new package name before publishing.
 - If `xflow package preflight --check-registry --check-auth --json` fails, do not run the real publish.
 - If `xflow goal audit --json` fails, do not claim xflow goal is stronger than Codex native goal.
 - If `xflow launch claims --json` lists a claim under `blocked_claims`, do not use that claim in launch copy.

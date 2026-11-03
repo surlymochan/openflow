@@ -7,7 +7,7 @@ This page defines what an external evaluator should run before trusting xflow cl
 From an empty temporary project:
 
 ```bash
-npm install -g evalid
+npm install -g @surlymochan/evalid
 xflow demo clean
 xflow guide
 xflow assess

@@ -7,7 +7,7 @@ This walkthrough is the public demo script for evaluating xflow without reading 
 Global package path after publish:
 
 ```bash
-npm install -g evalid
+npm install -g @surlymochan/evalid
 ```
 
 Source checkout path:

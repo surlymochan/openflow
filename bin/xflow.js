@@ -1727,7 +1727,7 @@ const LAUNCH_MISSING_SURFACES = {
     requirement: 'Public npm package ownership confirmed and package published from a green dry run.',
     why_it_matters: 'A launch story is incomplete while users cannot install the advertised package name.',
     acceptable_evidence: [
-      'npm view evalid name version --json returns this package',
+      'npm view @surlymochan/evalid name version --json returns this package',
       'npm publish --access public completed for the intended version',
     ],
   },
@@ -1993,10 +1993,10 @@ function buildLaunchCopyPayload(payload) {
   const packageBlocked = claims.blocked_claims.some((item) => item.id === 'published_package');
   const installCommand = packageBlocked
     ? 'git clone <repo-url> evalid && cd evalid && npm install && node bin/xflow.js quickstart'
-    : 'npm install -g evalid && xflow quickstart';
+    : 'npm install -g @surlymochan/evalid && xflow quickstart';
   const forbiddenPhrases = [];
   if (packageBlocked) {
-    forbiddenPhrases.push('npm install -g evalid works now');
+    forbiddenPhrases.push('npm install -g @surlymochan/evalid works now');
     forbiddenPhrases.push('evalid is publicly installable from npm');
     forbiddenPhrases.push('splash launch complete');
   }
@@ -3219,7 +3219,7 @@ function readPackageMetadata(parsedArgs = {}) {
     projectRoot,
     packagePath,
     packageJson,
-    packageName: parsedArgs.package_name || packageJson.name || 'evalid',
+    packageName: parsedArgs.package_name || packageJson.name || '@surlymochan/evalid',
     expectedVersion: parsedArgs.version || packageJson.version || null,
     issues,
   };
@@ -4813,7 +4813,7 @@ const QUICKSTART = {
     label: 'Published package first run',
     intent: 'Copy-paste-safe commands for an evaluator after evalid is available from npm.',
     commands: [
-      'npm install -g evalid',
+      'npm install -g @surlymochan/evalid',
       'xflow guide',
       'xflow evaluate',
       'xflow assess',

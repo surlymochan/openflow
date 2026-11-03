@@ -9,7 +9,7 @@ The rule is simple: keep the workflow runtime in the project and keep the agent-
 Every supported tool should be able to run this sequence:
 
 ```bash
-npm install -g evalid
+npm install -g @surlymochan/evalid
 xflow quickstart
 xflow guide
 xflow assess

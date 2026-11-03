@@ -1,7 +1,7 @@
 # evalid
 
 [![CI](https://github.com/surlymochan/evalid/actions/workflows/ci.yml/badge.svg)](https://github.com/surlymochan/evalid/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/evalid?label=npm)](https://www.npmjs.com/package/evalid)
+[![npm](https://img.shields.io/npm/v/@surlymochan/evalid?label=npm)](https://www.npmjs.com/package/@surlymochan/evalid)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![node >= 22.5](https://img.shields.io/badge/node-%E2%89%A522.5-informational)
 [![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/surlymochan/badge.svg)](https://hub.xerj.org/contributors/surlymochan)
