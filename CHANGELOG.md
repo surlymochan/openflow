@@ -3,6 +3,11 @@
 All notable changes to this project are documented here. Detailed notes live in
 [RELEASE_NOTES.md](RELEASE_NOTES.md).
 
+## [Unreleased]
+
+### Added
+- **CR gate `J6.cr.review` wired into the verify stage (v0.4 F1)**: closes the v0.3.0 known gap where J6 was registered and unit-tested but no workflow phase invoked it. The yolo `verify-consistency` phase and the corps `qa` phase now run J6 on every change — after the spec-delta review, before the stage flips to verify — and declare its verdict record `specs/changes/<change_id>/cr/review-0.json` as a required artifact. A failing verdict (spec misalignment, changed code with no test follow, net assertion decrease, blown loop budget) stops the workflow at verify instead of waving the change through to archive. Orchestration evidence: `test/cr-review-wiring.test.js` drives the real yolo verify phase through `WorkflowExecutor` against a git fixture — an aligned, tested change passes with a verdict record, and an untested change is stopped at the phase.
+
 ## [0.3.1] - 2026-11-04
 
 ### Changed

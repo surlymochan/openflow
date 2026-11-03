@@ -428,6 +428,7 @@ phases:
     atoms:
       - id: J1.tests.run
       - id: J4b.spec_delta.review
+      - id: J6.cr.review
       - id: H5.visual.review
         with: { mode: "qa" }
       - id: E5.artifact.verify
@@ -441,6 +442,7 @@ phases:
       - id: J5.gate.evidence_collect
     artifacts:
       - { path: "specs/changes/${change_id}/qa_acceptance.json", optional: false }
+      - { path: "specs/changes/${change_id}/cr/review-0.json", optional: false }
     gate:
       type: artifact-verify
       on_fail: stop
