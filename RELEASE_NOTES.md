@@ -1,5 +1,17 @@
 # Release Notes
 
+## 0.4.0 - CR gate wired in, overhead cut 1, predictions direct
+
+**The CR gate now runs inside the pipeline (F1, #15).** In 0.3.0 `J6.cr.review` was registered and unit-tested but no workflow invoked it — the release notes said so, and this release closes that gap. The yolo `verify-consistency` phase and the corps `qa` phase run J6 on every change, after the spec-delta review and before the stage flips to verify, and the verdict record `cr/review-0.json` is a required artifact: a failing verdict stops the workflow instead of waving the change through to archive. The wiring is proven end-to-end, not just by unit tests: `test/cr-review-wiring.test.js` drives the real yolo verify phase through `WorkflowExecutor` against a git fixture — an aligned, tested change passes with a verdict record on disk, and a code change with no test follow is stopped at the phase with the `cr_code_without_test` finding.
+
+**Overhead cut 1 (F2, #17).** The lite (yolo) track seals the TDD red proof immediately after `plan` — the issue/branch ceremony no longer sits between planning and red-proof, and the planning pass authors the failing test, so plan and red share one agent pass. `xflow workflow run --title "..."` derives the change id from the title when the branch cannot provide one. TDD snapshots are scoped: inside a git work tree, I6a seals only the files that differ from HEAD plus the files the test command names, and I6b materializes the rest from the recorded HEAD at replay. Offline measurements on the SWE-bench sympy tree: the sealed manifest drops from 1,543 files / 164 KB to the changed files only (2 files / 197 B for a one-file change), and the snapshot copy from 26.9 MB to ~51 KB. Proofs sealed before this change keep verifying.
+
+Acceptance debt, stated plainly: the v0.4 acceptance line for F2 was a live rerun of the same 6 SWE-bench instances — wall-clock ≤ 1.3× the baseline median, total tokens ≤ 2.0M, resolved ≥ 4/6. The bench generation environment is not currently restored, so those three numbers are still owed; they are not claimed here. If the rerun misses the line when it lands, the remaining overhead work continues as v0.4.1 rather than being declared done.
+
+**Predictions come straight out of `run.py` (F3, #16).** The official SWE-bench predictions format (`instance_id`, `model_name_or_path`, `model_patch`) is now produced by the bench harness itself, with the P0-2 evidence filter re-applied on both the live and replay paths — the one-off converter outside the repo is retired. Regression evidence: all four pilot arms rebuilt through `run.py --export-predictions` are byte-identical to the hand-converted pilot files (`cmp` = 0, 24 instances).
+
+**`xflow init` writes `.gitignore` (F4, #18).** Init now creates or merges the project `.gitignore` for evalid local state (`.as-xflow/`, `specs/changes/`), appending only missing entries and never modifying existing lines — the first line of defense ahead of the diff filtering added in #8. This closes the second v0.3.0 known gap; both are now done.
+
 ## 0.3.1 - Renamed: OpenFlow → evalid
 
 Same code as 0.3.0, new name and positioning. The project is now **evalid** — a runtime verification layer for coding agents: it seals each test run and replays it from a clean snapshot, so a claim only ships if the evidence replays green. Repository: `surlymochan/evalid` (old `openflow` links redirect); npm package: `evalid`. The `xflow` CLI name is unchanged in this release.
