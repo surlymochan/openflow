@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "harness"))
 
 import swe_env as E
+import diff_filter as D
 
 
 def read_runs(path: Path) -> list[dict]:
@@ -52,7 +53,16 @@ def regrade_cell(row: dict, inst: dict | None, label: str, raw_root: Path, emit)
     diff = raw_root / str(arm) / iid / f"r{rep}" / "solution.diff"
     patch_applied = False
     if diff.is_file() and diff.stat().st_size > 0:
-        ap = E.sh(E.GIT + ["apply", "--whitespace=nowarn", str(diff)], cwd=repo, check=False)
+        # P0-2 (issue #5): saved patches from older runs may still contain
+        # workflow evidence sections (specs/, .xflow/); strip them before
+        # applying so the graded tree only ever sees solution code.
+        original = diff.read_text(errors="replace")
+        filtered = D.strip_excluded_sections(original)
+        apply_path = diff
+        if filtered != original:
+            apply_path = workdir / "solution.filtered.diff"
+            apply_path.write_text(filtered)
+        ap = E.sh(E.GIT + ["apply", "--whitespace=nowarn", str(apply_path)], cwd=repo, check=False)
         patch_applied = ap.returncode == 0
 
     res = E.grade(inst, repo, venv, workdir / "grade")

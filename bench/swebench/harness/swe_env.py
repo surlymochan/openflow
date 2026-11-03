@@ -14,6 +14,7 @@ import subprocess
 from pathlib import Path
 
 import pandas as pd
+from agent_env import with_uv_cache
 from swebench.harness.constants import MAP_REPO_VERSION_TO_SPECS
 from swebench.harness.log_parsers import MAP_REPO_TO_PARSER
 from swebench.harness.test_spec.python import get_test_directives
@@ -103,7 +104,9 @@ def specs(inst: dict) -> dict:
 
 def build_env(inst: dict, repo_dir: Path, venv: Path, log: Path) -> None:
     s = specs(inst)
-    env = dict(os.environ)
+    # P0-3 (issue #5): the harness's own uv calls use the per-run cache too,
+    # not the shared ~/.cache/uv.
+    env = with_uv_cache(dict(os.environ), venv)
     env.pop("VIRTUAL_ENV", None)
     env["SETUPTOOLS_SCM_PRETEND_VERSION"] = inst["version"] + ".0"
     lines = []

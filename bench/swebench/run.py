@@ -10,6 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent / "harness"))
 import swe_env as E  # noqa: E402
 import arms as A  # noqa: E402
+import diff_filter as D  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
 LOCK = threading.Lock()
@@ -39,7 +40,10 @@ def cell(inst, arm, rep, out, stamp, raw_root, label):
         mf = events / "measure-from.txt"
         frm = mf.read_text().strip() if mf.exists() else base
         E.sh(E.GIT + ["add", "-A"], cwd=repo, check=False)
-        diff = E.sh(E.GIT + ["diff", "--no-ext-diff", "--cached", frm, "--", ".", ":(exclude).xflow", ":(exclude).as-xflow"], cwd=repo, check=False, errors="replace").stdout
+        # P0-2 (issue #5): evidence paths (specs/, .xflow/, .as-xflow/) are
+        # excluded at diff time and stripped again as a second guard, so a
+        # solution patch never carries workflow evidence.
+        diff = D.strip_excluded_sections(E.sh(E.GIT + ["diff", "--no-ext-diff", "--cached", frm, "--"] + D.pathspec_args(), cwd=repo, check=False, errors="replace").stdout)
         E.sh(E.GIT + ["diff", "--cached", frm, "--stat"], cwd=repo, check=False)
         (events / "solution.diff").write_text(diff)
         E.sh(E.GIT + ["reset", "-q"], cwd=repo, check=False)
