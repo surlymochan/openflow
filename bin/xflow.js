@@ -5421,7 +5421,17 @@ async function handleWorkflow(sub, args) {
       }
       const isDryRun = args.includes('--dry-run');
       const input = buildWorkflowInput(parsedArgs);
-      const changeId = resolveChangeId({ explicit: parsedArgs.change_id, projectRoot });
+      let changeId = resolveChangeId({ explicit: parsedArgs.change_id, projectRoot });
+      if (!changeId && input.title) {
+        // Lite-track turn economy (issue #5 P1-2): the documented invocation
+        // is `workflow run yolo --title "..."`, which dead-ended on branches
+        // like `main` that cannot derive a change id and pushed agents into
+        // manual atom-by-atom driving. Derive the id from the title instead.
+        changeId = normalizeChangeId(input.title);
+        if (changeId) {
+          console.log(`Derived --change-id "${changeId}" from --title (pass --change-id to override).`);
+        }
+      }
       ensureChangeId(changeId, 'workflow run', projectRoot);
       const { load, dryRun } = await import('../src/core/workflow-loader.js');
       if (isDryRun) {

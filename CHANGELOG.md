@@ -5,6 +5,9 @@ All notable changes to this project are documented here. Detailed notes live in
 
 ## [Unreleased]
 
+### Changed
+- **Overhead cut 1 (v0.4 F2, issue #5 P1-2/P1-4)**: the lite (yolo) track seals the TDD red proof immediately after `plan` — the issue/branch ceremony no longer sits between planning and red-proof, and the planning pass now authors the failing test, so plan and red share one agent pass. `xflow workflow run --title "..."` also derives the change id from the title when the branch cannot provide one (previously a hard stop on `main` that pushed agents into manual atom-by-atom driving). TDD snapshots are scoped: inside a git work tree I6a seals only the files that differ from HEAD plus the files the test command names, and I6b materializes the rest from the recorded HEAD at replay — on the SWE-bench sympy tree the sealed manifest drops from 1,543 files / 164 KB to the changed files only (2 files / 197 B for a one-file change), and the snapshot copy from 26.9 MB to ~51 KB. Proofs sealed before this change keep verifying (the scope joins the binding only when present).
+
 ### Added
 - **CR gate `J6.cr.review` wired into the verify stage (v0.4 F1)**: closes the v0.3.0 known gap where J6 was registered and unit-tested but no workflow phase invoked it. The yolo `verify-consistency` phase and the corps `qa` phase now run J6 on every change — after the spec-delta review, before the stage flips to verify — and declare its verdict record `specs/changes/<change_id>/cr/review-0.json` as a required artifact. A failing verdict (spec misalignment, changed code with no test follow, net assertion decrease, blown loop budget) stops the workflow at verify instead of waving the change through to archive. Orchestration evidence: `test/cr-review-wiring.test.js` drives the real yolo verify phase through `WorkflowExecutor` against a git fixture — an aligned, tested change passes with a verdict record, and an untested change is stopped at the phase.
 

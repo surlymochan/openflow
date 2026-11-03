@@ -110,6 +110,28 @@ phases:
       type: artifact-verify
       on_fail: stop
 
+  # F2 (issue #5 P1-2): on the lite track the red proof is sealed immediately
+  # after planning, in the same agent pass that authored the plan and the
+  # failing test. The issue/branch ceremony (openissue, set-in-progress) no
+  # longer sits between planning and red-proof, where it forced a separate
+  # exploration pass; it still completes before execute.
+  - id: tdd-red
+    label: "21a · TDD red"
+    catalog_ref: 21
+    required: true
+    atoms:
+      - id: I6a.tdd.run
+        with: { phase: "red", test_command: "${input.tdd_red_command}", expect: "fail" }
+      - id: I6b.tdd.proof_validate
+        with: { phase: "red", tdd_mode: "${input.tdd_mode}" }
+      - id: B3.status.transition
+        with: { to_stage: "tdd" }
+    artifacts:
+      - { path: "specs/changes/${change_id}/tdd/red-0.json", optional: false }
+    gate:
+      type: artifact-verify
+      on_fail: stop
+
   - id: openissue
     label: "19 · Open issue + branch"
     catalog_ref: 19
@@ -143,23 +165,6 @@ phases:
       type: deterministic
       atom: E6.gate.local_precheck
       with: { phase: "pre-exec" }
-      on_fail: stop
-
-  - id: tdd-red
-    label: "21a · TDD red"
-    catalog_ref: 21
-    required: true
-    atoms:
-      - id: I6a.tdd.run
-        with: { phase: "red", test_command: "${input.tdd_red_command}", expect: "fail" }
-      - id: I6b.tdd.proof_validate
-        with: { phase: "red", tdd_mode: "${input.tdd_mode}" }
-      - id: B3.status.transition
-        with: { to_stage: "tdd" }
-    artifacts:
-      - { path: "specs/changes/${change_id}/tdd/red-0.json", optional: false }
-    gate:
-      type: artifact-verify
       on_fail: stop
 
   - id: execute

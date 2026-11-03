@@ -25,7 +25,10 @@ ALLOWED_STAGE_TRANSITIONS: dict[str, set[str]] = {
     "proposal-freeze": {"proposal-freeze", "proposal-consistency-check", "plan"},
     "proposal-consistency-check": {"proposal-consistency-check", "plan"},
     "plan": {"plan", "tdd"},
-    "openissue": {"openissue", "tdd"},
+    # "execute" is reachable from openissue on the lite track: since F2 the
+    # red proof is sealed before the issue is filed, so execution may start
+    # straight from the openissue stage.
+    "openissue": {"openissue", "tdd", "execute"},
     "tdd": {"tdd", "execute", "verify"},
     "execute": {"execute", "tdd", "verify"},
     "verify": {"verify", "tdd", "execute", "archive"},

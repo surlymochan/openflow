@@ -189,6 +189,36 @@ describe('Workflow: yolo.yaml', () => {
     assert.equal(a5Atom.with.close_issue, true);
   });
 
+  test('lite track seals the red proof right after planning, before openissue (F2)', () => {
+    const phaseIds = yoloWorkflow.phases.map((phase) => phase.id);
+    assert.ok(
+      phaseIds.indexOf('plan') < phaseIds.indexOf('tdd-red'),
+      'red proof still follows planning',
+    );
+    assert.ok(
+      phaseIds.indexOf('tdd-red') < phaseIds.indexOf('openissue'),
+      'red proof is sealed before the issue/branch ceremony so plan and red share one agent pass',
+    );
+    assert.ok(
+      phaseIds.indexOf('openissue') < phaseIds.indexOf('execute'),
+      'openissue still completes before execution',
+    );
+  });
+
+  test('status machine allows openissue to enter execute once red is sealed (F2)', () => {
+    const result = spawnSync('python3', [
+      '-c',
+      [
+        'import sys',
+        'sys.path.append("xflow/scripts")',
+        'from common import assert_stage_transition_allowed',
+        'assert_stage_transition_allowed("openissue", "execute", current_status="active")',
+        'assert_stage_transition_allowed("plan", "tdd", current_status="active")',
+      ].join('\n'),
+    ], { cwd: ROOT, encoding: 'utf8' });
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+  });
+
   test('tdd red runs before execute and green quality review runs after execute', () => {
     const phaseIds = yoloWorkflow.phases.map((phase) => phase.id);
     assert.ok(

@@ -4654,4 +4654,52 @@ phases:
       cleanupProjectRoot(projectRoot);
     }
   });
+
+  test('workflow run derives the change id from --title on an underivable branch (F2)', () => {
+    const projectRoot = makeProjectRoot();
+    const workflowPath = resolve(projectRoot, 'needs-change-id.yaml');
+    try {
+      initGitRepo(projectRoot, 'main');
+      writeFileSync(workflowPath, `
+name: needs-change-id
+version: 1
+track: lite
+requires:
+  agentos_http: false
+  gh: false
+  pencil: false
+phases:
+  - id: change-init
+    label: "Change init"
+    catalog_ref: 1
+    required: true
+    atoms:
+      - id: B1.change.scaffold
+        with: { change_type: "backend", title: "Needs change id" }
+    gate:
+      type: skip
+`);
+
+      const result = spawnSync('node', [
+        'bin/xflow.js',
+        'workflow',
+        'run',
+        workflowPath,
+        '--project-root',
+        projectRoot,
+        '--title',
+        'Fix the thing',
+        '--dry-run',
+      ], {
+        cwd: REPO_ROOT,
+        encoding: 'utf8',
+        timeout: 15000,
+      });
+
+      assert.doesNotMatch(result.stderr, /CHANGE_ID is required/);
+      assert.match(result.stdout, /Derived --change-id "Fix-the-thing" from --title/);
+    } finally {
+      cleanupProjectRoot(projectRoot);
+    }
+  });
 });
