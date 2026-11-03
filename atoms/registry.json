@@ -279,6 +279,19 @@
         "openspec_root": "string?"
       }
     },
+    "J6.cr.review": {
+      "track": "lite",
+      "type": "python",
+      "script": "xflow/atoms/j6_cr_review.py",
+      "description": "Deterministic first-pass code review gate before PR/archive: spec alignment of changed code, test follow per code file, assertion net-decrease check, and a configurable loop budget (diff size) that recommends splitting the spec",
+      "input_schema": {
+        "project_root": "string",
+        "change_id": "string",
+        "diff_ref": "string?",
+        "max_files": "integer?",
+        "max_lines": "integer?"
+      }
+    },
     "K6.aha.merge": {
       "track": "lite",
       "type": "python",
