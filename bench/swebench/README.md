@@ -187,7 +187,8 @@ After the agent exits: test files touched by the official `test_patch` are resto
 
 | Path | Contents |
 | --- | --- |
-| `run.py` | Matrix runner, resumable |
+| `run.py` | Matrix runner, resumable; also exports saved patches as official predictions |
+| `harness/predictions.py` | Official SWE-bench predictions builder/writer (live and saved-patch paths) |
 | `harness/swe_env.py` | Checkout, env, grading |
 | `harness/arms.py` | Arms |
 | `harness/pi_shim.sh` | Shim for openswarm's Pi call |
@@ -210,6 +211,33 @@ After the agent exits: test files touched by the official `test_patch` are resto
 | `validity.py` | MiniMax run-validity classifier |
 
 Host paths are replaced by placeholders such as `<run>/` and `<bench>/`.
+
+## Official predictions
+
+`run.py` emits SWE-bench's official predictions format while a matrix runs:
+each completed cell's patch is written to a per-arm JSONL whose lines have exactly
+`instance_id`, `model_name_or_path` and `model_patch`, with the patch passed
+through the evidence filter again before writing. The default output
+directory is paired with the raw tree (`results/raw` → `results/predictions`,
+`results/raw-deepseek` → `results/predictions-deepseek`); `--predictions-dir`
+overrides it. Rep 1 files are named `preds-<arm>-filtered.jsonl`; later reps
+get a `-r<n>` suffix so instance ids stay unique per file.
+
+`model_name_or_path` is `<arm>+<public model label>`. Pi's recorded
+`deepseek/deepseek-flash` id maps to the pilot's public label
+`deepseek-v4.1-flash(pi)`; pass `--prediction-model '<label>'` to set the
+label explicitly (required when rebuilding saved patches, whose raw tree
+carries no model record).
+
+Saved patches can be rebuilt through the same code path without running any
+models (plain and gzipped `solution.diff` files are both handled):
+
+```
+python3 run.py --export-predictions --arms baseline,superpowers,openflow,openswarm \
+  --raw-root $PWD/results/raw-deepseek \
+  --predictions-dir $PWD/results/predictions-deepseek \
+  --prediction-model "deepseek-v4.1-flash(pi)"
+```
 
 ## Reproduce
 
