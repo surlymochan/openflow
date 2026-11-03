@@ -277,7 +277,7 @@ describe('competitive readiness benchmark', () => {
       'xflow package preflight --check-registry --check-auth --json',
       'xflow launch audit --pre-publish --strict --json',
       'xflow package audit --check-registry --json',
-      'npm install -g evalid',
+      'npm install -g @surlymochan/evalid',
       'xflow init --project-root .',
       'xflow goal set "Ship the next verified change" --project-root .',
       'xflow doctor --project-root .',
@@ -418,7 +418,7 @@ describe('competitive readiness benchmark', () => {
 
     for (const phrase of [
       'Universal CLI Contract',
-      'npm install -g evalid',
+      'npm install -g @surlymochan/evalid',
       'Codex CLI / App',
       'Claude Code',
       'Cursor',
@@ -446,7 +446,7 @@ describe('competitive readiness benchmark', () => {
       'Local Release',
       'Upgrade Checks',
       'Publication Readiness',
-      'npm install -g evalid',
+      'npm install -g @surlymochan/evalid',
       'npm install -g .',
       'xflow init --project-root .',
       'npm run release:local',
@@ -479,7 +479,7 @@ describe('competitive readiness benchmark', () => {
 
     for (const phrase of [
       'Clean Project Adoption',
-      'npm install -g evalid',
+      'npm install -g @surlymochan/evalid',
       'xflow demo clean',
       'xflow workflow validate yolo --project-root .',
       'Source Checkout Release Proof',
@@ -542,7 +542,7 @@ describe('competitive readiness benchmark', () => {
       'xflow launch dossier --output docs/launch-dossier.md',
       'xflow goal audit --json',
       'npm publish --dry-run --access public',
-      'npm view evalid name version --json',
+      'npm view @surlymochan/evalid name version --json',
       'xflow package preflight --check-registry --check-auth --json',
       'xflow launch audit --pre-publish --strict --json',
       'xflow package audit --check-registry --json',
@@ -701,7 +701,7 @@ describe('competitive readiness benchmark', () => {
     const adoptionRecord = readFileSync(resolve(REPO_ROOT, 'docs', 'adoption', 'openflow-release-hardening.md'), 'utf8');
 
     for (const phrase of [
-      'npm install -g evalid',
+      'npm install -g @surlymochan/evalid',
       'xflow init --project-root .',
       'xflow doctor --project-root .',
       'xflow workflow validate yolo --project-root .',
