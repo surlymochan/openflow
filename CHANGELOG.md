@@ -3,6 +3,25 @@
 All notable changes to this project are documented here. Detailed notes live in
 [RELEASE_NOTES.md](RELEASE_NOTES.md).
 
+## [0.3.0] - 2026-11-04
+
+### Added
+- **SPEC clarification gate `J4d.spec_clarify.gate`** (#11): blocks ambiguous specs before the loop starts. Flags MUST clauses with no quantified anchor, missing WHEN/THEN scenarios, vague wording (EN/CN tables) and TBD/placeholder text; every finding carries an answerable clarification question. Available as `xflow spec clarify` and wired into the yolo/corps proposal-consistency stage.
+- **Code review gate `J6.cr.review`** (#10): deterministic review checks — spec alignment (zero alignment fails), test-follow (untested changes fail unless `cr_allow_untested` is declared in status), net assertion decrease fails, test files may not be edited to force green, and a loop budget (default 10 files / 400 lines; warn over budget, fail at 2x).
+- **Test gate v2 checks in `I6c`** (#12): rejects expected values sourced from the implementation itself, dead-callback assertions, and self-comparison tautologies. Adds per-phase cost accounting (`src/core/phase-cost.js`): wall-clock and token spend per phase, flagged when it diverges from total wall-clock by more than 5%.
+
+### Fixed
+- **Benchmark evidence no longer leaks into solution patches** (#8): `run.py` now excludes `specs/` when generating `solution.diff`, with a second filter in the harness (regrade strips it from old patches too). A real openflow-arm patch shrank from 17.0 MB to 24 KB — 99.9% of it was evidence files, not code.
+- **Per-run uv cache** (#8): `UV_CACHE_DIR` is set per run instead of sharing one cache across benchmark arms.
+- **CI runner pinned to `ubuntu-24.04`** (#9): Playwright 1.59.1 does not support chromium on ubuntu 26.04, which silently killed the verify job.
+
+### Docs
+- Added `CONTRIBUTING.md` and issue/PR templates (#8, #11, #10). Workflow manual atom count updated 83 → 85.
+
+### Known gaps
+- `J6.cr.review` is registered and tested but not yet wired into the yolo/corps verify stage (planned for v0.4).
+- `xflow init` does not yet add OpenFlow artefacts to the user project's `.gitignore` (planned for v0.4).
+
 ## [0.2.2] - 2026-10-18
 
 ### Docs

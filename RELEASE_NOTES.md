@@ -1,5 +1,21 @@
 # Release Notes
 
+## 0.3.0 - Three-stage gates: SPEC, CR, Test
+
+OpenFlow's gates now cover the three stages where agent work usually goes wrong, each with deterministic checks instead of another model's opinion.
+
+**SPEC clarification gate (`J4d.spec_clarify.gate`, #11).** Ambiguity is cheapest before the loop starts. J4d blocks specs whose MUST clauses carry no quantified anchor (a clause whose value is itself a vague word does not count as anchored), scenarios without WHEN/THEN, vague wording in English or Chinese, and TBD/placeholder text. Every finding comes with a concrete question a human can answer. False-positive control is deliberate: MUST NOT clauses are exempt, already-quantified lines are not flagged, and code blocks and headings are not scanned. Ships as `xflow spec clarify` and in the yolo/corps proposal-consistency stage.
+
+**Code review gate (`J6.cr.review`, #10).** A diff fails review when nothing in it aligns with the spec, when behaviour changes ship without tests (an explicit `cr_allow_untested` status marker is the only, auditable, exemption), when assertions decrease net, or when test files were edited to make a red run look green. A loop budget (default 10 files / 400 changed lines) warns over budget and fails at 2x. Known gap: J6 is registered in the atom registry (now 85 atoms) and covered by its own tests, but is not yet wired into the yolo/corps verify stage — that wiring is planned for v0.4.
+
+**Test gate v2 (`I6c`, #12) and per-phase cost accounting.** I6c now also rejects tests whose expected value is computed from the implementation under test, assertions inside callbacks that never fire, and self-comparisons that are always true — each check ships with a passing counter-example so honest tests are not blocked. `src/core/phase-cost.js` records wall-clock and tokens per phase; a run whose phase sum diverges from total wall-clock by more than 5% is flagged `within_tolerance: false`, so cost claims stay auditable.
+
+**Clean benchmark patches (#8).** The SWE-bench harness generated `solution.diff` with the whole `specs/` evidence tree inside: one real openflow-arm patch was 17.0 MB, of which 99.9% was evidence files. Generation now excludes `specs/`, a harness-side filter strips it as a second line of defence, and regrade applies the same filter to old patches. The same patch is now 24 KB. `UV_CACHE_DIR` is also per-run now, and the repo gained `CONTRIBUTING.md` plus issue/PR templates.
+
+**CI fix (#9).** The verify job died at "Install Playwright" because `ubuntu-latest` had rolled to 26.04, which Playwright 1.59.1 does not support. The runner is pinned to `ubuntu-24.04`; upgrading Playwright itself is a separate, larger change.
+
+Also known: `xflow init` does not yet write OpenFlow entries into the user project's `.gitignore` (planned for v0.4).
+
 ## 0.2.2 - Benchmark docs
 
 No CLI or gate changes: this release only updates documentation. The README now leads with the SWE-bench Verified result on DeepSeek-V4.1-Flash: OpenFlow resolved 4/6 and the plain baseline resolved 3/6 (n=1 per cell). It also states the caveats: n=1 on 6 instances puts one or two resolves within noise, and the two workflow tools took about 1.8x the baseline's median wall-clock and cost 76% (OpenFlow) / 61% (openswarm) more per task. The first published table undercounted pytest because of a shared temp-dir race in grading; it is now fixed and regraded, with notes in [bench/swebench/README.md](bench/swebench/README.md#regrade-2026-10-18). The optimization backlog from these results is tracked in [issue #5](https://github.com/surlymochan/openflow/issues/5).
