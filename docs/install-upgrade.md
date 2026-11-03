@@ -1,12 +1,12 @@
-# openflow Install And Upgrade
+# evalid Install And Upgrade
 
 This document defines the public install and upgrade story for source checkouts and npm-style global installs.
 
 ## Source Checkout
 
 ```bash
-git clone <repo-url> openflow
-cd openflow
+git clone <repo-url> evalid
+cd evalid
 npm install
 npm run doctor
 ```
@@ -16,7 +16,7 @@ Use source checkout mode when developing xflow itself or when testing workflow c
 ## Global CLI
 
 ```bash
-npm install -g @surlymochan/openflow
+npm install -g evalid
 xflow doctor
 ```
 

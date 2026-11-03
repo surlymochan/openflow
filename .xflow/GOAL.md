@@ -1,8 +1,8 @@
-# OpenFlow Goal
+# evalid Goal
 
 ## Goal
 
-Keep OpenFlow credible as an open-source agent delivery runtime: repo-owned
+Keep evalid credible as an open-source agent delivery runtime: repo-owned
 workflow contracts, executable verification gates, durable project context, and
 honest benchmark evidence.
 

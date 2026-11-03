@@ -3,7 +3,7 @@
 This file is intentionally a public template, not a dump of a maintainer's
 private operating memory.
 
-Use it to record durable lessons discovered while running OpenFlow workflows.
+Use it to record durable lessons discovered while running evalid workflows.
 Keep entries concise, evidence-backed, and safe to publish.
 
 ## Active Ahas

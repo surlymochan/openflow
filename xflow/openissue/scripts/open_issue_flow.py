@@ -133,13 +133,13 @@ def get_checkout_default_branch(checkout_path: Path) -> str:
     return current_branch or "main"
 
 
-def enforce_openflow_openissue_contract(repo: str, title: str | None, body: str | None, checkout_path: Path) -> None:
+def enforce_evalid_openissue_contract(repo: str, title: str | None, body: str | None, checkout_path: Path) -> None:
     if repo == PLACEHOLDER_ISSUE_REPO:
         raise SystemExit("Configure a real issue repo with --repo or .as-xflow/config.json issue_routing.repo before running openissue.")
     if not title:
-        raise SystemExit("OpenFlow openissue requires a non-empty issue title.")
+        raise SystemExit("evalid openissue requires a non-empty issue title.")
     if not body:
-        raise SystemExit("OpenFlow openissue requires a non-empty issue body. Pass --body or --body-file.")
+        raise SystemExit("evalid openissue requires a non-empty issue body. Pass --body or --body-file.")
     if not checkout_path.exists():
         raise SystemExit(f"Checkout path does not exist: {checkout_path}")
 
@@ -367,7 +367,7 @@ def main() -> int:
     issue_body = load_issue_body(args)
     checkout_path = resolve_code_checkout(args.checkout_path, args.project_root)
     issue_repo = resolve_issue_repo(args, checkout_path)
-    enforce_openflow_openissue_contract(issue_repo, args.title, issue_body, checkout_path)
+    enforce_evalid_openissue_contract(issue_repo, args.title, issue_body, checkout_path)
     issue = create_or_update_issue(issue_repo, args.title, issue_body, args.issue_number)
     issue_number = int(issue["number"])
     issue_url = str(issue["url"])

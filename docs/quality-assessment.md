@@ -1,10 +1,10 @@
-# openflow Quality Assessment
+# evalid Quality Assessment
 
 Date: 2026-05-23
 
 ## Verdict
 
-`openflow` is strong enough to present as a serious open-source agent delivery
+`evalid` is strong enough to present as a serious open-source agent delivery
 runtime today. The core engine is no longer the weak point: yolo and corps both
 have executable workflow data, verification gates, and release checks.
 

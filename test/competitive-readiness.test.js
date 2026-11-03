@@ -16,10 +16,10 @@ describe('competitive readiness benchmark', () => {
     const skillReadme = readFileSync(resolve(REPO_ROOT, 'xflow', 'README.md'), 'utf8');
 
     for (const phrase of [
-      'Executable delivery workflow for AI coding agents',
+      'runtime verification layer for coding agents',
       '3 Minute Start',
-      'git clone https://github.com/surlymochan/openflow.git',
-      'cd openflow',
+      'git clone https://github.com/surlymochan/evalid.git',
+      'cd evalid',
       'xflow quickstart',
       'xflow guide',
       'xflow evaluate',
@@ -277,7 +277,7 @@ describe('competitive readiness benchmark', () => {
       'xflow package preflight --check-registry --check-auth --json',
       'xflow launch audit --pre-publish --strict --json',
       'xflow package audit --check-registry --json',
-      'npm install -g @surlymochan/openflow',
+      'npm install -g evalid',
       'xflow init --project-root .',
       'xflow goal set "Ship the next verified change" --project-root .',
       'xflow doctor --project-root .',
@@ -418,7 +418,7 @@ describe('competitive readiness benchmark', () => {
 
     for (const phrase of [
       'Universal CLI Contract',
-      'npm install -g @surlymochan/openflow',
+      'npm install -g evalid',
       'Codex CLI / App',
       'Claude Code',
       'Cursor',
@@ -446,7 +446,7 @@ describe('competitive readiness benchmark', () => {
       'Local Release',
       'Upgrade Checks',
       'Publication Readiness',
-      'npm install -g @surlymochan/openflow',
+      'npm install -g evalid',
       'npm install -g .',
       'xflow init --project-root .',
       'npm run release:local',
@@ -479,7 +479,7 @@ describe('competitive readiness benchmark', () => {
 
     for (const phrase of [
       'Clean Project Adoption',
-      'npm install -g @surlymochan/openflow',
+      'npm install -g evalid',
       'xflow demo clean',
       'xflow workflow validate yolo --project-root .',
       'Source Checkout Release Proof',
@@ -542,7 +542,7 @@ describe('competitive readiness benchmark', () => {
       'xflow launch dossier --output docs/launch-dossier.md',
       'xflow goal audit --json',
       'npm publish --dry-run --access public',
-      'npm view @surlymochan/openflow name version --json',
+      'npm view evalid name version --json',
       'xflow package preflight --check-registry --check-auth --json',
       'xflow launch audit --pre-publish --strict --json',
       'xflow package audit --check-registry --json',
@@ -673,7 +673,7 @@ describe('competitive readiness benchmark', () => {
 
     assert.equal(trackerItem.id, 'release-proof-adapter');
     assert.equal(trackerItem.source, 'tracker-file');
-    assert.match(launchDossier, /openflow Launch Dossier/);
+    assert.match(launchDossier, /evalid Launch Dossier/);
     assert.match(launchDossier, /Competitive score: 100\/100/);
     assert.match(launchDossier, /Objective Audit/);
     assert.match(launchDossier, /`goal_vs_codex`: proven_project_layer/);
@@ -701,7 +701,7 @@ describe('competitive readiness benchmark', () => {
     const adoptionRecord = readFileSync(resolve(REPO_ROOT, 'docs', 'adoption', 'openflow-release-hardening.md'), 'utf8');
 
     for (const phrase of [
-      'npm install -g @surlymochan/openflow',
+      'npm install -g evalid',
       'xflow init --project-root .',
       'xflow doctor --project-root .',
       'xflow workflow validate yolo --project-root .',

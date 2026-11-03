@@ -1,6 +1,6 @@
-# openflow Launch Dossier
+# evalid Launch Dossier
 
-Generated: 2026-11-03T18:35:31.543Z
+Generated: 2026-11-03T18:52:08.690Z
 Mode: post_publish
 Verdict: conditionally ready: engine and adoption evidence are strong, registry publication remains required for a splash launch
 Launch ready: not yet
@@ -101,23 +101,23 @@ Evidence:
 
 - **published_package**: Public npm package ownership confirmed and package published from a green dry run.
   Why it matters: A launch story is incomplete while users cannot install the advertised package name.
-  Acceptable evidence: npm view @surlymochan/openflow name version --json returns this package; npm publish --access public completed for the intended version
+  Acceptable evidence: npm view evalid name version --json returns this package; npm publish --access public completed for the intended version
 
 ## Missing Before Splash Launch
 
 - **third_party_adoption**: At least one adoption artifact comes from a third-party project, public PR, external repository, or named external team beyond maintainer dogfooding.
-  Why it matters: An industry-splash claim needs ecosystem evidence, not only a maintainer hardening run inside openflow.
+  Why it matters: An industry-splash claim needs ecosystem evidence, not only a maintainer hardening run inside evalid.
   Acceptable evidence: docs/adoption/<third-party-project>.md with a public PR, external repository, or named external team source; xflow adoption validate --splash --json passes; xflow launch audit --splash --strict --json passes
 - **published_package**: Public npm package ownership confirmed and package published from a green dry run.
   Why it matters: A launch story is incomplete while users cannot install the advertised package name.
-  Acceptable evidence: npm view @surlymochan/openflow name version --json returns this package; npm publish --access public completed for the intended version
+  Acceptable evidence: npm view evalid name version --json returns this package; npm publish --access public completed for the intended version
 
 ## Current Evidence Snapshot
 
 - Adoption records: 1; status: pass
-- Goal audit: pass; goal: Keep OpenFlow credible as an open-source agent delivery runtime: repo-owned workflow contracts, executable verification gates, durable project context, and honest benchmark evidence.
+- Goal audit: pass; goal: Keep evalid credible as an open-source agent delivery runtime: repo-owned workflow contracts, executable verification gates, durable project context, and honest benchmark evidence.
 - Package evidence: missing; source: registry_json
-- Package name/version: @surlymochan/openflow@0.3.0
+- Package name/version: evalid@0.3.1
 
 ## Passing Evidence
 

@@ -19,7 +19,7 @@ xflow doctor --project-root .
 
 ## Environment
 
-- OpenFlow version:
+- evalid version:
 - Node:
 - Python:
 - OS:

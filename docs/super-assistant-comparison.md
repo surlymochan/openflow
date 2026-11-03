@@ -1,6 +1,6 @@
 # Super-Assistant Comparison
 
-Use this page when someone asks whether openflow should absorb Super-Assistant's
+Use this page when someone asks whether evalid should absorb Super-Assistant's
 enterprise delivery harness or split separate personal/team workflows.
 
 ## Verdict
@@ -9,7 +9,7 @@ Super-Assistant has useful enterprise ingredients: team constraints, checkpoint
 notifications, plugin execution, an experience index, and S3-backed team sync.
 Those ideas are worth absorbing.
 
-openflow should not absorb the whole harness. After the policy-overlay
+evalid should not absorb the whole harness. After the policy-overlay
 integration, xflow is stronger because the same capabilities are expressed as
 thin atoms, provider seams, and structured proof artifacts on top of the
 existing `yolo` and `corps` tracks.

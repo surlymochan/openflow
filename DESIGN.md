@@ -1,6 +1,6 @@
 # Design Notes
 
-OpenFlow's public design direction is intentionally small:
+evalid's public design direction is intentionally small:
 
 - Keep workflow contracts in repo-owned YAML and schemas.
 - Keep deterministic gates executable and test-covered.

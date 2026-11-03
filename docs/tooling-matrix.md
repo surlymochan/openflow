@@ -1,4 +1,4 @@
-# openflow Tooling Matrix
+# evalid Tooling Matrix
 
 Use this page when installing or explaining xflow across different agent tools.
 
@@ -9,7 +9,7 @@ The rule is simple: keep the workflow runtime in the project and keep the agent-
 Every supported tool should be able to run this sequence:
 
 ```bash
-npm install -g @surlymochan/openflow
+npm install -g evalid
 xflow quickstart
 xflow guide
 xflow assess
@@ -82,7 +82,7 @@ reload context, plan once, then choose the light or heavy execution track.
 Use this in project-level agent instructions:
 
 ```text
-Use openflow as the workflow source of truth. Start with `xflow guide`, then run
+Use evalid as the workflow source of truth. Start with `xflow guide`, then run
 `xflow goal set "<project direction>" --project-root .`, `xflow doctor --project-root .`,
 `xflow goal audit --project-root . --json`, and `xflow workflow validate yolo --project-root .`.
 For implementation, use `xflow:plan` first, then `xflow:yolo` or `xflow:corps`

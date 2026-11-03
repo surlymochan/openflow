@@ -4,7 +4,7 @@ This benchmark is the public, repeatable proof path for claims against OpenSpec,
 
 ## Demo Scenario
 
-A tracker item arrives from an external system. `openflow` imports the source context, turns it into local change artifacts, reviews spec deltas, and proves the release surface before any public claim or package publish.
+A tracker item arrives from an external system. `evalid` imports the source context, turns it into local change artifacts, reviews spec deltas, and proves the release surface before any public claim or package publish.
 
 ## Commands
 
@@ -65,4 +65,4 @@ xflow launch audit --pre-publish --strict --json
 
 ## Current Result
 
-`openflow` is designed to win the local delivery and verification benchmark because every superiority claim is backed by a runnable command or checked file. Public ecosystem breadth still needs third-party adoption, but the repo now ships the adapter seam, adoption validator, fixture-backed smoke path, and a non-fixture maintainer release-hardening adoption record.
+`evalid` is designed to win the local delivery and verification benchmark because every superiority claim is backed by a runnable command or checked file. Public ecosystem breadth still needs third-party adoption, but the repo now ships the adapter seam, adoption validator, fixture-backed smoke path, and a non-fixture maintainer release-hardening adoption record.

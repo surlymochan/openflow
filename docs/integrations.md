@@ -1,6 +1,6 @@
 # Integration Matrix
 
-openflow keeps integrations thin: external systems may supply issues, docs, CI, or project state, but workflow truth remains in local YAML, atoms, and change artifacts.
+evalid keeps integrations thin: external systems may supply issues, docs, CI, or project state, but workflow truth remains in local YAML, atoms, and change artifacts.
 
 ## Integration Surfaces
 

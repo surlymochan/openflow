@@ -1,15 +1,15 @@
 # Public Release Gate
 
-This page defines the final public-release boundary for openflow. It is intentionally stricter than local development because distribution is part of the product surface.
+This page defines the final public-release boundary for evalid. It is intentionally stricter than local development because distribution is part of the product surface.
 
 ## Current Registry Status
 
-The package name `openflow` was checked against the npm public registry during the release-hardening pass and returned `404 Not Found`, meaning no published package with that name was visible at that time.
+The package name `evalid` was checked against the npm public registry during the release-hardening pass and returned `404 Not Found`, meaning no published package with that name was visible at that time.
 
 Do not treat this as permanent ownership. Re-check before publishing.
 
 ```bash
-npm view @surlymochan/openflow name version --json
+npm view evalid name version --json
 ```
 
 ## Release Check
@@ -120,7 +120,7 @@ Record these in the release note or PR:
 
 ## Failure Rules
 
-- If `npm view @surlymochan/openflow` returns an existing package not owned by this project, choose a new package name before publishing.
+- If `npm view evalid` returns an existing package not owned by this project, choose a new package name before publishing.
 - If `xflow package preflight --check-registry --check-auth --json` fails, do not run the real publish.
 - If `xflow goal audit --json` fails, do not claim xflow goal is stronger than Codex native goal.
 - If `xflow launch claims --json` lists a claim under `blocked_claims`, do not use that claim in launch copy.
