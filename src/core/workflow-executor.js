@@ -19,6 +19,7 @@ import { spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { randomUUID } from 'crypto';
 import { appendExecutionLog, appendExecutionLogSync } from './execution-log.js';
+import { addTokenUsage, buildPhaseCostReport, emptyTokenUsage, extractTokenUsage } from './phase-cost.js';
 import { createConcurrencyPolicy } from './concurrency-policy.js';
 import { buildWorkflowManifest } from './workflow-integrity.js';
 
@@ -57,12 +58,45 @@ export class WorkflowExecutor {
       phaseRunSessionId: null,
       lastAtomResult: null,
       atomResults: {},
+      phaseCosts: [],
+      currentPhaseTokens: null,
+      workflowStartedAtMs: null,
+      costReport: null,
     };
   }
 
   // ─── Main execution loop ─────────────────────────────────────────────────
 
+  // ─── Phase cost accounting ─────────────────────────────────────────────
+
+  recordPhaseCost(phase, status, startedAtMs) {
+    const entry = {
+      phase_id: phase?.id || 'unknown',
+      status,
+      duration_ms: Math.max(0, Date.now() - startedAtMs),
+      tokens: this.runtime.currentPhaseTokens && this.runtime.currentPhaseTokens.total > 0
+        ? { ...this.runtime.currentPhaseTokens }
+        : null,
+    };
+    this.runtime.phaseCosts.push(entry);
+    this.runtime.currentPhaseTokens = emptyTokenUsage();
+    return entry;
+  }
+
+  buildCostReport() {
+    const wallClockMs = this.runtime.workflowStartedAtMs
+      ? Date.now() - this.runtime.workflowStartedAtMs
+      : null;
+    this.runtime.costReport = buildPhaseCostReport({
+      phases: this.runtime.phaseCosts,
+      wallClockMs,
+    });
+    return this.runtime.costReport;
+  }
+
   async run() {
+    this.runtime.workflowStartedAtMs = Date.now();
+    this.runtime.currentPhaseTokens = emptyTokenUsage();
     const state = this.loadState();
     let startIdx = 0;
     const rerunRequest = state.rerun && typeof state.rerun === 'object' ? state.rerun : null;
@@ -101,6 +135,7 @@ export class WorkflowExecutor {
     for (let i = startIdx; i < this.phases.length; i++) {
       this.ensureNotAborted();
       const phase = this.phases[i];
+      const phaseStartedAtMs = Date.now();
       console.log(`\n${'═'.repeat(60)}`);
       console.log(`Phase ${i + 1}/${this.phases.length}: ${phase.label || phase.id}`);
       console.log('═'.repeat(60));
@@ -133,6 +168,7 @@ export class WorkflowExecutor {
             mission_id: this.runtime.missionId || null,
             workflow_integrity_digest: this.workflowManifest.digest,
           });
+          this.recordPhaseCost(phase, 'skipped', phaseStartedAtMs);
           this.saveState({ ...state, last_completed_phase: phase.id });
           continue;
         }
@@ -142,6 +178,7 @@ export class WorkflowExecutor {
       if (phase.preconditions?.length > 0) {
         const precondOk = this.checkPreconditions(phase.preconditions);
         if (!precondOk) {
+          this.recordPhaseCost(phase, 'failed', phaseStartedAtMs);
           this.fail(phase, 'precondition_failed');
           return;
         }
@@ -168,6 +205,7 @@ export class WorkflowExecutor {
             if (!result.ok) {
               console.error(`  ✗ Atom ${atomRef.id} failed`);
               if (phase.gate?.on_fail === 'stop') {
+                this.recordPhaseCost(phase, 'failed', phaseStartedAtMs);
                 this.fail(phase, 'atom_failed', atomRef.id);
                 return;
               }
@@ -197,6 +235,7 @@ export class WorkflowExecutor {
       if (!gateResult.ok) {
         const onFail = phase.gate?.on_fail || 'stop';
         if (onFail === 'stop') {
+          this.recordPhaseCost(phase, 'failed', phaseStartedAtMs);
           this.fail(phase, 'gate_failed', JSON.stringify(gateResult));
           return;
         } else if (onFail === 'advance-with-warning') {
@@ -214,6 +253,7 @@ export class WorkflowExecutor {
       }
       state.updated_at = new Date().toISOString();
       this.saveState(state);
+      const phaseCost = this.recordPhaseCost(phase, 'completed', phaseStartedAtMs);
       await this.logExecutionEvent('phase_completed', {
         workflow_run_id: this.runtime.workflowRunId,
         workflow: this.workflow.name,
@@ -224,6 +264,8 @@ export class WorkflowExecutor {
         change_id: this.changeId || null,
         mission_id: this.runtime.missionId || null,
         workflow_integrity_digest: this.workflowManifest.digest,
+        duration_ms: phaseCost.duration_ms,
+        cost: phaseCost,
       });
     }
 
@@ -238,6 +280,7 @@ export class WorkflowExecutor {
       change_id: this.changeId || null,
       mission_id: this.runtime.missionId || null,
       completed_phases: this.phases.map((phase) => phase.id),
+      cost: this.buildCostReport(),
     });
   }
 
@@ -818,6 +861,9 @@ export class WorkflowExecutor {
   captureAtomResult(atomId, result) {
     this.runtime.lastAtomResult = result;
     this.runtime.atomResults[atomId] = result;
+    if (this.runtime.currentPhaseTokens) {
+      addTokenUsage(this.runtime.currentPhaseTokens, extractTokenUsage(result));
+    }
     this.runtime.missionId = result.mission?.mission_id || result.mission_id || result.binding?.mission_id || this.runtime.missionId;
     this.runtime.phaseRunId = result.phase_run?.phase_run_id || result.phase_run_id || this.runtime.phaseRunId;
     this.runtime.phaseRunSessionId = result.session?.session_id || result.phase_run_session?.session_id || this.runtime.phaseRunSessionId;

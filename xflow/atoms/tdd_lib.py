@@ -392,7 +392,7 @@ def assertion_lines(content: str) -> list[str]:
     return lines
 
 
-def analyze_test(content: str) -> list[dict]:
+def analyze_test(content: str, implementation_sources: list[str] | None = None) -> list[dict]:
     prepared = prepare_source(content)
     findings = []
     assertion_count = len(ASSERTION_PATTERN.findall(prepared))
@@ -426,6 +426,211 @@ def analyze_test(content: str) -> list[dict]:
 
     if assertion_count == 0:
         findings.append({"severity": "fail", "code": "no_assertions"})
+
+    # Gate v2: plausible-but-wrong checks. Each check is deliberately narrow:
+    # it only fires on a shape that cannot be a meaningful test, and every
+    # check ships with passing counter-examples in the test suite.
+    for pattern in SELF_COMPARISON_PATTERNS:
+        match = pattern.search(prepared)
+        if match:
+            findings.append({
+                "severity": "fail",
+                "code": "self_comparison_assertion",
+                "expression": match.group(1),
+            })
+            break
+
+    findings.extend(dead_callback_findings(prepared))
+
+    if implementation_sources:
+        findings.extend(same_source_expected_findings(prepared, implementation_sources))
+
+    return findings
+
+
+# --- Gate v2 helpers --------------------------------------------------------
+
+_LITERAL_RHS = r"(?:[-+]?\d|['\"]|\[|\{|true\b|false\b|True\b|False\b|None\b)"
+
+IMPL_CONSTANT_PATTERNS = [
+    # JS/TS: [export] const|let|var NAME = <literal>
+    re.compile(rf"(?:\bexport\s+)?\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*{_LITERAL_RHS}"),
+    # Python module-level: NAME = <literal>
+    re.compile(rf"^([A-Za-z_][\w]*)\s*=\s*{_LITERAL_RHS}", re.M),
+]
+
+TEST_LOCAL_DEF_PATTERNS = [
+    re.compile(r"\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*="),
+    re.compile(r"^([A-Za-z_][\w]*)\s*=", re.M),
+    re.compile(r"\bfunction\s+([A-Za-z_$][\w$]*)\s*\("),
+    re.compile(r"\bdef\s+([A-Za-z_]\w*)\s*\("),
+    re.compile(r"\bclass\s+([A-Za-z_$][\w$]*)"),
+]
+
+SELF_COMPARISON_PATTERNS = [
+    re.compile(r"\bassert\.(?:equal|strictEqual|deepEqual|deepStrictEqual)\(\s*([A-Za-z_$][\w$.[\]]*)\s*,\s*\1\s*\)"),
+    re.compile(r"\bexpect\(\s*([A-Za-z_$][\w$.[\]]*)\s*\)\.(?:toBe|toEqual|toStrictEqual|toDeepEqual)\(\s*\1\s*\)"),
+    re.compile(r"\bassertEqual\(\s*([A-Za-z_$][\w$.[\]]*)\s*,\s*\1\s*\)"),
+    re.compile(r"\bassert\s+([A-Za-z_$][\w$.[\]]*)\s*==\s*\1(?![\w$.[\]])"),
+]
+
+_CALLBACK_DEF_PATTERNS = [
+    # JS/TS: function NAME(...) { ... }
+    ("js", re.compile(r"(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(")),
+    # JS/TS: const NAME = (...) => / const NAME = function
+    ("js", re.compile(r"\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s+)?(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>")),
+    ("js", re.compile(r"\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s+)?function\b")),
+    # Python: def NAME(...)
+    ("py", re.compile(r"^def\s+([A-Za-z_]\w*)\s*\(", re.M)),
+]
+
+
+def _constant_like(name: str, exported: bool) -> bool:
+    if exported:
+        return len(name) >= 2
+    # Unexported implementation constants are only trusted when they use the
+    # screaming-snake convention; anything else collides too easily.
+    return bool(re.fullmatch(r"[A-Z][A-Z0-9_]{2,}", name))
+
+
+def implementation_constants(sources: list[str]) -> set[str]:
+    names: set[str] = set()
+    for source in sources:
+        cleaned = strip_comments(source)
+        for pattern in IMPL_CONSTANT_PATTERNS:
+            for match in pattern.finditer(cleaned):
+                prefix = cleaned[max(0, match.start() - 8):match.start()]
+                exported = "export" in prefix
+                name = match.group(1)
+                if _constant_like(name, exported):
+                    names.add(name)
+    return names
+
+
+def test_local_names(prepared: str) -> set[str]:
+    names: set[str] = set()
+    for pattern in TEST_LOCAL_DEF_PATTERNS:
+        names.update(match.group(1) for match in pattern.finditer(prepared))
+    return names
+
+
+def same_source_expected_findings(prepared: str, implementation_sources: list[str]) -> list[dict]:
+    """Flag assertions whose expected value is an implementation constant.
+
+    When a test asserts against a constant taken from the implementation,
+    editing that constant moves the expectation with it, so the test can
+    never fail on the value it claims to pin down. Independent literals in
+    the test are fine: they do not move. Names the test defines itself
+    shadow the implementation and are also fine.
+    """
+    constants = implementation_constants(implementation_sources)
+    if not constants:
+        return []
+    candidates = constants - test_local_names(prepared)
+    if not candidates:
+        return []
+    findings = []
+    seen: set[str] = set()
+    for line in prepared.splitlines():
+        if not ASSERTION_PATTERN.search(line):
+            continue
+        for name in sorted(candidates):
+            if name in seen:
+                continue
+            # The constant must be used as a value in the assertion, not
+            # called as a function.
+            if re.search(rf"\b{re.escape(name)}\b(?!\s*\()", line):
+                seen.add(name)
+                findings.append({
+                    "severity": "fail",
+                    "code": "expected_value_from_implementation",
+                    "symbol": name,
+                })
+    return findings
+
+
+def _js_body_span(prepared: str, search_from: int) -> tuple[int, int] | None:
+    opening = prepared.find("{", search_from)
+    if opening < 0:
+        return None
+    depth = 0
+    for index in range(opening, len(prepared)):
+        char = prepared[index]
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return (opening, index + 1)
+    return None
+
+
+def _py_body_span(prepared: str, def_start: int) -> tuple[int, int] | None:
+    # Skip the (possibly multi-line) def header: it ends at the first line
+    # whose stripped form ends with ':'.
+    position = def_start
+    body_start = None
+    for line in prepared[def_start:].splitlines(keepends=True):
+        position += len(line)
+        if line.strip().endswith(":"):
+            body_start = position
+            break
+    if body_start is None:
+        return None
+    end = body_start
+    position = body_start
+    for line in prepared[body_start:].splitlines(keepends=True):
+        if line.strip() == "" or line[0] in (" ", "\t"):
+            end = position + len(line)
+            position += len(line)
+        else:
+            break
+    return (body_start, end)
+
+
+def dead_callback_findings(prepared: str) -> list[dict]:
+    """Flag named callbacks/functions whose assertions can never run.
+
+    A named function defined in a test file that contains assertions but is
+    never referenced again (never called, passed, or exported) is dead: its
+    assertions look like coverage but execute zero times. Framework entry
+    points are excluded: exported functions, Python ``test_*`` functions and
+    decorated functions.
+    """
+    findings = []
+    reported: set[str] = set()
+    for kind, pattern in _CALLBACK_DEF_PATTERNS:
+        for match in pattern.finditer(prepared):
+            name = match.group(1)
+            if name in reported:
+                continue
+            prefix = prepared[max(0, match.start() - 8):match.start()]
+            if "export" in prefix or match.group(0).startswith("export"):
+                continue
+            if kind == "py":
+                if name.startswith("test"):
+                    continue
+                line_start = prepared.rfind("\n", 0, match.start()) + 1
+                previous = prepared[:line_start].rstrip("\n").splitlines()
+                if previous and previous[-1].lstrip().startswith("@"):
+                    continue
+                span = _py_body_span(prepared, match.start())
+            else:
+                span = _js_body_span(prepared, match.end())
+            if span is None:
+                continue
+            body = prepared[span[0]:span[1]]
+            if not ASSERTION_PATTERN.search(body):
+                continue
+            outside = prepared[:match.start()] + prepared[span[1]:]
+            if re.search(rf"\b{re.escape(name)}\b", outside):
+                continue
+            reported.add(name)
+            findings.append({
+                "severity": "fail",
+                "code": "assertion_in_dead_callback",
+                "symbol": name,
+            })
     return findings
 
 

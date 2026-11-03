@@ -12,8 +12,12 @@ green proof. tdd_mode refactor instead requires the existing tests that
 touch the changed code to pass on the pre-change tree and the current tree,
 with no assertion lines removed. tdd_mode docs requires the diff to stay on
 non-code paths. A semantically wrong but plausible expected value is not
-decidable from the diff; only type-only or existence-only assertions are
-flagged, and only when they are the sole assertions.
+decidable from the diff in general; gate v2 still catches three decidable
+shapes of it: expected values taken from the implementation's own constants
+(the expectation moves when the constant is edited), assertions inside
+named callbacks that are never referenced again (they execute zero times),
+and self-comparison assertions (x == x). Type-only or existence-only
+assertions are flagged only when they are the sole assertions.
 """
 import argparse
 import json
@@ -68,14 +72,14 @@ def read_text(path: Path) -> str:
         return ""
 
 
-def review_test_file(project_root: Path, relative_path: str) -> list[dict]:
+def review_test_file(project_root: Path, relative_path: str, implementation_sources: list[str] | None = None) -> list[dict]:
     path = project_root / relative_path
     try:
         content = path.read_text(encoding="utf-8")
     except OSError:
         return [{"severity": "fail", "code": "test_unreadable", "path": relative_path}]
     findings = []
-    for finding in tdd_lib.analyze_test(content):
+    for finding in tdd_lib.analyze_test(content, implementation_sources=implementation_sources):
         item = dict(finding)
         item["path"] = relative_path
         findings.append(item)
@@ -311,8 +315,9 @@ def main() -> None:
         for relative in iter_repo_tests(project_root):
             if symbols and tdd_lib.references_symbol(read_text(project_root / relative), symbols):
                 reviewed.add(relative)
+    implementation_sources = [read_text(project_root / relative) for relative in code_files]
     for test_file in sorted(reviewed):
-        findings.extend(review_test_file(project_root, test_file))
+        findings.extend(review_test_file(project_root, test_file, implementation_sources))
 
     failed = any(finding.get("severity") == "fail" for finding in findings)
     verdict = "failed" if failed else "passed"
