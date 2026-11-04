@@ -22,12 +22,12 @@ Underneath, a workflow engine (spec → implement → verify loops with per-phas
 
 _Renamed from OpenFlow in v0.3.1 (2026-11-04); old repository and package links redirect._
 
-## Benchmarks: OpenFlow vs superpowers (2026-10-17)
+## Benchmarks: evalid vs superpowers (2026-10-17)
 
-_These results were recorded when the project was named OpenFlow; the version labels in this section are kept exactly as measured._
+_These results were measured before the rename, when the project was named OpenFlow; product names in this section have been unified to the current names (evalid, swrm), and all versions and figures are the original measurements._
 
 For the synthetic and evidence-check results below, the same model (`grok-4.7-high` via local `cursor-agent`) and same
-harness are used for every arm; the SWE-bench block uses DeepSeek via Pi. Pinned: OpenFlow 0.2.1,
+harness are used for every arm; the SWE-bench block uses DeepSeek via Pi. Pinned: evalid 0.2.1,
 [superpowers](https://github.com/obra/superpowers) v7.0.0 (`bb92a77`). Scripts, raw results and methodology:
 [`bench/`](bench/README.md) and [`bench/e2e/`](bench/e2e/README.md). Losses are shown as measured.
 
@@ -40,11 +40,11 @@ DeepSeek-V4.1-Flash (`deepseek-flash`), n=1 per cell, 20-minute cap; details and
 | --- | --- | --- | --- | --- | --- |
 | Plain agent (baseline) | 3/6 (50%) | 124 s (110–175) | $0.0234 | $0.16 | 6 |
 | superpowers v7.0.0 | 2/6 (33%) | 154 s (136–340) | $0.0285 | $0.31 | 6 |
-| OpenFlow 0.2.1 | 4/6 (67%) | 230 s (200–266) | $0.0412 | $0.23 | 6 |
-| openswarm (Pi executor) | 5/6 (83%) | 228 s (187–254) | $0.0377 | $0.21 | 6 |
+| evalid 0.2.1 | 4/6 (67%) | 230 s (200–266) | $0.0412 | $0.23 | 6 |
+| swrm (Pi executor) | 5/6 (83%) | 228 s (187–254) | $0.0377 | $0.21 | 6 |
 
 **Caveats:** n=1 on 6 instances, so one or two resolves are within noise. The two workflow tools took about 1.8x the
-baseline's median wall-clock and cost 76% (evalid) / 61% (openswarm) more per task. The first published table undercounted
+baseline's median wall-clock and cost 76% (evalid) / 61% (swrm) more per task. The first published table undercounted
 pytest because of a shared temp-dir race in grading; it is now fixed and regraded
 ([regrade notes](bench/swebench/README.md#regrade-2026-10-18)). On the MiniMax-M3.1-Flash-Preview subset, baseline
 resolved 3/4 and superpowers 2/4; evalid had no clean MiniMax run because the plan's usage cap was hit.
@@ -58,7 +58,7 @@ results: [#5](https://github.com/surlymochan/evalid/issues/5).
 | --- | --- | --- | --- | --- |
 | Plain agent (baseline) | 24/24 (100%) | 55 s (46–132) | 105k / 28k | 24 |
 | superpowers v7.0.0 | 24/24 (100%) | 187 s (121–299) | 312k / 59k | 24 |
-| OpenFlow 0.2.1 | 11/12 (92%) | 985 s (920–1195) | 5.29M / 233k ¹ | 12 ² |
+| evalid 0.2.1 | 11/12 (92%) | 985 s (920–1195) | 5.29M / 233k ¹ | 12 ² |
 
 On tasks this small the plain agent already succeeds every time, and evalid's full ceremony is the slowest and most
 token-hungry arm. 3 of 12 evalid runs hit the 20-minute cap while still running the workflow; their code already passed.
@@ -70,10 +70,10 @@ proofs, skipped tests, weak or wrong assertions, contradictory specs, …) and 1
 
 | Checker | Faulty caught | Honest wrongly rejected | Cost per check |
 | --- | --- | --- | --- |
-| OpenFlow 0.2.1 gates (deterministic code) | 22/25 (88%): original 16/17, held-out 6/8 | 0/11 | ~0.1–0.2 s, no model tokens |
+| evalid 0.2.1 gates (deterministic code) | 22/25 (88%): original 16/17, held-out 6/8 | 0/11 | ~0.1–0.2 s, no model tokens |
 | superpowers v7.0.0 skills + LLM judge | 25/25 (100%) | 1/11 | one agent call per check |
 | LLM judge, no skills | 25/25 (100%) ³ | 0/11 | one agent call per check |
-| OpenFlow 0.2.0 (before this benchmark, original 24 only) | 10/17 (59%) | 3/7 | – |
+| evalid 0.2.0 (before this benchmark, original 24 only) | 10/17 (59%) | 3/7 | – |
 
 An LLM reviewer that is explicitly asked to audit an episode, and is allowed to rerun the tests, caught more than evalid's static gates did.
 evalid's gates are deterministic and cost no model calls, but they still miss plausible-but-wrong expected values,
