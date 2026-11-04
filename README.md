@@ -22,7 +22,7 @@ Underneath, a workflow engine (spec → implement → verify loops with per-phas
 
 _Renamed from OpenFlow in v0.3.1 (2026-11-04); old repository and package links redirect._
 
-## Benchmarks: OpenFlow vs superpowers (2026-10-17)
+## Benchmarks: evalid vs superpowers (2026-10-17)
 
 _These results were recorded when the project was named OpenFlow; the version labels in this section are kept exactly as measured._
 
@@ -44,7 +44,7 @@ DeepSeek-V4.1-Flash (`deepseek-flash`), n=1 per cell, 20-minute cap; details and
 | openswarm (Pi executor) | 5/6 (83%) | 228 s (187–254) | $0.0377 | $0.21 | 6 |
 
 **Caveats:** n=1 on 6 instances, so one or two resolves are within noise. The two workflow tools took about 1.8x the
-baseline's median wall-clock and cost 76% (evalid) / 61% (openswarm) more per task. The first published table undercounted
+baseline's median wall-clock and cost 76% (evalid) / 61% (swrm) more per task. The first published table undercounted
 pytest because of a shared temp-dir race in grading; it is now fixed and regraded
 ([regrade notes](bench/swebench/README.md#regrade-2026-10-18)). On the MiniMax-M3.1-Flash-Preview subset, baseline
 resolved 3/4 and superpowers 2/4; evalid had no clean MiniMax run because the plan's usage cap was hit.
