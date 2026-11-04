@@ -1,6 +1,8 @@
 # End-to-end task-completion harness
 
-Shared runner for the OpenFlow and openswarm benchmarks. Each cell is one task, one workflow arm, and one repeat. The model is local `cursor-agent` with model `grok-4.7-high` on every arm that actually calls a model.
+_Naming note: these results were measured before the rename, when the tools were called OpenFlow and openswarm. Product names in this document have been unified to the current names (evalid and swrm); versions and all figures are the original measurements._
+
+Shared runner for the evalid and swrm benchmarks. Each cell is one task, one workflow arm, and one repeat. The model is local `cursor-agent` with model `grok-4.7-high` on every arm that actually calls a model.
 
 Three numbers are recorded per cell:
 
@@ -44,9 +46,9 @@ Eight tasks: four JavaScript (`node --test`) and four Python (`unittest`).
 5. Run the visible test command.
 6. Copy `hidden/` into `<workdir>/_hidden_acceptance/` and run the hidden command. Success is that exit code.
 
-The prompt is the text of `TASK.md` plus one shared line, `Implement it; run the visible tests.` Superpowers adds `Use the installed skills for this change.` OpenFlow adds `Use the installed workflow tool for this change.` Baseline adds nothing else. The prompt does not mention `hidden/`.
+The prompt is the text of `TASK.md` plus one shared line, `Implement it; run the visible tests.` Superpowers adds `Use the installed skills for this change.` evalid adds `Use the installed workflow tool for this change.` Baseline adds nothing else. The prompt does not mention `hidden/`.
 
-Raw cursor-agent streams are `results/raw/<run>/agent-*.jsonl`. Openswarm also stores `executor-usage.json` and `openswarm-result.json`.
+Raw cursor-agent streams are `results/raw/<run>/agent-*.jsonl`. swrm also stores `executor-usage.json` and `openswarm-result.json`.
 
 ## Arms
 
@@ -80,7 +82,7 @@ The debug log (`bench-work/tmp/cursor-agent-logs-1000/session-2026-10-17T12-09-4
 
 Running `hooks/session-start` with `CURSOR_PLUGIN_ROOT` set to that checkout prints `additional_context` of the same length, 3405 characters, and the body is the `using-superpowers` skill. The stream-json `result.usage` on that call was `inputTokens` 10677, `outputTokens` 158, `cacheReadTokens` 5888, `cacheWriteTokens` 0, which is consistent with the skill text being in the prompt rather than only registered on disk.
 
-### Openswarm tokens
+### swrm tokens
 
 `result.json` has top-level `usage` and the same object on `attempts[].meta.usage` (the cursor backend writes the four `result.usage` fields). The arm keeps the per-attempt objects and does not also add the top-level copy. Session ids are read from the executor event log when the result does not carry one. Planner usage comes from `agent-1.jsonl` the same way as baseline.
 
@@ -97,11 +99,11 @@ python3 run.py \
 
 Environment variables for a full matrix:
 
-- `OPENFLOW_TGZ` — local tarball of `@surlymochan/openflow`
-- `OPENSWARM_DIR` — openswarm checkout (this tree's `release/xswarm` once the cursor backend is the one you want to measure)
+- `OPENFLOW_TGZ` — local tarball of `@surlymochan/evalid`
+- `OPENSWARM_DIR` — swrm checkout (this tree's `release/xswarm` once the cursor backend is the one you want to measure)
 - `SUPERPOWERS_DIR` — optional override; default is the v7.0.0 checkout above
 
-A row already in the jsonl for the same `(task, arm, repeat)` is skipped. Delete that line to retry a cell. Per-run timeout is 20 minutes. The openswarm executor budget of 15 minutes sits inside that cap, so planner time counts against it.
+A row already in the jsonl for the same `(task, arm, repeat)` is skipped. Delete that line to retry a cell. Per-run timeout is 20 minutes. The swrm executor budget of 15 minutes sits inside that cap, so planner time counts against it.
 
 `report.py` reads the jsonl and writes, next to it or under `--out-dir`:
 
@@ -128,20 +130,20 @@ One real smoke is in `results/e2e-2026-10-17-smoke.jsonl` (report under `results
 
 ## Fairness
 
-- Same model flag and the same cursor-agent flags on every real call. Superpowers only adds `--plugin-dir`. Openswarm's executor is cursor-agent with those flags; `--model grok-4.7-high` is passed into `openswarm run` so the policy default cannot drift.
-- Same task text. The only prompt difference is the one neutral line on superpowers and openflow.
+- Same model flag and the same cursor-agent flags on every real call. Superpowers only adds `--plugin-dir`. swrm's executor is cursor-agent with those flags; `--model grok-4.7-high` is passed into `openswarm run` so the policy default cannot drift.
+- Same task text. The only prompt difference is the one neutral line on superpowers and evalid.
 - Same hidden tests, applied only after the arm exits, from outside the workspace copy.
 - Repeats are independent fresh copies. Concurrency does not share a worktree or an `OPENSWARM_HOME`.
 - Do not edit tasks, hidden tests, or the reference patches after looking at model results. `validate_tasks.py` is the only acceptance check for the tasks themselves.
-- Tool install (OpenFlow prefix, project rule, `xflow init`) is not scored as the agent's diff. The rule text is the documented Cursor snippet, not a benchmark-authored strategy.
+- Tool install (evalid prefix, project rule, `xflow init`) is not scored as the agent's diff. The rule text is the documented Cursor snippet, not a benchmark-authored strategy.
 
 ## Limitations
 
 - The filesystem is not sandboxed. `--force` can read paths outside the workdir, including `tasks/<id>/hidden/` and `solution.patch`, if the model goes looking. The harness keeps those files out of the copy and out of the prompt. It does not add flags the spec did not list.
 - `result.usage` is whatever cursor-agent puts on the final result event. In this CLI build that object is replaced on each `turnEnded`, so a multi-turn invocation contributes its last reported usage, not a sum of turns. Turns are not emitted as separate usage events. Cells that time out before a result event record zeros and `missing_usage: true`.
 - The reported model string may be a display name (`Grok 4.7 256K High`). The controlled variable is the flag `grok-4.7-high`, stored as `model`.
-- OpenFlow needs a local tarball and Node >= 22.5. The system `node` on this machine is v20. The arm prepends a Node 22.5+ binary when it can find one.
-- Openswarm's 15 minute executor budget is inside the 20 minute cell timeout.
+- evalid needs a local tarball and Node >= 22.5. The system `node` on this machine is v20. The arm prepends a Node 22.5+ binary when it can find one.
+- swrm's 15 minute executor budget is inside the 20 minute cell timeout.
 - `omo` cannot be scored with a Cursor subscription. See `arms/omo.md`.
 - Visible tests are partial on purpose. A green visible run is not success.
 
@@ -154,32 +156,32 @@ acceptance tests applied only after the agent exits. Per-run cap 20 minutes. Con
 | --- | --- | --- | --- | --- | --- | --- |
 | baseline (plain cursor-agent) | 24/24 (100%) | 55 s (46–132) | 105k (87k–113k) | 28k | 0 | 24 |
 | superpowers v7.0.0 (`--plugin-dir`) | 24/24 (100%) | 187 s (121–299) | 312k (267k–436k) | 59k | 0 | 24 |
-| openswarm (planner + `--backend cursor` executor) | 24/24 (100%) | 220 s (137–356) | 207k (191k–246k) | 64k | 0 | 24 |
-| openflow 0.2.1 (installed + Cursor rule) | 11/12 (92%) | 985 s (920–1195) | 5.29M (5.07M–5.41M) ¹ | 233k ¹ | 3 | 12 ² |
+| swrm (planner + `--backend cursor` executor) | 24/24 (100%) | 220 s (137–356) | 207k (191k–246k) | 64k | 0 | 24 |
+| evalid 0.2.1 (installed + Cursor rule) | 11/12 (92%) | 985 s (920–1195) | 5.29M (5.07M–5.41M) ¹ | 233k ¹ | 3 | 12 ² |
 | oh-my-openagent | not run (see `arms/omo.md`) | – | – | – | – | 0 |
 
 Matched comparison (repeat 1 of every task, n = 8 per arm): baseline 8/8, 57 s, 104k tokens; superpowers 8/8, 154 s,
-289k; openswarm 8/8, 218 s, 203k; openflow 8/8, 1008 s, 5.32M ¹ (2 of 8 hit the cap). `results/headline.json` has both views.
+289k; swrm 8/8, 218 s, 203k; evalid 8/8, 1008 s, 5.32M ¹ (2 of 8 hit the cap). `results/headline.json` has both views.
 
 ¹ Token medians only use runs that returned a usage event. A run killed at the cap has no usage event, so its tokens are
 unknown, not zero; those runs used at least as many tokens as they had consumed when killed. Most of "total" is cache
 reads (`cacheReadTokens`); input+output is shown separately.
-² openflow ran 3 repeats on `config-deep-merge` and `csv-quoting` and 1 repeat on the other six tasks. Each openflow run took
-15–20 minutes and about 5M tokens, so the remaining repeats were not run to save subscription quota. The openflow
+² evalid ran 3 repeats on `config-deep-merge` and `csv-quoting` and 1 repeat on the other six tasks. Each evalid run took
+15–20 minutes and about 5M tokens, so the remaining repeats were not run to save subscription quota. The evalid
 batch ran after the other three arms had started (same concurrency); `baseline` runs overlapped it in time.
 
 What this says, plainly:
 
 - These 8 tasks are small. The plain baseline solved all of them, so success rate does not separate the arms here; time
   and tokens do. Every workflow layer costs more time and tokens than the plain agent on tasks this size.
-- openflow's documented Cursor entry asks the agent to run the full ceremony (goal, doctor, plan, red/green proofs,
+- evalid's documented Cursor entry asks the agent to run the full ceremony (goal, doctor, plan, red/green proofs,
   quality review, verify). On these tasks that was the slowest and most expensive arm by a wide margin, and 3 of 12 runs
   were still working on the workflow when the 20-minute cap killed them (the code in all 3 already passed
   the hidden tests). One `csv-quoting` run failed the hidden tests.
-- openswarm adds a planner call and a host-side verify; its overhead here is planner tokens plus executor start-up.
+- swrm adds a planner call and a host-side verify; its overhead here is planner tokens plus executor start-up.
 - oh-my-openagent runs inside OpenCode/senpi with its own provider logins. The only subscription on this machine is
   Cursor's, which OmO cannot use, so the OmO arm was not run. Estimated cost to run it with metered DeepSeek
-  (`deepseek-v4-pro`, $0.66 / $1.98 per 1M in/out, cache-miss list price, 2026-10-17): using the measured openswarm
+  (`deepseek-v4-pro`, $0.66 / $1.98 per 1M in/out, cache-miss list price, 2026-10-17): using the measured swrm
   median of about 53k input + 10k output tokens per task, 8 tasks × 3 repeats ≈ 1.3M input + 0.24M output ≈ **$1.3**
   (more if OmO's own prompts are larger). Not run because the rules for this benchmark exclude paid APIs.
 
