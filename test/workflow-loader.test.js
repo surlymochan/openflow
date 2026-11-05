@@ -205,6 +205,18 @@ describe('Workflow: yolo.yaml', () => {
     );
   });
 
+  test('zero model stop points between plan and tdd-red (P1-2 turn merge)', () => {
+    const phases = yoloWorkflow.phases;
+    const planIdx = phases.findIndex((phase) => phase.id === 'plan');
+    const redIdx = phases.findIndex((phase) => phase.id === 'tdd-red');
+    const between = phases.slice(planIdx + 1, redIdx);
+    assert.equal(between.length, 0, 'no phase may sit between planning and the red proof');
+    const stopPoints = phases
+      .slice(planIdx, redIdx + 1)
+      .filter((phase) => phase.gate && (phase.gate.type === 'human' || phase.gate.type === 'llm-judge'));
+    assert.equal(stopPoints.length, 0, 'plan -> tdd-red must not pause for a human or llm-judge gate');
+  });
+
   test('status machine allows openissue to enter execute once red is sealed (F2)', () => {
     const result = spawnSync('python3', [
       '-c',

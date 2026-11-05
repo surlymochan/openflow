@@ -5,6 +5,9 @@ All notable changes to this project are documented here. Detailed notes live in
 
 ## [Unreleased]
 
+### Added
+- **CR review seal partition (issue #5, P1-2)**: the J6 review proof (`cr/review-0.json`) now splits the changed files into `sealed_unchanged` (bytes still identical to the green TDD proof's sealed hashes) and `seal_drifted`, with a `reread_count`. The yolo skill's verify-consistency guidance uses the partition so the review pass re-reads only drifted files instead of everything the gate already verified. Reporting only — verdicts are unchanged, and without a green seal the partition is `null` and everything is re-read.
+
 ## [0.4.1] - 2026-11-06
 
 ### Fixed

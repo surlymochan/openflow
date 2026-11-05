@@ -61,6 +61,14 @@ pass that writes the plan also writes the failing test, so `tdd-red` only
 runs and seals it — no second exploration pass, and the issue/branch
 ceremony no longer sits between planning and the red proof.
 
+In `verify-consistency`, run the deterministic gates first. The J6 proof
+(`specs/changes/${CHANGE_ID}/cr/review-0.json`) carries a `seal_partition`:
+files whose bytes still match the green proof's sealed hashes
+(`sealed_unchanged`) are exactly what the TDD gate verified — the review
+pass does not re-read them. Only `seal_drifted` files (changed after the
+green seal, or never sealed) get a fresh read. When `seal_partition` is
+null there is no green seal to trust, and the review re-reads everything.
+
 The workflow YAML is the canonical execution source for atom order, gates, and
 artifact checks. This skill only explains the contract.
 

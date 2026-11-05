@@ -26,6 +26,11 @@ Checks (findings are structured JSON, severity fail | warn):
    (--max-files / --max-lines, or status.json cr_max_files /
    cr_max_lines). Over budget is a warn with a split-the-spec
    recommendation; over 2x budget fails.
+5. Seal partition (reporting only, never a verdict input) - the proof
+   splits the changed files into those still byte-identical to the
+   green TDD seal (file_hashes in tdd/green-0.json) and those that
+   drifted or were never sealed. A review pass re-reads only the
+   drifted set; the sealed set is exactly what the TDD gate verified.
 
 Self-contained on purpose: this atom does not import tdd_lib so it can
 run standalone in a reviewed tree. The file/symbol/assertion semantics
@@ -36,6 +41,7 @@ directory is excluded from the reviewed diff.
 """
 import argparse
 import fnmatch
+import hashlib
 import json
 import os
 import re
@@ -198,6 +204,38 @@ def assertion_delta(project_root: Path, diff_ref: str, test_files: list, deleted
             if baseline.returncode == 0:
                 removed += assertion_count(baseline.stdout)
     return added, removed
+
+
+def seal_partition(project_root: Path, change_dir: Path, files: list):
+    """Split changed files by whether they still match the green seal.
+
+    The green TDD proof (tdd/green-0.json) records the sha256 of every
+    file I6a sealed when the proof was produced (issue #5, P1-2). A
+    changed file whose current bytes still hash to the sealed value is
+    byte-for-byte what the TDD gate verified, so a review pass does not
+    need to re-read it; anything else — drifted after the seal, or never
+    sealed — must be re-read. Returns None when no usable green seal
+    exists (the review then re-reads everything).
+    """
+    green = read_json(change_dir / "tdd" / "green-0.json")
+    hashes = green.get("file_hashes")
+    if not isinstance(hashes, dict) or not hashes:
+        return None
+    sealed, drifted = [], []
+    for relative in files:
+        full = project_root / relative
+        digest = None
+        if full.is_file():
+            digest = hashlib.sha256(full.read_bytes()).hexdigest()
+        if digest is not None and hashes.get(relative) == digest:
+            sealed.append(relative)
+        else:
+            drifted.append(relative)
+    return {
+        "sealed_unchanged": sealed,
+        "seal_drifted": drifted,
+        "reread_count": len(drifted),
+    }
 
 
 def tokenize(text: str) -> set:
@@ -416,6 +454,7 @@ def main() -> None:
         "changed_files": all_files,
         "code_files": code_files,
         "test_files": test_files,
+        "seal_partition": seal_partition(project_root, change_dir, all_files),
         "spec_aligned_files": aligned_files,
         "assertions": {"added": added_assertions, "removed": removed_assertions},
         "budget": budget,
