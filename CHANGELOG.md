@@ -5,8 +5,13 @@ All notable changes to this project are documented here. Detailed notes live in
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-06
+
 ### Added
 - **CR review seal partition (issue #5, P1-2)**: the J6 review proof (`cr/review-0.json`) now splits the changed files into `sealed_unchanged` (bytes still identical to the green TDD proof's sealed hashes) and `seal_drifted`, with a `reread_count`. The yolo skill's verify-consistency guidance uses the partition so the review pass re-reads only drifted files instead of everything the gate already verified. Reporting only — verdicts are unchanged, and without a green seal the partition is `null` and everything is re-read.
+- **Bench Verified set extended to 15 instances (issue #5, P2-2)**: `bench/swebench/instances.json` grows from 12 to 15, adding sympy-15599, sympy-19040 and sympy-24213, and a structural validation of the instance set (`bench/swebench/test_instances.py`) now runs in CI. Gold-patch checks for the three new instances stay pending the benchmark environment.
+- **Bench report aggregates median (IQR) (issue #5, P2-1)**: `bench/swebench/report.py` now aggregates per-arm wall-clock, token and cost results with q1/median/q3 and presents them as median (IQR); reps isolation and the aggregation itself are pinned by `bench/swebench/test_reps_report.py`. Live multi-rep runs stay pending the benchmark environment.
+- **P0-2 acceptance pinned against saved pre-fix patches (issue #5, P0-2)**: regression tests in `bench/swebench/test_diff_filter.py` run the saved pre-fix patches through the evidence filter (`specs/`, `.xflow/`, `.as-xflow/` excluded from solution patches). The saved 9.7 MB evidence-laden patch filters down to 4.3 KB, and every saved patch lands under the 200 KB acceptance line.
 
 ## [0.4.1] - 2026-11-06
 

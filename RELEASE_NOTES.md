@@ -1,5 +1,19 @@
 # Release Notes
 
+## 0.5.0 - Review re-reads only drifted files; the bench set grows to 15
+
+Minor release. One product change — the CR review now spends its re-reads only where the seal says bytes moved — plus three bench-hygiene landings from the issue #5 backlog, each pinned by tests rather than by a live run.
+
+**Review re-reads only drifted files (#32, issue #5 P1-2).** The J6 review proof (`cr/review-0.json`) now carries a seal partition: every changed file is classified `sealed_unchanged` (bytes still identical to the green TDD proof's sealed hashes) or `seal_drifted`, with a `reread_count`. The yolo verify-consistency guidance consumes the partition, so the review pass re-reads only the drifted files instead of everything the gate already verified. This is reporting only — verdicts are unchanged, and without a green seal the partition is `null` and everything is re-read, exactly as before.
+
+**The Verified bench set grows from 12 to 15 instances (#30, issue #5 P2-2).** `bench/swebench/instances.json` adds sympy-15599, sympy-19040 and sympy-24213, and a structural validation of the instance set (`bench/swebench/test_instances.py`) now runs in CI, so a malformed instance entry fails the build instead of a bench run. Gold-patch checks for the three new instances are pending the benchmark environment.
+
+**Bench reports now aggregate as median (IQR) (#31, issue #5 P2-1).** `bench/swebench/report.py` aggregates per-arm wall-clock, token and cost results with q1/median/q3 and presents them in median (IQR) form. Reps isolation — repeat runs of the same cell never share grading state — and the aggregation itself are pinned by `bench/swebench/test_reps_report.py`.
+
+**P0-2 acceptance is now pinned by regression tests (#29, issue #5 P0-2).** The evidence exclusion itself landed earlier (solution patches drop `specs/`, `.xflow/` and `.as-xflow/`); what was missing was a test that would notice if it regressed. `bench/swebench/test_diff_filter.py` now runs the saved pre-fix patches through the filter: the saved 9.7 MB evidence-laden patch comes out at 4.3 KB, and every saved patch lands under the 200 KB acceptance line.
+
+Acceptance debt, stated plainly: the live-run acceptance for P1-2, P2-1 and P2-2 — multi-rep bench runs on the restored environment, including the wall-clock/token lines from issue #5 and gold checks for the new instances — is still pending the benchmark environment. No performance numbers are claimed in this release; what shipped is the reporting, the larger instance set, and the tests that pin their behaviour.
+
 ## 0.4.1 - Failed runs report phase costs; Node 24 test counts fail closed
 
 Patch release. Two fixes, both about the gate trusting evidence it had not actually read.
