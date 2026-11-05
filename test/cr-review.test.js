@@ -4,6 +4,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 
 const REPO_ROOT = process.cwd();
 const CHANGE_ID = 'chg-cr';
@@ -236,6 +237,71 @@ describe('J6.cr.review gate', () => {
       const { run, proof } = runCr(projectRoot);
       assert.equal(run.status, 0, run.stderr || run.stdout);
       assert.ok(!codes(proof).some((code) => code.startsWith('cr_loop_budget')));
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
+
+  // P1-2 (issue #5): the review pass re-reads only files that drifted
+  // from the green TDD seal; files still byte-identical to the sealed
+  // hashes are what the gate already verified.
+  const TEST_CHANGED = TEST_BASE + "assert.equal(parseWidget('D'), 'd');\n";
+  const sha256 = (text) => createHash('sha256').update(text).digest('hex');
+
+  function writeGreenSeal(projectRoot, hashes) {
+    const tddDir = resolve(projectRoot, 'specs', 'changes', CHANGE_ID, 'tdd');
+    mkdirSync(tddDir, { recursive: true });
+    writeFileSync(
+      resolve(tddDir, 'green-0.json'),
+      JSON.stringify({ phase: 'green', passed: true, file_hashes: hashes }, null, 2),
+    );
+  }
+
+  test('seal partition: files matching the green seal need no re-read', () => {
+    const projectRoot = makeRepo();
+    try {
+      writeFileSync(resolve(projectRoot, 'src', 'widget.js'), WIDGET_CHANGED);
+      writeFileSync(resolve(projectRoot, 'test', 'widget.test.js'), TEST_CHANGED);
+      writeGreenSeal(projectRoot, {
+        'src/widget.js': sha256(WIDGET_CHANGED),
+        'test/widget.test.js': sha256(TEST_CHANGED),
+      });
+      const { run, proof } = runCr(projectRoot);
+      assert.equal(run.status, 0, run.stderr || run.stdout);
+      assert.deepEqual(proof.seal_partition.sealed_unchanged, ['src/widget.js', 'test/widget.test.js']);
+      assert.deepEqual(proof.seal_partition.seal_drifted, []);
+      assert.equal(proof.seal_partition.reread_count, 0);
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('seal partition: a file edited after the green seal must be re-read', () => {
+    const projectRoot = makeRepo();
+    try {
+      writeFileSync(resolve(projectRoot, 'src', 'widget.js'), WIDGET_CHANGED);
+      writeFileSync(resolve(projectRoot, 'test', 'widget.test.js'), TEST_CHANGED);
+      writeGreenSeal(projectRoot, {
+        'src/widget.js': sha256(WIDGET_CHANGED),
+        'test/widget.test.js': sha256(TEST_CHANGED),
+      });
+      writeFileSync(resolve(projectRoot, 'src', 'widget.js'), WIDGET_CHANGED + '// drift\n');
+      const { proof } = runCr(projectRoot);
+      assert.deepEqual(proof.seal_partition.sealed_unchanged, ['test/widget.test.js']);
+      assert.deepEqual(proof.seal_partition.seal_drifted, ['src/widget.js']);
+      assert.equal(proof.seal_partition.reread_count, 1);
+      assert.ok(proof.seal_partition.reread_count < proof.changed_files.length);
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('seal partition: no green seal means everything is re-read (null partition)', () => {
+    const projectRoot = makeRepo();
+    try {
+      writeFileSync(resolve(projectRoot, 'src', 'widget.js'), WIDGET_CHANGED);
+      const { proof } = runCr(projectRoot);
+      assert.equal(proof.seal_partition, null);
     } finally {
       rmSync(projectRoot, { recursive: true, force: true });
     }
