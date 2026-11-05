@@ -56,6 +56,29 @@ jobs:
         # same as ci.yml.
         run: npx playwright install --with-deps chromium
 
+      - name: Stage installed xflow skill for the diff gate
+        # release:pack includes skill:diff, which compares this checkout's
+        # xflow/ skill against the *installed* copy (default
+        # ~/.codex/skills/xflow). That installed copy only exists on the
+        # maintainer's machine: `npm run skill:sync` creates it through the
+        # as-skillhub companion repo (its skills_sync.sh under
+        # ~/Documents/workspace/pro/as-skillhub), which a clean runner does
+        # not have — sync itself fails there with "missing skills sync
+        # script", so the gate cannot be satisfied as-is. Stage the
+        # installed copy from this checkout and point the check at it via
+        # XFLOW_INSTALLED_SKILL_DIR, the override the check script itself
+        # supports. The gate still diffs two separate trees file by file
+        # and fails on any mismatch; what CI cannot cover is drift against
+        # a maintainer's live installed dir, which stays covered by
+        # `npm run release:local` on the maintainer machine (unchanged).
+        # The tarball is packed from this same checkout by pack:check, so
+        # the staged copy cannot mask a packing regression.
+        run: |
+          staged="$RUNNER_TEMP/installed-xflow-skill"
+          mkdir -p "$staged"
+          cp -R xflow/. "$staged"/
+          echo "XFLOW_INSTALLED_SKILL_DIR=$staged" >> "$GITHUB_ENV"
+
       - name: Pre-publish gate
         # The manual publish sequence in docs/npm-publish-handoff.md runs
         # `npm run release:pack` before publishing: verify (npm test),
