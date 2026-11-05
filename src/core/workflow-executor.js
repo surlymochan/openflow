@@ -91,7 +91,22 @@ export class WorkflowExecutor {
       phases: this.runtime.phaseCosts,
       wallClockMs,
     });
+    this.persistCostReport(this.runtime.costReport);
     return this.runtime.costReport;
+  }
+
+  // The cost report is run evidence (issue #5 P1-1): besides riding on the
+  // terminal execution-log event, persist it as a standalone artifact so a
+  // reader never has to mine the ndjson log for the per-phase breakdown.
+  // Best-effort by design — accounting must never fail the run itself.
+  persistCostReport(report) {
+    try {
+      const dir = resolve(this.projectRoot, '.as-xflow');
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(resolve(dir, 'phase-cost.json'), JSON.stringify(report, null, 2));
+    } catch {
+      // The execution-log event still carries the report.
+    }
   }
 
   async run() {
@@ -720,6 +735,7 @@ export class WorkflowExecutor {
         phase_label: phase?.label || null,
         reason,
         detail: detail || null,
+        cost: this.buildCostReport(),
       });
     } catch {
       // Failure logging is best-effort and must not hide the real stop reason.
