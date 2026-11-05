@@ -35,7 +35,15 @@ describe('local release checklist', () => {
     });
 
     assert.equal(result.status, 0, result.stderr || result.stdout || String(result.error));
-    const [pack] = JSON.parse(result.stdout);
+    // npm <= 11 prints a top-level array of pack results; npm 12 prints an
+    // object keyed by package name. The pack entry itself is unchanged, so
+    // unwrap either envelope before checking the whitelist.
+    const parsed = JSON.parse(result.stdout);
+    const pack = Array.isArray(parsed)
+      ? parsed[0]
+      : parsed.files
+        ? parsed
+        : Object.values(parsed)[0];
     const paths = pack.files.map((file) => file.path);
 
     for (const requiredPath of [
