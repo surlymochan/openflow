@@ -5,6 +5,8 @@ All notable changes to this project are documented here. Detailed notes live in
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-11-06
+
 ### Fixed
 - **TDD gate counts skipped/todo tests again on Node 24**: the gate parsed skip/todo counts only from the TAP reporter's `# skipped / # todo` summary lines, but Node 24's built-in runner defaults to the spec reporter when piped, whose summary lines carry a `ℹ` marker — an all-skipped/todo run exited 0, parsed as zero skips, and was waved through as green. The parser now reads the runner's summary block in both reporter formats (anchored to the summary lines, gated on the full node signature), and fails closed: a node summary whose gate counts cannot be fully parsed classifies as `counts_unknown` and is rejected by proof validation (`tests_counts_unknown`) instead of reading as zero skipped.
 
