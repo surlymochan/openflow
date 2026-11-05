@@ -105,4 +105,92 @@ describe('phase cost accounting (small workflow integration)', () => {
       rmSync(projectRoot, { recursive: true, force: true });
     }
   });
+
+  test('a completed run persists the cost report as a standalone evidence artifact', async () => {
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-cost-'));
+    try {
+      const modulePath = resolve(projectRoot, 'sleepy.mjs');
+      writeFileSync(modulePath, `
+        export default async function run() {
+          await new Promise((done) => setTimeout(done, 400));
+          return { ok: true, usage: { input_tokens: 40, output_tokens: 10 } };
+        }
+      `, 'utf8');
+      const registry = { atoms: { 'TEST.sleepy': { track: 'heavy', type: 'js', module: modulePath } } };
+      const phases = [
+        { id: 'red', label: 'Red', atoms: [{ id: 'TEST.sleepy' }], gate: { type: 'skip' } },
+        { id: 'green', label: 'Green', atoms: [{ id: 'TEST.sleepy' }], gate: { type: 'skip' } },
+      ];
+      const executor = new WorkflowExecutor({
+        workflow: { name: 'cost-smoke', track: 'heavy' },
+        phases,
+        registry,
+        projectRoot,
+        changeId: 'chg-cost-smoke',
+        input: {},
+      });
+      await executor.run();
+
+      const artifact = JSON.parse(readFileSync(resolve(projectRoot, '.as-xflow', 'phase-cost.json'), 'utf8'));
+      assert.deepEqual(artifact.phases.map((phase) => phase.phase_id), ['red', 'green']);
+      assert.ok(artifact.phases.every((phase) => phase.status === 'completed'));
+      assert.equal(artifact.total_phase_ms, artifact.phases.reduce((sum, phase) => sum + phase.duration_ms, 0));
+      assert.equal(artifact.within_tolerance, true, `drift ${artifact.drift_pct}% must stay within ${artifact.tolerance_pct}%`);
+      assert.deepEqual(artifact.tokens, { input: 80, output: 20, total: 100 });
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('a failed run still records the per-phase breakdown in its evidence', async () => {
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-cost-'));
+    try {
+      const modulePath = resolve(projectRoot, 'sleepy.mjs');
+      writeFileSync(modulePath, `
+        export default async function run() {
+          return { ok: true, usage: { input_tokens: 10, output_tokens: 5 } };
+        }
+      `, 'utf8');
+      const registry = { atoms: { 'TEST.sleepy': { track: 'heavy', type: 'js', module: modulePath } } };
+      const phases = [
+        { id: 'red', label: 'Red', atoms: [{ id: 'TEST.sleepy' }], gate: { type: 'skip' } },
+        {
+          id: 'green',
+          label: 'Green',
+          atoms: [{ id: 'TEST.sleepy' }],
+          gate: { type: 'skip' },
+          preconditions: [{ phase_artifact: 'definitely-missing.txt', predicate: 'exists' }],
+        },
+      ];
+      const executor = new WorkflowExecutor({
+        workflow: { name: 'cost-smoke-fail', track: 'heavy' },
+        phases,
+        registry,
+        projectRoot,
+        changeId: 'chg-cost-smoke',
+        input: {},
+        exitOnFailure: false,
+      });
+      await assert.rejects(executor.run(), /precondition_failed/);
+
+      const logLines = readFileSync(resolve(projectRoot, '.as-xflow', 'logs', 'execution.ndjson'), 'utf8')
+        .trim()
+        .split('\n')
+        .map((line) => JSON.parse(line));
+      const failed = logLines.find((entry) => entry.kind === 'workflow_failed');
+      assert.ok(failed, 'workflow_failed event exists');
+      assert.ok(failed.cost, 'workflow_failed carries a cost report');
+      assert.deepEqual(
+        failed.cost.phases.map((phase) => [phase.phase_id, phase.status]),
+        [['red', 'completed'], ['green', 'failed']],
+      );
+      assert.equal(failed.cost.total_phase_ms, failed.cost.phases.reduce((sum, phase) => sum + phase.duration_ms, 0));
+      assert.deepEqual(failed.cost.tokens, { input: 10, output: 5, total: 15 });
+
+      const artifact = JSON.parse(readFileSync(resolve(projectRoot, '.as-xflow', 'phase-cost.json'), 'utf8'));
+      assert.deepEqual(artifact.phases, failed.cost.phases);
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
 });
