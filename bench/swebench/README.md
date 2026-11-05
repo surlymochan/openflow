@@ -142,6 +142,14 @@ Round 2 (used for every arm): all 12 Verified instances of sympy, pytest and pyl
 | pylint-dev__pylint-4551 | pylint | 1-4 hours |
 | pylint-dev__pylint-8898 | pylint | 1-4 hours |
 
+Round 3 (issue #5 P2-2, set for the next rerun; no counted runs yet): the set grows to 15 — the compared 6, the other 6 round-2 instances, plus 3 drawn from the "15 min - 1 hour" bucket (the harder buckets hold no more instances of these repos): sorted candidate ids (49, excluding the round-2 and round-1 sets), pooled shuffle with the house seed 20261017, first 3. The next full round runs 15 instances × `--reps 3`, i.e. n = 45 runs per arm. The 3 additions still need the gold-patch check (`harness/validate.py`) in the bench environment before their first counted run; the Results tables above remain the 6-instance round.
+
+| id | repo | difficulty |
+| --- | --- | --- |
+| sympy__sympy-15599 | sympy | 15 min - 1 hour |
+| sympy__sympy-19040 | sympy | 15 min - 1 hour |
+| sympy__sympy-24213 | sympy | 15 min - 1 hour |
+
 ## Environment (no Docker)
 
 - Per run: the tree at `base_commit` is extracted with `git archive` and committed as a single `baseline` commit with no history, so the upstream fix is not in the git objects.
