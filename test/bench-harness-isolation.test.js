@@ -10,7 +10,7 @@ import { resolve } from 'node:path';
 
 test('swebench harness isolation (evidence diff filter + per-run uv cache + predictions)', () => {
   const benchDir = resolve(process.cwd(), 'bench/swebench');
-  const result = spawnSync('python3', ['-m', 'unittest', 'test_diff_filter', 'test_predictions', 'test_instances', '-v'], {
+  const result = spawnSync('python3', ['-m', 'unittest', 'test_diff_filter', 'test_predictions', 'test_instances', 'test_reps_report', '-v'], {
     cwd: benchDir,
     encoding: 'utf8',
   });

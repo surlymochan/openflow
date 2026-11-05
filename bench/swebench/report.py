@@ -132,7 +132,10 @@ def main():
         s = {"n": n, "resolved": res, "resolved_rate": res / n if n else None,
              "instances": len({r["instance_id"] for r in rs}),
              "wall_s_q1_med_q3": quantiles(walls), "timed_out": sum(1 for r in rs if r.get("timed_out")),
-             "tokens_in_out_median": statistics.median(io), "tokens_total_incl_cache_median": statistics.median(tot),
+             "tokens_in_out_median": statistics.median(io),
+             "tokens_in_out_q1_med_q3": quantiles(io),
+             "tokens_total_incl_cache_median": statistics.median(tot),
+             "tokens_total_incl_cache_q1_med_q3": quantiles(tot),
              "tokens_total_incl_cache_sum": sum(tot),
              "guard_blocked": sum((c.get("guard_blocked") or 0) for r in rs for c in r.get("calls", [])),
              "runs_with_model_errors": sum(1 for r in rs if r.get("errors")), "cost": {}}
@@ -143,6 +146,7 @@ def main():
         for row in prices:
             cs = [cost(r["tokens"], row) for r in rs]
             s["cost"][row["id"]] = {"median_per_run": statistics.median(cs), "total": sum(cs),
+                                    "q1_med_q3": quantiles(cs),
                                     "per_resolved": (sum(cs) / res) if res else None}
         summary["arms"][a] = s
     per_inst = defaultdict(dict)
@@ -153,15 +157,16 @@ def main():
     summary["leak_scan"] = leak_scan(raw)
     (out / "summary.json").write_text(json.dumps(summary, indent=1))
 
-    L = [f"| Arm | Resolved (official tests) | Median wall-clock (IQR) | Median $ per task ({args.price}) | Total $ all runs ({args.price}) | Median tokens in+out | Median tokens incl. cache | n |",
+    L = [f"| Arm | Resolved (official tests) | Median wall-clock (IQR) | Median $ per task ({args.price}) | Total $ all runs ({args.price}) | Median tokens in+out | Median tokens incl. cache (IQR) | n |",
          "| --- | --- | --- | --- | --- | --- | --- | --- |"]
     for a in arms:
         s = summary["arms"][a]
         q1, md, q3 = s["wall_s_q1_med_q3"]
+        tq1, tmd, tq3 = s["tokens_total_incl_cache_q1_med_q3"]
         c = s["cost"][args.price]
         L.append(f"| {a} | **{s['resolved']}/{s['n']} ({s['resolved_rate']:.0%})** | {md:.0f} s ({q1:.0f}–{q3:.0f}) | "
                  f"${c['median_per_run']:.4f} | ${c['total']:.2f} | {s['tokens_in_out_median']:,.0f} | "
-                 f"{s['tokens_total_incl_cache_median']:,.0f} | {s['n']} |")
+                 f"{tmd:,.0f} ({tq1:,.0f}–{tq3:,.0f}) | {s['n']} |")
     L += ["", "Same token counts at other list prices (computed, not billed):", "",
           "| Arm | " + " | ".join(f"{r['label']}: median / total" for r in other_rows) + " |",
           "| --- | " + " | ".join("---" for _ in other_rows) + " |"]
