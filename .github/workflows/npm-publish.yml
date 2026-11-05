@@ -41,8 +41,12 @@ jobs:
 
       - name: Upgrade npm
         # Trusted publishing requires npm >= 11.5.1; the npm bundled with
-        # Node 22 is older, so upgrade explicitly.
-        run: npm install -g npm@latest
+        # Node 22 is older, so upgrade explicitly — but pin to the 11 line.
+        # npm 12 changed `npm pack --json` output from a top-level array to
+        # an object keyed by package name, which the release gate below
+        # (test/release-checklist.test.js) consumes; stay on 11 until the
+        # gate is verified against the new shape.
+        run: npm install -g npm@^11.5.1
 
       - name: Install
         run: npm ci
