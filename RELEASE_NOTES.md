@@ -1,5 +1,15 @@
 # Release Notes
 
+## 0.4.1 - Failed runs report phase costs; Node 24 test counts fail closed
+
+Patch release. Two fixes, both about the gate trusting evidence it had not actually read.
+
+**Failed runs now report where the time and tokens went (#22).** The per-phase cost report landed in 0.3.0 but only rode on successful runs. It now also rides on the `workflow_failed` execution-log event — a run that stops mid-way still reports its per-phase timing/token breakdown — and is persisted as a standalone artifact at `.as-xflow/phase-cost.json` on both completion and failure, so the breakdown is readable without mining the ndjson execution log. The accounting structure (phase sum vs wall clock within 5%) is covered by `test/phase-cost.test.js`. This lands item P1-1 from issue #5.
+
+**TDD gate reads test counts correctly on Node 24, and fails closed when it cannot (#23).** The gate parsed skip/todo counts only from the TAP reporter's summary lines. Node 24's built-in runner defaults to the spec reporter when piped, whose summary lines carry a different marker — an all-skipped/todo run on Node 24 exited 0, parsed as zero skips, and was waved through as green. The parser now reads the runner's summary block in both reporter formats (TAP and spec), requires the full node signature before treating a block as a node summary, and anchors summary lines at line start so test names or program output cannot forge counts. When a detected node summary cannot be fully parsed, the run classifies as `counts_unknown` and proof validation rejects it (`tests_counts_unknown`) instead of reading unknown counts as zero. Measured against pinned captured outputs: the new count-parsing tests pass 9/9 under Node 22 and 9/9 under Node 24; the end-to-end TDD proof suite passes 18/18 under both (it was 17/18 on Node 24 before this fix).
+
+With P1-1 landed here, the P0/P1 items tracked on the optimization backlog in #5 stand checked off as verified; the remaining longer-horizon items stay tracked there.
+
 ## 0.4.0 - CR gate wired in, overhead cut 1, predictions direct
 
 **The CR gate now runs inside the pipeline (F1, #15).** In 0.3.0 `J6.cr.review` was registered and unit-tested but no workflow invoked it — the release notes said so, and this release closes that gap. The yolo `verify-consistency` phase and the corps `qa` phase run J6 on every change, after the spec-delta review and before the stage flips to verify, and the verdict record `cr/review-0.json` is a required artifact: a failing verdict stops the workflow instead of waving the change through to archive. The wiring is proven end-to-end, not just by unit tests: `test/cr-review-wiring.test.js` drives the real yolo verify phase through `WorkflowExecutor` against a git fixture — an aligned, tested change passes with a verdict record on disk, and a code change with no test follow is stopped at the phase with the `cr_code_without_test` finding.
