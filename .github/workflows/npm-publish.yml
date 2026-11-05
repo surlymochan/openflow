@@ -1,0 +1,87 @@
+name: Publish to npm
+
+# Publishes @surlymochan/evalid via npm trusted publishing (OIDC).
+# No npm token is stored or used: npm exchanges the GitHub Actions OIDC
+# token for a short-lived publish grant. The trusted publisher entry on
+# npmjs.com must name this exact workflow file (npm-publish.yml).
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    # Pinned for the same reason as ci.yml: Playwright 1.59.1 does not
+    # support the Ubuntu 26.04 image behind ubuntu-latest.
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # For release events, build exactly the tagged tree. Empty on
+          # workflow_dispatch, where checkout falls back to the ref the
+          # run was dispatched from.
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+          cache: npm
+
+      - name: Upgrade npm
+        # Trusted publishing requires npm >= 11.5.1; the npm bundled with
+        # Node 22 is older, so upgrade explicitly.
+        run: npm install -g npm@latest
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Playwright browser
+        # npm test (inside the release:pack gate below) needs the browser,
+        # same as ci.yml.
+        run: npx playwright install --with-deps chromium
+
+      - name: Pre-publish gate
+        # The manual publish sequence in docs/npm-publish-handoff.md runs
+        # `npm run release:pack` before publishing: verify (npm test),
+        # drift scan, skill diff, and `npm pack --dry-run` for the tarball
+        # contents check. Keep the same gate here.
+        run: npm run release:pack
+
+      - name: Check version
+        id: check
+        run: |
+          pkg_name="$(node -p "require('./package.json').name")"
+          pkg_version="$(node -p "require('./package.json').version")"
+          echo "version=$pkg_version" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "release" ]; then
+            tag="${{ github.event.release.tag_name }}"
+            if [ "${tag#v}" != "$pkg_version" ]; then
+              echo "::error::Release tag $tag does not match package.json version $pkg_version; refusing to publish."
+              exit 1
+            fi
+          fi
+          if npm view "$pkg_name@$pkg_version" version >/dev/null 2>&1; then
+            echo "$pkg_name@$pkg_version is already published on npm; skipping." >> "$GITHUB_STEP_SUMMARY"
+            echo "already_published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "already_published=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish
+        # OIDC trusted publishing: intentionally no NODE_AUTH_TOKEN here.
+        # A token in the environment would take precedence over the OIDC
+        # exchange and defeat the point of trusted publishing.
+        if: steps.check.outputs.already_published != 'true'
+        run: npm publish --provenance --access public

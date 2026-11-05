@@ -6,6 +6,19 @@ Use this page for the final irreversible public publish step. Everything here
 is intentionally explicit because `npm publish --access public` changes public
 distribution state.
 
+## Automated publish (trusted publishing)
+
+The registry-mutating step normally runs from GitHub Actions, not from a
+local shell: `.github/workflows/npm-publish.yml` publishes via npm trusted
+publishing (OIDC — no stored npm token anywhere) whenever a GitHub Release
+is published, and can also be started manually (workflow_dispatch) to
+publish the version in `package.json` if that version is not on npm yet.
+Before publishing it runs the same `npm run release:pack` gate as the manual
+sequence below, and for release events it refuses to publish when the
+release tag does not match the `package.json` version. The manual sequence
+below remains the fallback for when Actions or the trusted-publisher
+registration on npmjs.com is unavailable.
+
 ## Current Verified State
 
 - Package: `evalid@0.2.0`
