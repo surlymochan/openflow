@@ -5,6 +5,9 @@ All notable changes to this project are documented here. Detailed notes live in
 
 ## [Unreleased]
 
+### Fixed
+- **TDD gate counts skipped/todo tests again on Node 24**: the gate parsed skip/todo counts only from the TAP reporter's `# skipped / # todo` summary lines, but Node 24's built-in runner defaults to the spec reporter when piped, whose summary lines carry a `ℹ` marker — an all-skipped/todo run exited 0, parsed as zero skips, and was waved through as green. The parser now reads the runner's summary block in both reporter formats (anchored to the summary lines, gated on the full node signature), and fails closed: a node summary whose gate counts cannot be fully parsed classifies as `counts_unknown` and is rejected by proof validation (`tests_counts_unknown`) instead of reading as zero skipped.
+
 ### Added
 - **Phase cost evidence on every run (issue #5 P1-1)**: the per-phase timing/token report (`src/core/phase-cost.js`, landed in 0.3.0) now also rides on the `workflow_failed` execution-log event — a run that stops mid-way still reports where its time and tokens went — and is persisted as a standalone artifact at `.as-xflow/phase-cost.json` on both completion and failure, so the breakdown is readable without mining the ndjson execution log. Acceptance rerun on the SWE-bench cells stays pending the benchmark environment; the accounting structure (phase sum vs wall clock within 5%) is covered by `test/phase-cost.test.js`.
 

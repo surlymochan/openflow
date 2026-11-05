@@ -343,27 +343,68 @@ def output_digest(stdout: str, stderr: str) -> str:
     return hashlib.sha256(f"{stdout}\0{stderr}".encode("utf-8")).hexdigest()
 
 
+# Node's built-in test runner ends a run with a summary block of
+# "<marker> <label> <count>" lines — the runner's own structured tally.
+# The marker depends on the reporter: "#" for the TAP reporter (the piped
+# default up to Node 22) and "ℹ" for the spec reporter (the piped default
+# from Node 24, and selectable on any version). The gate reads only these
+# line-anchored summary lines, never free-floating text, so test names or
+# program output cannot forge a count.
+_NODE_GATE_LABELS = ("pass", "fail", "skipped", "todo")
+# Lines every node:test summary block carries and other TAP emitters do
+# not; their joint presence is what marks a block as a node summary.
+_NODE_SIGNATURE_LABELS = ("tests", "suites", "cancelled")
+
+
 def _summary_count(text: str, label: str):
-    match = re.search(rf"#\s+{label}\s+(\d+)\b", text)
+    match = re.search(rf"^[#\u2139]\s*{label}\s+(\d+)\b", text, re.MULTILINE)
     if not match:
         return None
     return int(match.group(1))
+
+
+def node_run_counts(text: str):
+    """Summary counts from a node:test run, or None when there is no summary.
+
+    A dict is returned once a block carries the full node signature
+    (tests/suites/cancelled). A gate label the block does not carry maps
+    to None — unknown, never silently zero: a truncated or reshaped
+    block must not read as "zero skipped".
+    """
+    if not text:
+        return None
+    if any(_summary_count(text, label) is None for label in _NODE_SIGNATURE_LABELS):
+        return None
+    labels = _NODE_SIGNATURE_LABELS + _NODE_GATE_LABELS
+    return {label: _summary_count(text, label) for label in labels}
+
+
+def output_counts_unknown(text: str) -> bool:
+    """True when a node:test summary is present but a gate count is unreadable."""
+    counts = node_run_counts(text)
+    if counts is None:
+        return False
+    return any(counts[label] is None for label in _NODE_GATE_LABELS)
 
 
 def output_non_result(text: str) -> bool:
     """True when the runner reported skip/todo/xfail and no passing test."""
     if not text:
         return False
-    skipped = _summary_count(text, "skipped") or 0
-    todo = _summary_count(text, "todo") or 0
-    passed = _summary_count(text, "pass")
-    failed = _summary_count(text, "fail")
-    if skipped + todo > 0 and (passed or 0) == 0 and (failed or 0) == 0:
-        return True
+    counts = node_run_counts(text)
+    node_failed = None
+    if counts is not None:
+        skipped = counts["skipped"]
+        todo = counts["todo"]
+        passed = counts["pass"]
+        node_failed = counts["fail"]
+        if None not in (skipped, todo, passed, node_failed):
+            if skipped + todo > 0 and passed == 0 and node_failed == 0:
+                return True
     py_skipped = sum(int(item) for item in re.findall(r"\b(\d+)\s+skipped\b", text))
     py_skipped += sum(int(item) for item in re.findall(r"\b(\d+)\s+xfailed\b", text))
     py_passed = sum(int(item) for item in re.findall(r"\b(\d+)\s+passed\b", text))
-    if py_skipped > 0 and py_passed == 0 and (failed or 0) == 0:
+    if py_skipped > 0 and py_passed == 0 and (node_failed or 0) == 0:
         return True
     return False
 
@@ -372,6 +413,11 @@ def classify_output(text: str, passed: bool) -> str:
     if output_non_result(text):
         return "skipped"
     if passed:
+        # Fail closed: a node:test summary that cannot be fully read does
+        # not prove a clean pass — the skip/todo counts may sit in the
+        # part that failed to parse, so the run is unverifiable, not green.
+        if output_counts_unknown(text):
+            return "counts_unknown"
         return "passed"
     if re.search(r"does not provide an export named|cannot import name\b", text, re.IGNORECASE):
         return "test_error"

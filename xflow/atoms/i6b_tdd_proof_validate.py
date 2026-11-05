@@ -154,6 +154,9 @@ def main():
     if proof.get('failure_kind') == 'skipped' or tdd_lib.output_non_result(actual_text):
         emit({'ok': False, 'verdict': 'tests_skipped_or_todo', 'phase': args.phase}, 1)
 
+    if proof.get('failure_kind') == 'counts_unknown' or tdd_lib.output_counts_unknown(actual_text):
+        emit({'ok': False, 'verdict': 'tests_counts_unknown', 'phase': args.phase}, 1)
+
     expected_passed = expected_result(args.phase)
     if expected_passed is not None and proof.get('passed') is not expected_passed:
         emit({

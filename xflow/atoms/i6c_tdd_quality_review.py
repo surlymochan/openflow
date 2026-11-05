@@ -95,6 +95,15 @@ def proof_skipped(proof: dict) -> bool:
     return tdd_lib.output_non_result(blob)
 
 
+def proof_counts_unknown(proof: dict) -> bool:
+    if not proof:
+        return False
+    if proof.get("failure_kind") == "counts_unknown":
+        return True
+    blob = f"{proof.get('stdout_tail') or ''}\n{proof.get('stderr_tail') or ''}"
+    return tdd_lib.output_counts_unknown(blob)
+
+
 def symbols_in(project_root: Path, code_files: list[str]) -> set[str]:
     symbols = set()
     for relative in code_files:
@@ -297,6 +306,12 @@ def main() -> None:
                 "severity": "fail",
                 "code": "tests_skipped_or_todo",
                 "message": "A recorded run skipped or marked todo the tests it claims to have executed.",
+            })
+        if proof_counts_unknown(red_proof) or proof_counts_unknown(green_proof):
+            findings.append({
+                "severity": "fail",
+                "code": "tests_counts_unknown",
+                "message": "A recorded run's summary counts could not be fully parsed, so its skip/todo counts are unknown and the run cannot be verified.",
             })
         symbols = symbols_in(project_root, code_files)
         if symbols and test_files:
