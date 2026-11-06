@@ -1,5 +1,17 @@
 # Release Notes
 
+## 0.5.1 - Gates stop re-reading unchanged files; bench arms run at high effort
+
+Patch release. Two gate cost improvements from the issue #5 backlog, both pinned by tests rather than by a live run, plus a bench-harness change.
+
+**Stat-anchored gate verification (#34, issue #5 P1-3).** The TDD seal now records a stat anchor (size, mtime_ns, inode) per sealed file alongside its sha256. Proof validation (I6b) and the CR review seal partition (J6) stat-check first and re-read + re-hash only files whose anchor moved, instead of re-reading every sealed file on every gate pass; proofs sealed before the anchors existed fall back to the full re-read. Validation reports `reread_files` / `reread_count` and the seal partition reports `stat_checked`, so the skipped re-reads are observable. Test evidence (local): `test/tdd-proof.test.js` 22/22 — 4 new, including unchanged tree validating with `reread_count` 0 and anchor-less proofs still verifying by full re-read; `test/cr-review.test.js` 14/14 — 2 new, including anchors accepting unchanged files (`stat_checked` 2) and an edited file re-read and drifted (`stat_checked` 1, `reread_count` 1).
+
+**Per-process read cache for the review gates (#35, issue #5 P1-2 follow-up).** Both gates now read through a per-process cache keyed by the P1-3 stat anchor: each unchanged file is read from disk once per run and served from memory on later reads, while a changed file is re-read instead of served stale (a mid-read change is retried once). This removes the repeated re-reads inside one gate run — I6c reading the same source file for symbols, implementation sources and test review, and J6's test follow re-reading every test file once per changed code file. Both proofs report `read_cache` (`disk_reads` / `cache_hits`). No verdict logic changed. Test evidence (local): `test/tdd-proof.test.js` 24/24 — 2 new, including a cache unit test (3 reads → 1 disk read + 2 hits) and the quality-review proof reporting `read_cache` {disk_reads: 2, cache_hits: 2}; `test/cr-review.test.js` 16/16 — 2 new, including one gate run reading each unchanged file from disk once ({disk_reads: 3, cache_hits: 1}) and a test file shared by two code files read from disk once ({disk_reads: 4, cache_hits: 3}).
+
+**Bench arms run at high thinking effort (#36).** Both pi call sites in the SWE-bench harness (`harness/arms.py` `run_pi()` and `harness/pi_shim.sh`) now set `--effort high`, so all four arms run MiniMax at the same high thinking effort and the workflow remains the only variable. The archived DeepSeek tables were recorded with the settings of their time and are not affected.
+
+Acceptance debt, stated plainly: the live-run acceptance for P1-2 and P1-3 — the wall-clock/token lines from issue #5, including median tokens incl. cache ≤ 2.0M — is still pending the benchmark environment, which is being rebuilt. No bench numbers are claimed in this release; what shipped is the mechanism and the tests that pin its behaviour.
+
 ## 0.5.0 - Review re-reads only drifted files; the bench set grows to 15
 
 Minor release. One product change — the CR review now spends its re-reads only where the seal says bytes moved — plus three bench-hygiene landings from the issue #5 backlog, each pinned by tests rather than by a live run.
