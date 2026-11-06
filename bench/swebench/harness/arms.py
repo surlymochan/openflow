@@ -105,7 +105,7 @@ def run_pi(task_id: str, workdir: Path, prompt: str, events: Path, timeout: int,
     env.update(env_extra or {})
     t0 = time.time()
     p = subprocess.run([RUN_PI, "--task-id", task_id, "--rw", "--workdir", str(workdir), "--timeout", str(int(timeout)),
-                        "--effort", "medium", "--prompt-file", str(pf)],
+                        "--effort", "high", "--prompt-file", str(pf)],
                        env=env, text=True, capture_output=True, stdin=subprocess.DEVNULL)
     wall = time.time() - t0
     rec = None
