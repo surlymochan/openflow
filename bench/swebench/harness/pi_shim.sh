@@ -9,7 +9,7 @@ LABEL="executor-$((N+1))"
 PF="$SHIM_EVENTS/$LABEL-prompt.md"
 printf '%s' "$PROMPT" > "$PF"
 OUT=$("${RUN_PI:-<pi>/run_pi.sh}" --task-id "$SHIM_TASK_ID" --rw --workdir "$PWD" \
-      --timeout "${SHIM_TIMEOUT:-1200}" --effort medium --prompt-file "$PF" 2>"$SHIM_EVENTS/$LABEL-run_pi.stderr.txt")
+      --timeout "${SHIM_TIMEOUT:-1200}" --effort high --prompt-file "$PF" 2>"$SHIM_EVENTS/$LABEL-run_pi.stderr.txt")
 RC=$?
 EVT=$(printf '%s\n' "$OUT" | tail -1 | python3 -c 'import json,sys; print(json.load(sys.stdin).get("events_file",""))' 2>/dev/null)
 printf '%s\n' "$OUT" | tail -1 > "$SHIM_EVENTS/$LABEL-record.json"
