@@ -142,6 +142,70 @@ def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def stat_anchor(path: Path) -> list | None:
+    """[size, mtime_ns, inode] for a file, or None when it cannot be stat'ed.
+
+    The anchor is the cheap identity a later gate stats first: when the
+    anchor still matches the one recorded at seal time, the bytes the seal
+    hashed cannot have changed without a same-size same-nanosecond rewrite
+    (the same heuristic git uses for its index). Any anchor mismatch falls
+    back to a full re-read and re-hash, so the check never weakens.
+    """
+    try:
+        st = path.stat()
+    except OSError:
+        return None
+    if not path.is_file():
+        return None
+    return [st.st_size, st.st_mtime_ns, st.st_ino]
+
+
+def read_with_anchor(path: Path) -> tuple[bytes, list | None]:
+    """Read a file and return the bytes plus the stat anchor they were read under.
+
+    Stats before and after the read; when the file changed mid-read the
+    read is retried once, so the returned anchor always describes the
+    returned bytes.
+    """
+    before = stat_anchor(path)
+    data = path.read_bytes()
+    after = stat_anchor(path)
+    if before is not None and after is not None and before != after:
+        data = path.read_bytes()
+        after = stat_anchor(path)
+    return data, after
+
+
+def verify_hashes_by_stat(root: Path, hashes: dict, stats: dict | None) -> dict:
+    """Check recorded sha256 hashes, re-reading only files whose stat moved.
+
+    `stats` maps rel -> [size, mtime_ns, ino] recorded when the hash was
+    computed (issue #5, P1-3). A file whose current anchor matches is
+    accepted without reading its bytes; anything else — missing anchor,
+    stat mismatch, missing file — is re-read and hashed. Returns
+    {"mismatched": [...], "reread": [...], "stat_checked": n}.
+    """
+    mismatched: list[str] = []
+    reread: list[str] = []
+    stat_checked = 0
+    anchors = stats if isinstance(stats, dict) else {}
+    for rel, digest in hashes.items():
+        full = root / rel
+        anchor = anchors.get(rel)
+        if anchor is not None:
+            current = stat_anchor(full)
+            if current is not None and list(current) == list(anchor):
+                stat_checked += 1
+                continue
+        reread.append(rel)
+        if not full.is_file():
+            mismatched.append(rel)
+            continue
+        if sha256_bytes(full.read_bytes()) != digest:
+            mismatched.append(rel)
+    return {"mismatched": sorted(mismatched), "reread": sorted(reread), "stat_checked": stat_checked}
+
+
 # Optional binding fields join the payload only when present, so proofs
 # sealed before the field existed keep verifying byte-for-byte.
 OPTIONAL_BINDING_FIELDS = {"snapshot_scope"}
@@ -313,16 +377,23 @@ def write_snapshot(project_root: Path, change_id: str, phase: str, attempt: int,
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(data)
         return hashes, None
+    file_stats: dict[str, list] = {}
+    copy_stats: dict[str, list] = {}
     for rel in scope["files"]:
         full = project_root / rel
         if full.is_symlink() or not full.is_file():
             continue
-        data = full.read_bytes()
+        data, anchor = read_with_anchor(full)
+        if anchor is not None:
+            file_stats[rel] = anchor
         hashes[rel] = sha256_bytes(data)
         target = destination / rel
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(data)
-    scope = {**scope, "files": sorted(hashes)}
+        copy_anchor = stat_anchor(target)
+        if copy_anchor is not None:
+            copy_stats[rel] = copy_anchor
+    scope = {**scope, "files": sorted(hashes), "file_stats": file_stats, "copy_stats": copy_stats}
     return hashes, scope
 
 

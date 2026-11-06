@@ -306,4 +306,64 @@ describe('J6.cr.review gate', () => {
       rmSync(projectRoot, { recursive: true, force: true });
     }
   });
+
+  // P1-3 (issue #5): when the green seal carries stat anchors, unchanged
+  // files are accepted by stat alone; only anchor mismatches are hashed.
+  function writeGreenSealWithStats(projectRoot, files) {
+    const code = [
+      'import sys, json',
+      'sys.path.insert(0, "xflow/atoms")',
+      'import tdd_lib',
+      'from pathlib import Path',
+      'root = Path(sys.argv[1])',
+      'tdd = root / "specs" / "changes" / "chg-cr" / "tdd"',
+      'tdd.mkdir(parents=True, exist_ok=True)',
+      'hashes, stats = {}, {}',
+      'for rel in sys.argv[2:]:',
+      '    data = (root / rel).read_bytes()',
+      '    hashes[rel] = tdd_lib.sha256_bytes(data)',
+      '    stats[rel] = tdd_lib.stat_anchor(root / rel)',
+      'proof = {"phase": "green", "passed": True, "file_hashes": hashes,',
+      '         "snapshot_scope": {"version": 1, "files": sorted(hashes), "deleted": [], "file_stats": stats}}',
+      'json.dump(proof, open(tdd / "green-0.json", "w"), indent=2)',
+    ].join('\n');
+    const seal = spawnSync('python3', ['-c', code, projectRoot, ...files], {
+      cwd: REPO_ROOT, encoding: 'utf8', timeout: 10000,
+    });
+    assert.equal(seal.status, 0, seal.stderr || seal.stdout);
+  }
+
+  test('seal partition: stat anchors accept unchanged files without a hash re-read (P1-3)', () => {
+    const projectRoot = makeRepo();
+    try {
+      writeFileSync(resolve(projectRoot, 'src', 'widget.js'), WIDGET_CHANGED);
+      writeFileSync(resolve(projectRoot, 'test', 'widget.test.js'), TEST_CHANGED);
+      writeGreenSealWithStats(projectRoot, ['src/widget.js', 'test/widget.test.js']);
+      const { run, proof } = runCr(projectRoot);
+      assert.equal(run.status, 0, run.stderr || run.stdout);
+      assert.deepEqual(proof.seal_partition.sealed_unchanged, ['src/widget.js', 'test/widget.test.js']);
+      assert.deepEqual(proof.seal_partition.seal_drifted, []);
+      assert.equal(proof.seal_partition.reread_count, 0);
+      assert.equal(proof.seal_partition.stat_checked, 2);
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('seal partition: a file edited after the seal is re-read and reported drifted (P1-3)', () => {
+    const projectRoot = makeRepo();
+    try {
+      writeFileSync(resolve(projectRoot, 'src', 'widget.js'), WIDGET_CHANGED);
+      writeFileSync(resolve(projectRoot, 'test', 'widget.test.js'), TEST_CHANGED);
+      writeGreenSealWithStats(projectRoot, ['src/widget.js', 'test/widget.test.js']);
+      writeFileSync(resolve(projectRoot, 'src', 'widget.js'), WIDGET_CHANGED + '// drift\n');
+      const { proof } = runCr(projectRoot);
+      assert.deepEqual(proof.seal_partition.sealed_unchanged, ['test/widget.test.js']);
+      assert.deepEqual(proof.seal_partition.seal_drifted, ['src/widget.js']);
+      assert.equal(proof.seal_partition.reread_count, 1);
+      assert.equal(proof.seal_partition.stat_checked, 1);
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
 });

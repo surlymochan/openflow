@@ -91,11 +91,22 @@ def main():
         emit({'ok': False, 'verdict': 'proof_inconsistent', 'phase': args.phase}, 1)
 
     destination = tdd_lib.snapshot_dir(project, args.change_id, args.phase, args.attempt)
-    found = tdd_lib.snapshot_tree_hashes(destination)
-    if found is None or found != proof.get('file_hashes'):
-        emit({'ok': False, 'verdict': 'snapshot_mismatch', 'phase': args.phase}, 1)
-
     scope = proof.get('snapshot_scope')
+    copy_stats = scope.get('copy_stats') if isinstance(scope, dict) else None
+    reread_files: set[str] = set()
+    if isinstance(copy_stats, dict) and copy_stats:
+        # Stat-anchored check (issue #5, P1-3): the seal already hashed
+        # these bytes, so only copies whose stat moved are re-read.
+        checked = tdd_lib.verify_hashes_by_stat(destination, proof.get('file_hashes'), copy_stats)
+        reread_files.update(checked['reread'])
+        if checked['mismatched']:
+            emit({'ok': False, 'verdict': 'snapshot_mismatch', 'phase': args.phase, 'files': checked['mismatched']}, 1)
+    else:
+        found = tdd_lib.snapshot_tree_hashes(destination)
+        if found is None or found != proof.get('file_hashes'):
+            emit({'ok': False, 'verdict': 'snapshot_mismatch', 'phase': args.phase}, 1)
+        reread_files.update(proof.get('file_hashes', {}).keys())
+
     scoped = isinstance(scope, dict) and bool(proof.get('git_head'))
     try:
         if scoped:
@@ -130,12 +141,21 @@ def main():
 
     if args.phase in {'green', 'refactor', 'run'}:
         mismatched = []
-        for rel, digest in proof.get('file_hashes', {}).items():
-            if not tdd_lib.is_test_file(rel):
-                continue
-            path = project / rel
-            if not path.is_file() or tdd_lib.sha256_bytes(path.read_bytes()) != digest:
-                mismatched.append(rel)
+        test_hashes = {rel: digest for rel, digest in proof.get('file_hashes', {}).items()
+                       if tdd_lib.is_test_file(rel)}
+        file_stats = scope.get('file_stats') if isinstance(scope, dict) else None
+        if isinstance(file_stats, dict) and file_stats:
+            # Stat-anchored check (issue #5, P1-3): sealed test files whose
+            # anchor still matches are accepted without re-reading them.
+            checked = tdd_lib.verify_hashes_by_stat(project, test_hashes, file_stats)
+            reread_files.update(checked['reread'])
+            mismatched = checked['mismatched']
+        else:
+            for rel, digest in test_hashes.items():
+                path = project / rel
+                if not path.is_file() or tdd_lib.sha256_bytes(path.read_bytes()) != digest:
+                    mismatched.append(rel)
+            reread_files.update(test_hashes.keys())
         if scoped:
             # Test files outside the sealed scope were pinned to the recorded
             # HEAD at seal time; any that have drifted since are unsealed edits.
@@ -178,6 +198,8 @@ def main():
         'exit_code': proof['exit_code'],
         'phase': args.phase,
         'tdd_mode': mode,
+        'reread_files': sorted(reread_files),
+        'reread_count': len(reread_files),
     }, 0)
 
 if __name__ == '__main__':
