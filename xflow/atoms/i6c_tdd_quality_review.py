@@ -11,7 +11,10 @@ tdd_mode red-green (default) requires a failing red proof and a passing
 green proof. tdd_mode refactor instead requires the existing tests that
 touch the changed code to pass on the pre-change tree and the current tree,
 with no assertion lines removed. tdd_mode docs requires the diff to stay on
-non-code paths. A semantically wrong but plausible expected value is not
+non-code paths. File reads go through a per-process cache keyed by the
+P1-3 stat anchor (issue #5, P1-2 follow-up): the same unchanged file is
+read from disk once per run and served from memory on later reads; a
+changed file is re-read. A semantically wrong but plausible expected value is not
 decidable from the diff in general; gate v2 still catches three decidable
 shapes of it: expected values taken from the implementation's own constants
 (the expectation moves when the constant is edited), assertions inside
@@ -66,17 +69,21 @@ def read_json(path: Path) -> dict:
 
 
 def read_text(path: Path) -> str:
-    try:
-        return path.read_text(encoding="utf-8")
-    except OSError:
-        return ""
+    return _read_cache.read_text(path)
+
+
+# One cache per gate run (reset in main): the same source file is read
+# several times in one run — symbols, implementation sources, test
+# review — and the cache serves the repeats from memory while the stat
+# anchor still matches (issue #5, P1-2 follow-up to #34). See
+# tdd_lib.FileReadCache for the invalidation contract.
+_read_cache = tdd_lib.FileReadCache()
 
 
 def review_test_file(project_root: Path, relative_path: str, implementation_sources: list[str] | None = None) -> list[dict]:
     path = project_root / relative_path
-    try:
-        content = path.read_text(encoding="utf-8")
-    except OSError:
+    content = _read_cache.get(path)
+    if content is None:
         return [{"severity": "fail", "code": "test_unreadable", "path": relative_path}]
     findings = []
     for finding in tdd_lib.analyze_test(content, implementation_sources=implementation_sources):
@@ -226,6 +233,8 @@ def refactor_findings(project_root: Path, diff_ref: str, code_files: list[str], 
 
 
 def main() -> None:
+    global _read_cache
+    _read_cache = tdd_lib.FileReadCache()
     parser = argparse.ArgumentParser()
     parser.add_argument("--project-root", default=".")
     parser.add_argument("--change-id", required=True)
@@ -344,6 +353,7 @@ def main() -> None:
         "changed_files": files,
         "code_files": code_files,
         "test_files": test_files,
+        "read_cache": _read_cache.stats(),
         "findings": findings,
         "recorded_at": datetime.now(timezone.utc).isoformat(),
     }
@@ -357,6 +367,7 @@ def main() -> None:
         "verdict": verdict,
         "tdd_mode": mode,
         "proof_file": str(proof_file),
+        "read_cache": _read_cache.stats(),
         "failures": sum(1 for finding in findings if finding.get("severity") == "fail"),
         "warnings": sum(1 for finding in findings if finding.get("severity") == "warn"),
         "failed_codes": [

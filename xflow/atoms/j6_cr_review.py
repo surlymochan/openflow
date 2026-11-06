@@ -34,7 +34,10 @@ Checks (findings are structured JSON, severity fail | warn):
 
 Self-contained on purpose: this atom does not import tdd_lib so it can
 run standalone in a reviewed tree. The file/symbol/assertion semantics
-mirror tdd_lib so verdicts agree with I6c.
+mirror tdd_lib so verdicts agree with I6c. File reads go through a
+per-process cache keyed by the P1-3 stat anchor (issue #5, P1-2
+follow-up): the same unchanged file is read from disk once per run
+and served from memory on later reads; a changed file is re-read.
 
 The proof is written to specs/changes/<change_id>/cr/review-0.json; that
 directory is excluded from the reviewed diff.
@@ -119,10 +122,64 @@ def assertion_count(content: str) -> int:
 
 
 def read_text(path: Path) -> str:
-    try:
-        return path.read_text(encoding="utf-8", errors="replace")
-    except OSError:
-        return ""
+    return _read_cache.read_text(path)
+
+
+class FileReadCache:
+    """Per-process cache of file text, keyed by the stat anchor.
+
+    Local mirror of tdd_lib.FileReadCache (issue #5, P1-2 follow-up to
+    #34) — this atom stays self-contained and does not import tdd_lib.
+    One gate run reads the same source file several times: spec
+    alignment, then test follow (which re-reads every test file once
+    per changed code file). The first read stores the text under the
+    file's stat anchor (size, mtime_ns, inode, the P1-3 identity); a
+    later read whose anchor still matches is served from memory without
+    touching the bytes. Any anchor mismatch re-reads from disk, so the
+    cache can never serve stale content; a mid-read change is retried
+    once, so the stored anchor always describes the stored text.
+    Unreadable files are never cached and never counted as disk reads.
+    `stats()` reports {"disk_reads": n, "cache_hits": n} for the proof.
+    """
+
+    def __init__(self) -> None:
+        self._entries: dict[str, tuple[list, str]] = {}
+        self.disk_reads = 0
+        self.cache_hits = 0
+
+    def get(self, path: Path) -> str | None:
+        """Cached text for `path`, or None when it is unreadable."""
+        anchor = stat_anchor(path)
+        key = str(path)
+        entry = self._entries.get(key)
+        if anchor is not None and entry is not None and list(entry[0]) == list(anchor):
+            self.cache_hits += 1
+            return entry[1]
+        try:
+            data = path.read_bytes()
+            after = stat_anchor(path)
+            if anchor is not None and after is not None and list(after) != list(anchor):
+                data = path.read_bytes()
+                after = stat_anchor(path)
+        except OSError:
+            return None
+        self.disk_reads += 1
+        text = data.decode("utf-8", errors="replace")
+        if after is not None:
+            self._entries[key] = (after, text)
+        return text
+
+    def read_text(self, path: Path) -> str:
+        """Cached text for `path`, or "" when it is unreadable."""
+        text = self.get(path)
+        return "" if text is None else text
+
+    def stats(self) -> dict:
+        return {"disk_reads": self.disk_reads, "cache_hits": self.cache_hits}
+
+
+# One cache per gate run (reset in main).
+_read_cache = FileReadCache()
 
 
 def read_json(path: Path) -> dict:
@@ -322,6 +379,8 @@ def iter_repo_tests(project_root: Path) -> list:
 
 
 def main() -> None:
+    global _read_cache
+    _read_cache = FileReadCache()
     parser = argparse.ArgumentParser()
     parser.add_argument("--project-root", default=".")
     parser.add_argument("--change-id", required=True)
@@ -490,6 +549,7 @@ def main() -> None:
         "changed_files": all_files,
         "code_files": code_files,
         "test_files": test_files,
+        "read_cache": _read_cache.stats(),
         "seal_partition": seal_partition(project_root, change_dir, all_files),
         "spec_aligned_files": aligned_files,
         "assertions": {"added": added_assertions, "removed": removed_assertions},
@@ -507,6 +567,7 @@ def main() -> None:
         "ok": proof["ok"],
         "verdict": verdict,
         "proof_file": str(proof_file),
+        "read_cache": _read_cache.stats(),
         "failures": sum(1 for f in findings if f.get("severity") == "fail"),
         "warnings": sum(1 for f in findings if f.get("severity") == "warn"),
         "failed_codes": [f.get("code") for f in findings if f.get("severity") == "fail"],
