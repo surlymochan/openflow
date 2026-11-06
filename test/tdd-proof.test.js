@@ -583,6 +583,120 @@ describe('TDD proof semantics', () => {
     }
   });
 
+  // P1-3 (issue #5): stat-anchored verification re-reads only files whose
+  // seal-time stat anchor moved; unchanged sealed files are accepted by
+  // stat alone, and proofs sealed before the anchors existed fall back to
+  // the full re-read.
+  function sealGreen(projectRoot) {
+    mkdirSync(resolve(projectRoot, 'src'), { recursive: true });
+    mkdirSync(resolve(projectRoot, 'test'), { recursive: true });
+    writeFileSync(resolve(projectRoot, 'src', 'add.js'), 'export function add(a, b) { return a + b; }\n');
+    writeFileSync(resolve(projectRoot, 'test', 'add.test.js'), [
+      "import test from 'node:test';",
+      "import assert from 'node:assert/strict';",
+      "import { add } from '../src/add.js';",
+      "test('adds', () => { assert.equal(add(2, 2), 4); });",
+      '',
+    ].join('\n'));
+    git(projectRoot, ['add', '.']);
+    git(projectRoot, ['commit', '-m', 'baseline product']);
+    writeFileSync(resolve(projectRoot, 'src', 'add.js'), 'export function add(a, b) { return a + b; } // touched\n');
+    const run = runAtom('xflow/atoms/i6a_tdd_run.py', projectRoot, [
+      '--phase', 'green', '--test-command', 'node --test test/add.test.js',
+    ]);
+    assert.equal(run.status, 0, run.stderr || run.stdout);
+    return JSON.parse(readFileSync(
+      resolve(projectRoot, 'specs', 'changes', 'chg-tdd', 'tdd', 'green-0.json'),
+      'utf8',
+    ));
+  }
+
+  function stripSealStats(projectRoot, proofPath) {
+    const strip = spawnSync('python3', ['-c', [
+      'import sys, json',
+      'sys.path.insert(0, "xflow/atoms")',
+      'import tdd_lib',
+      'path = sys.argv[1]',
+      'proof = json.load(open(path))',
+      'scope = proof.get("snapshot_scope") or {}',
+      'scope.pop("file_stats", None)',
+      'scope.pop("copy_stats", None)',
+      'proof["snapshot_scope"] = scope',
+      'proof["binding"] = tdd_lib.compute_binding(proof)',
+      'json.dump(proof, open(path, "w"), indent=2)',
+    ].join('\n'), proofPath], { cwd: REPO_ROOT, encoding: 'utf8', timeout: 10000 });
+    assert.equal(strip.status, 0, strip.stderr || strip.stdout);
+  }
+
+  test('stat-anchored validation re-reads nothing when the tree is unchanged (P1-3)', () => {
+    const projectRoot = makeGitChangeRoot();
+    try {
+      const proof = sealGreen(projectRoot);
+      assert.deepEqual(Object.keys(proof.file_hashes).sort(), ['src/add.js', 'test/add.test.js']);
+      assert.ok(proof.snapshot_scope.file_stats, 'seal records tree stat anchors');
+      assert.ok(proof.snapshot_scope.copy_stats, 'seal records snapshot-copy stat anchors');
+      const validate = runAtom('xflow/atoms/i6b_tdd_proof_validate.py', projectRoot, ['--phase', 'green']);
+      assert.equal(validate.status, 0, validate.stderr || validate.stdout);
+      const result = JSON.parse(validate.stdout);
+      assert.equal(result.verdict, 'valid');
+      assert.deepEqual(result.reread_files, []);
+      assert.equal(result.reread_count, 0);
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('a test file edited after the seal is caught and named (P1-3)', () => {
+    const projectRoot = makeGitChangeRoot();
+    try {
+      sealGreen(projectRoot);
+      writeFileSync(resolve(projectRoot, 'test', 'add.test.js'), [
+        "import test from 'node:test';",
+        "import assert from 'node:assert/strict';",
+        "import { add } from '../src/add.js';",
+        "test('adds', () => { assert.equal(add(2, 2), 5); });",
+        '',
+      ].join('\n'));
+      const validate = runAtom('xflow/atoms/i6b_tdd_proof_validate.py', projectRoot, ['--phase', 'green']);
+      assert.notEqual(validate.status, 0, validate.stdout);
+      assert.match(validate.stdout, /green_tree_mismatch/);
+      assert.match(validate.stdout, /test\/add\.test\.js/);
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('a tampered snapshot copy is caught by the seal check (P1-3)', () => {
+    const projectRoot = makeGitChangeRoot();
+    try {
+      sealGreen(projectRoot);
+      const copy = resolve(projectRoot, 'specs', 'changes', 'chg-tdd', 'tdd', 'snapshots', 'green-0', 'src', 'add.js');
+      writeFileSync(copy, 'export function add(a, b) { return a - b; }\n');
+      const validate = runAtom('xflow/atoms/i6b_tdd_proof_validate.py', projectRoot, ['--phase', 'green']);
+      assert.notEqual(validate.status, 0, validate.stdout);
+      assert.match(validate.stdout, /snapshot_mismatch/);
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('proofs sealed without stat anchors still verify by full re-read (P1-3)', () => {
+    const projectRoot = makeGitChangeRoot();
+    try {
+      sealGreen(projectRoot);
+      const proofPath = resolve(projectRoot, 'specs', 'changes', 'chg-tdd', 'tdd', 'green-0.json');
+      stripSealStats(projectRoot, proofPath);
+      const validate = runAtom('xflow/atoms/i6b_tdd_proof_validate.py', projectRoot, ['--phase', 'green']);
+      assert.equal(validate.status, 0, validate.stderr || validate.stdout);
+      const result = JSON.parse(validate.stdout);
+      assert.equal(result.verdict, 'valid');
+      assert.deepEqual(result.reread_files, ['src/add.js', 'test/add.test.js']);
+      assert.equal(result.reread_count, 2);
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
+
   test('docs mode accepts a documentation-only diff without a red proof', () => {
     const projectRoot = makeGitChangeRoot();
     try {

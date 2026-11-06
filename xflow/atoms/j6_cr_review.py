@@ -206,6 +206,23 @@ def assertion_delta(project_root: Path, diff_ref: str, test_files: list, deleted
     return added, removed
 
 
+def stat_anchor(path: Path):
+    """[size, mtime_ns, inode] for a file, or None when it cannot be stat'ed.
+
+    Same anchor the TDD seal records in the green proof's snapshot scope
+    (issue #5, P1-3): a matching anchor means the sealed bytes are still
+    there without re-reading them. Kept local — this atom stays
+    self-contained and does not import tdd_lib.
+    """
+    try:
+        st = path.stat()
+    except OSError:
+        return None
+    if not path.is_file():
+        return None
+    return [st.st_size, st.st_mtime_ns, st.st_ino]
+
+
 def seal_partition(project_root: Path, change_dir: Path, files: list):
     """Split changed files by whether they still match the green seal.
 
@@ -216,14 +233,32 @@ def seal_partition(project_root: Path, change_dir: Path, files: list):
     need to re-read it; anything else — drifted after the seal, or never
     sealed — must be re-read. Returns None when no usable green seal
     exists (the review then re-reads everything).
+
+    When the green proof carries the seal-time stat anchors (snapshot
+    scope file_stats, issue #5 P1-3), a file whose anchor still matches
+    is accepted without hashing it at all; only anchor mismatches are
+    re-read and hashed. `stat_checked` counts the files accepted this
+    way; `reread_count` keeps its P1-2 meaning (files the review must
+    re-read) and is unchanged by the fast path. Proofs sealed before
+    the anchors existed fall back to hashing every file.
     """
     green = read_json(change_dir / "tdd" / "green-0.json")
     hashes = green.get("file_hashes")
     if not isinstance(hashes, dict) or not hashes:
         return None
+    scope = green.get("snapshot_scope")
+    stats = scope.get("file_stats") if isinstance(scope, dict) else None
     sealed, drifted = [], []
+    stat_checked = 0
     for relative in files:
         full = project_root / relative
+        anchor = stats.get(relative) if isinstance(stats, dict) else None
+        if anchor is not None:
+            current = stat_anchor(full)
+            if current is not None and list(current) == list(anchor):
+                stat_checked += 1
+                sealed.append(relative)
+                continue
         digest = None
         if full.is_file():
             digest = hashlib.sha256(full.read_bytes()).hexdigest()
@@ -235,6 +270,7 @@ def seal_partition(project_root: Path, change_dir: Path, files: list):
         "sealed_unchanged": sealed,
         "seal_drifted": drifted,
         "reread_count": len(drifted),
+        "stat_checked": stat_checked,
     }
 
 

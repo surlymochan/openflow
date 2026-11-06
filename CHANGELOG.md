@@ -5,6 +5,9 @@ All notable changes to this project are documented here. Detailed notes live in
 
 ## [Unreleased]
 
+### Added
+- **Stat-anchored gate verification (issue #5, P1-3)**: the TDD seal now records a stat anchor (size, mtime_ns, inode) per sealed file alongside its sha256 — tree anchors and snapshot-copy anchors in the proof's snapshot scope, bound into the proof like the scope itself. Proof validation (I6b) and the CR review seal partition (J6) stat-check first and re-read + re-hash only files whose anchor moved, instead of re-reading every sealed file on every gate pass; proofs sealed before the anchors existed fall back to the full re-read. Validation reports `reread_files` / `reread_count` and the seal partition reports `stat_checked`, so the skipped re-reads are observable. The token acceptance (median tokens incl. cache ≤ 2.0M) still needs a benchmark-environment rerun — no performance numbers are claimed here.
+
 ## [0.5.0] - 2026-11-06
 
 ### Added
