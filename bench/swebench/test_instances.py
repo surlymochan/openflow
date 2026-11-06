@@ -42,7 +42,8 @@ class InstancesTest(unittest.TestCase):
             | set(ext["added_round3"])
         )
         self.assertEqual(accounted, set(DATA["instances"]))
-        self.assertEqual(sorted(ext["pending_validation"]), sorted(ext["added_round3"]))
+        self.assertEqual(sorted(ext["validated"]), sorted(ext["added_round3"]))
+        self.assertEqual(ext["pending_validation"], [])
 
 
 if __name__ == "__main__":
