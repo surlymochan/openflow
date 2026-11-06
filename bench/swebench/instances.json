@@ -2,7 +2,7 @@
  "dataset": "princeton-nlp/SWE-bench_Verified",
  "revision": "c104f840cc67f8b6eec6f759ebc8b2693d585d4a",
  "split": "test",
- "selection": "Round 1: seeded shuffle (seed 20261017) over the '<15 min' and '15 min - 1 hour' buckets; the baseline resolved 12/12, so per the >80% rule the set was replaced. Round 2 (used for all arms): every SWE-bench Verified instance of sympy, pytest and pylint in the '1-4 hours' and '>4 hours' buckets (12), all of which pass the gold-patch check in this Docker-free env (harness/validate.py). Round 3 (issue #5 P2-2, set for the next rerun): the set grows from the 6 compared instances to 15. The other 6 round-2 instances join the compared 6, and 3 more are drawn from the next bucket down ('15 min - 1 hour'; the two harder buckets hold no further instances of these repos): sorted candidate ids (49, excluding the round-2 set and the round-1 set), pooled shuffle with random.Random(20261017), first 3. The 3 round-3 additions still need the gold-patch check (harness/validate.py) in the bench env before their first counted run.",
+ "selection": "Round 1: seeded shuffle (seed 20261017) over the '<15 min' and '15 min - 1 hour' buckets; the baseline resolved 12/12, so per the >80% rule the set was replaced. Round 2 (used for all arms): every SWE-bench Verified instance of sympy, pytest and pylint in the '1-4 hours' and '>4 hours' buckets (12), all of which pass the gold-patch check in this Docker-free env (harness/validate.py). Round 3 (issue #5 P2-2, set for the next rerun): the set grows from the 6 compared instances to 15. The other 6 round-2 instances join the compared 6, and 3 more are drawn from the next bucket down ('15 min - 1 hour'; the two harder buckets hold no further instances of these repos): sorted candidate ids (49, excluding the round-2 set and the round-1 set), pooled shuffle with random.Random(20261017), first 3. The 3 round-3 additions passed the gold-patch check (harness/validate.py) in the bench env on 2026-11-06 (validate-15.log, 15/15 ok:true); see round3_extension.validation.",
  "instances": [
   "sympy__sympy-12489",
   "sympy__sympy-13852",
@@ -45,11 +45,13 @@
   ],
   "round3_method": "difficulty '15 min - 1 hour', repos sympy/pytest/pylint, excluding the round-2 set and round1_too_easy; 49 candidates sorted by id, pooled shuffle random.Random(20261017), first 3",
   "round3_source": "instance_id/repo/difficulty rows of princeton-nlp/SWE-bench_Verified (datasets-server listing, fetched 2026-11-06); bucket counts cross-checked against the round-2 claim (1-4 hours: 11, >4 hours: 1)",
-  "pending_validation": [
+  "pending_validation": [],
+  "validated": [
    "sympy__sympy-15599",
    "sympy__sympy-19040",
    "sympy__sympy-24213"
   ],
+  "validation": "harness/validate.py over all 15 ids: 15/15 ok:true, no errors. Log: bench-env/validate-15.log (mtime 2026-11-06 19:35 UTC, after instances.json fa7ea30, 2026-11-05 19:07 UTC). The 3 round-3 additions are therefore cleared for their first counted run.",
   "next_round_shape": "15 instances x --reps 3 = n=45 runs per arm"
  },
  "round1_too_easy": {
