@@ -1,5 +1,15 @@
 # Release Notes
 
+## 0.5.2 - Bench grades stop silently zeroing; the 15-instance set is validated
+
+Patch release. One bench-harness fix that removes a silent false-negative from grading, plus the P2-2 validation close-out from the issue #5 backlog. Both are pinned by tests and by a validation log, not by a live run.
+
+**Absolute grade paths (#38).** `run.py` / `regrade.py` passed `--raw-root` / `--raw` through unresolved, but `swe_env.grade()` runs `git apply <test.patch>` with `cwd=<cell repo>`. With a relative raw root the patch path did not resolve from the repo cwd, so every cell failed grading with `test_patch did not apply` — and `run.py` recorded it as an ordinary `resolved: false`, a silent false-negative for the entire run. Found during the 2026-11-06 bench rebuild: the first MiniMax pilot went 4/4 on this error before diagnosis. `run.py` now resolves `--out` / `--raw-root` / `--predictions-dir` to absolute paths up front, `regrade.py` resolves `--raw`, and `grade()` also writes `grade.json` on the test_patch-apply early return (previously the failure path wrote nothing — exactly how this stayed invisible). No behavior change for absolute-path invocations. Test evidence (from the PR): `npm run verify` exit 0 (941 pass / 0 fail), including the swebench harness isolation test; the same patch regraded from a fresh tree with absolute paths applies cleanly and grades normally.
+
+**P2-2 15-instance set validated (#39, issue #5 P2-2).** The 3 round-3 additions (sympy__sympy-15599, sympy__sympy-19040, sympy__sympy-24213) have passed the gold-patch check: `harness/validate.py` over all 15 ids in `instances.json` (fa7ea30) reports 15/15 ok:true with no errors (`bench-env/validate-15.log`, mtime 2026-11-06 19:35 UTC, after the instances.json commit). `round3_extension.pending_validation` is cleared to `[]`, the validated ids are recorded, and `test_instances.py` now pins the validated state instead of the pending state. Test evidence (local, this round): `python3 -m unittest test_instances test_diff_filter test_predictions test_reps_report test_validity` — 28 tests, all OK. The issue #5 P2-2 checkbox is ticked.
+
+Acceptance debt, stated plainly: the bench-number acceptance for P1-2, P1-3, P2-1 and P2-3 — the wall-clock/token/resolved lines from issue #5 — still awaits the MiniMax full-matrix batch (15 instances × 4 arms × reps 3), which is running. No bench numbers are claimed in this release.
+
 ## 0.5.1 - Gates stop re-reading unchanged files; bench arms run at high effort
 
 Patch release. Two gate cost improvements from the issue #5 backlog, both pinned by tests rather than by a live run, plus a bench-harness change.

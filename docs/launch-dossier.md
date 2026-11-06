@@ -117,7 +117,7 @@ Evidence:
 - Adoption records: 1; status: pass
 - Goal audit: pass; goal: Keep evalid credible as an open-source agent delivery runtime: repo-owned workflow contracts, executable verification gates, durable project context, and honest benchmark evidence.
 - Package evidence: missing; source: registry_json
-- Package name/version: @surlymochan/evalid@0.5.1
+- Package name/version: @surlymochan/evalid@0.5.2
 
 ## Passing Evidence
 
