@@ -697,6 +697,70 @@ describe('TDD proof semantics', () => {
     }
   });
 
+  // P1-2 follow-up (issue #5): the in-process re-reads inside one gate
+  // run — I6c/J6 reading the same source file several times for symbols,
+  // assertions and references — are served by a per-process cache keyed
+  // by the P1-3 stat anchor, so each unchanged file is read from disk
+  // once per run and a changed file is re-read instead of served stale.
+  test('read cache serves repeated reads from one disk read (P1-2 follow-up)', () => {
+    const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-cache-'));
+    try {
+      const target = resolve(projectRoot, 'note.txt');
+      writeFileSync(target, 'first\n');
+      const check = spawnSync('python3', ['-c', [
+        'import sys',
+        'sys.path.insert(0, "xflow/atoms")',
+        'import tdd_lib',
+        'from pathlib import Path',
+        'cache = tdd_lib.FileReadCache()',
+        'p = Path(sys.argv[1])',
+        'assert cache.read_text(p) == "first\\n"',
+        'assert cache.read_text(p) == "first\\n"',
+        'assert cache.read_text(p) == "first\\n"',
+        'assert cache.stats() == {"disk_reads": 1, "cache_hits": 2}, cache.stats()',
+        'p.write_text("second, longer\\n")',
+        'assert cache.read_text(p) == "second, longer\\n"',
+        'assert cache.stats() == {"disk_reads": 2, "cache_hits": 2}, cache.stats()',
+        'assert cache.get(Path(sys.argv[1] + ".missing")) is None',
+        'assert cache.read_text(Path(sys.argv[1] + ".missing")) == ""',
+        'assert cache.stats() == {"disk_reads": 2, "cache_hits": 2}, cache.stats()',
+      ].join('\n'), target], { cwd: REPO_ROOT, encoding: 'utf8', timeout: 10000 });
+      assert.equal(check.status, 0, check.stderr || check.stdout);
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('quality review reports its per-process read cache (P1-2 follow-up)', () => {
+    const projectRoot = makeGitChangeRoot();
+    try {
+      writeProofs(projectRoot);
+      mkdirSync(resolve(projectRoot, 'src'), { recursive: true });
+      mkdirSync(resolve(projectRoot, 'test'), { recursive: true });
+      writeFileSync(resolve(projectRoot, 'src', 'feature.js'), 'export function answer() { return 42; }\n');
+      writeFileSync(resolve(projectRoot, 'test', 'feature.test.js'), [
+        "import assert from 'node:assert/strict';",
+        "import { answer } from '../src/feature.js';",
+        "assert.equal(answer(), 42);",
+        '',
+      ].join('\n'));
+
+      const review = runAtom('xflow/atoms/i6c_tdd_quality_review.py', projectRoot);
+      assert.equal(review.status, 0, review.stderr || review.stdout);
+      const proof = JSON.parse(readFileSync(
+        resolve(projectRoot, 'specs', 'changes', 'chg-tdd', 'tdd', 'quality-0.json'),
+        'utf8',
+      ));
+      assert.equal(proof.ok, true);
+      // src/feature.js from disk once (symbols), then a cache hit
+      // (implementation sources); test/feature.test.js from disk once
+      // (symbol reference check), then a cache hit (test review).
+      assert.deepEqual(proof.read_cache, { disk_reads: 2, cache_hits: 2 });
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
+
   test('docs mode accepts a documentation-only diff without a red proof', () => {
     const projectRoot = makeGitChangeRoot();
     try {

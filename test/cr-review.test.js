@@ -366,4 +366,69 @@ describe('J6.cr.review gate', () => {
       rmSync(projectRoot, { recursive: true, force: true });
     }
   });
+
+  // P1-2 follow-up (issue #5): within one gate run, I6c/J6 read the same
+  // source file several times (symbols, assertions, references). A
+  // per-process cache keyed by the P1-3 stat anchor serves the repeats
+  // without re-reading the bytes; a changed file is re-read instead.
+  test('read cache: one gate run reads each unchanged file from disk once', () => {
+    const projectRoot = makeRepo();
+    try {
+      writeFileSync(resolve(projectRoot, 'src', 'widget.js'), WIDGET_CHANGED);
+      writeFileSync(resolve(projectRoot, 'test', 'widget.test.js'), TEST_CHANGED);
+      const { run, proof } = runCr(projectRoot);
+      assert.equal(run.status, 0, run.stderr || run.stdout);
+      // proposal.md + src/widget.js + test/widget.test.js from disk;
+      // the second read of src/widget.js (test follow) is a cache hit.
+      assert.deepEqual(proof.read_cache, { disk_reads: 3, cache_hits: 1 });
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('read cache: a test file shared by two code files is read from disk once', () => {
+    const GADGET_BASE = `export function parseGadget(input) {\n  return String(input).trim();\n}\n`;
+    const GADGET_CHANGED = `export function parseGadget(input) {\n  return String(input).trim().toUpperCase();\n}\n`;
+    const projectRoot = makeRepo({
+      proposal: '# Proposal\n\nImprove parseWidget and parseGadget so widget and gadget input is normalized before use.\n',
+    });
+    try {
+      writeFileSync(resolve(projectRoot, 'src', 'gadget.js'), GADGET_BASE);
+      writeFileSync(resolve(projectRoot, 'test', 'widget.test.js'), [
+        "import assert from 'node:assert/strict';",
+        "import { parseWidget } from '../src/widget.js';",
+        "import { parseGadget } from '../src/gadget.js';",
+        '',
+        "assert.equal(parseWidget(' a '), 'a');",
+        "assert.equal(parseWidget('b'), 'b');",
+        "assert.ok(parseWidget('c'));",
+        "assert.equal(parseGadget(' d '), 'd');",
+        '',
+      ].join('\n'));
+      git(projectRoot, ['add', '.']);
+      git(projectRoot, ['commit', '-m', 'baseline with gadget']);
+      writeFileSync(resolve(projectRoot, 'src', 'widget.js'), WIDGET_CHANGED);
+      writeFileSync(resolve(projectRoot, 'src', 'gadget.js'), GADGET_CHANGED);
+      writeFileSync(resolve(projectRoot, 'test', 'widget.test.js'), [
+        "import assert from 'node:assert/strict';",
+        "import { parseWidget } from '../src/widget.js';",
+        "import { parseGadget } from '../src/gadget.js';",
+        '',
+        "assert.equal(parseWidget(' a '), 'a');",
+        "assert.equal(parseWidget('b'), 'b');",
+        "assert.ok(parseWidget('c'));",
+        "assert.equal(parseGadget(' d '), 'd');",
+        "assert.equal(parseWidget('D'), 'd');",
+        "assert.equal(parseGadget('e'), 'E');",
+        '',
+      ].join('\n'));
+      const { run, proof } = runCr(projectRoot);
+      assert.equal(run.status, 0, run.stderr || run.stdout);
+      // proposal.md + two code files + one test file from disk; the
+      // second read of each code file and of the shared test file hits.
+      assert.deepEqual(proof.read_cache, { disk_reads: 4, cache_hits: 3 });
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
+  });
 });

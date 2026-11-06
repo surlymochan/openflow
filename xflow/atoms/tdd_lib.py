@@ -176,6 +176,62 @@ def read_with_anchor(path: Path) -> tuple[bytes, list | None]:
     return data, after
 
 
+class FileReadCache:
+    """Per-process cache of file text, keyed by the stat anchor.
+
+    One gate run reads the same source file several times — symbols,
+    assertions, references (issue #5, P1-2 follow-up to #34). The first
+    read stores the text under the file's stat anchor (size, mtime_ns,
+    inode, the P1-3 identity); a later read whose anchor still matches
+    is served from memory without touching the bytes. Any anchor
+    mismatch — the file changed, or it was never read — re-reads from
+    disk, so the cache can never serve stale content; a mid-read change
+    is retried once, like read_with_anchor, so the stored anchor always
+    describes the stored text. Unreadable files are never cached and
+    never counted as disk reads.
+
+    `stats()` reports {"disk_reads": n, "cache_hits": n} so a proof can
+    show the skipped re-reads; the counts are per cache instance, and a
+    gate creates one instance per run.
+    """
+
+    def __init__(self) -> None:
+        self._entries: dict[str, tuple[list, str]] = {}
+        self.disk_reads = 0
+        self.cache_hits = 0
+
+    def get(self, path) -> str | None:
+        """Cached text for `path`, or None when it is unreadable."""
+        path = Path(path)
+        anchor = stat_anchor(path)
+        key = str(path)
+        entry = self._entries.get(key)
+        if anchor is not None and entry is not None and list(entry[0]) == list(anchor):
+            self.cache_hits += 1
+            return entry[1]
+        try:
+            data = path.read_bytes()
+            after = stat_anchor(path)
+            if anchor is not None and after is not None and list(after) != list(anchor):
+                data = path.read_bytes()
+                after = stat_anchor(path)
+        except OSError:
+            return None
+        self.disk_reads += 1
+        text = data.decode("utf-8", errors="replace")
+        if after is not None:
+            self._entries[key] = (after, text)
+        return text
+
+    def read_text(self, path) -> str:
+        """Cached text for `path`, or "" when it is unreadable."""
+        text = self.get(path)
+        return "" if text is None else text
+
+    def stats(self) -> dict:
+        return {"disk_reads": self.disk_reads, "cache_hits": self.cache_hits}
+
+
 def verify_hashes_by_stat(root: Path, hashes: dict, stats: dict | None) -> dict:
     """Check recorded sha256 hashes, re-reading only files whose stat moved.
 
