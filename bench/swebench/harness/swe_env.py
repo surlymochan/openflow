@@ -193,7 +193,9 @@ def grade(inst: dict, repo_dir: Path, venv: Path, out_dir: Path, timeout: int = 
     (out_dir / "test.patch").write_text(inst["test_patch"])
     ap = sh(GIT + ["apply", "-v", str(out_dir / "test.patch")], cwd=repo_dir, check=False)
     if ap.returncode != 0:
-        return {"resolved": False, "error": "test_patch did not apply", "apply_log": ap.stdout[-2000:]}
+        res = {"resolved": False, "error": "test_patch did not apply", "apply_log": ap.stdout[-2000:]}
+        (out_dir / "grade.json").write_text(json.dumps(res, indent=1))
+        return res
     cmd = test_command(inst, venv)
     env = dict(os.environ)
     env.pop("VIRTUAL_ENV", None)

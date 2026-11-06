@@ -138,8 +138,14 @@ def main():
                     help="rebuild predictions from saved solution.diff files under --raw-root "
                          "and exit; requires --prediction-model")
     a = ap.parse_args()
-    raw_root = Path(a.raw_root)
-    predictions_dir = Path(a.predictions_dir) if a.predictions_dir else default_predictions_dir(raw_root)
+    # Grade dirs are consumed from inside each cell's repo (git apply runs with
+    # cwd=repo), so every path handed to cells must be absolute: a relative
+    # --raw-root otherwise makes every grade fail with "test_patch did not
+    # apply" (the patch path does not resolve from the repo cwd) and cells are
+    # silently recorded as unresolved.
+    a.out = str(Path(a.out).resolve())
+    raw_root = Path(a.raw_root).resolve()
+    predictions_dir = Path(a.predictions_dir).resolve() if a.predictions_dir else default_predictions_dir(raw_root)
     if a.export_predictions:
         if not a.prediction_model:
             ap.error("--export-predictions requires --prediction-model")

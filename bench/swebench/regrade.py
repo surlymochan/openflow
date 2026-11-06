@@ -130,7 +130,7 @@ def main(argv=None) -> None:
 
         with ThreadPoolExecutor(max_workers=args.jobs) as pool:
             futures = {
-                pool.submit(regrade_cell, row, inst, args.label, Path(args.raw), emit): i
+                pool.submit(regrade_cell, row, inst, args.label, Path(args.raw).resolve(), emit): i
                 for i, (row, inst) in enumerate(tasks)
             }
             for future in as_completed(futures):
