@@ -5,6 +5,14 @@ All notable changes to this project are documented here. Detailed notes live in
 
 ## [Unreleased]
 
+## [0.5.2] - 2026-11-07
+
+### Fixed
+- **Bench grading no longer silently zeroes on relative paths (#38)**: `run.py` / `regrade.py` passed `--raw-root` / `--raw` through unresolved, but `swe_env.grade()` runs `git apply <test.patch>` with `cwd=<cell repo>` — with a relative raw root every cell failed grading with `test_patch did not apply` and `run.py` recorded it as an ordinary `resolved: false`. `run.py` now resolves `--out` / `--raw-root` / `--predictions-dir` to absolute paths up front, `regrade.py` resolves `--raw`, and `grade()` writes `grade.json` on the test_patch-apply early return (previously the failure path wrote nothing, which is how this stayed invisible). Found during the 2026-11-06 bench rebuild: the first MiniMax pilot went 4/4 on this error before diagnosis.
+
+### Added
+- **P2-2 15-instance bench set validated (#39, issue #5 P2-2)**: the 3 round-3 additions (sympy-15599, sympy-19040, sympy-24213) have passed the gold-patch check — `harness/validate.py` over all 15 ids in `instances.json` (fa7ea30): 15/15 ok, no errors (`bench-env/validate-15.log`, 2026-11-06 19:35 UTC). `round3_extension.pending_validation` is cleared, the validated ids are recorded, and `test_instances.py` now pins the validated state. The issue #5 P2-2 checkbox is ticked; the bench-number acceptance for P1-2 / P1-3 / P2-1 / P2-3 still awaits the MiniMax full-matrix batch — no bench numbers are claimed here.
+
 ## [0.5.1] - 2026-11-07
 
 ### Added
