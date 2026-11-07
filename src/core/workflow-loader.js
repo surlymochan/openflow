@@ -151,13 +151,3 @@ export function dryRun(workflowPath, input = {}) {
 
   return { workflow, phases };
 }
-
-/**
- * Resolve a single atom from the registry to its invocation descriptor.
- * Used by the execution layer to dispatch atoms.
- */
-export function resolveAtom(atomId, registry) {
-  const def = registry.atoms[atomId];
-  if (!def) throw new Error(`Unknown atom: ${atomId}`);
-  return { ...def, id: atomId };
-}

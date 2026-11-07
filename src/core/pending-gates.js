@@ -34,15 +34,6 @@ export function listPendingGates(projectRoot = process.cwd()) {
     .sort((left, right) => String(right.created_at || '').localeCompare(String(left.created_at || '')));
 }
 
-export function readPendingGate(projectRoot = process.cwd(), phase) {
-  const gateFile = resolve(resolvePendingGatesDir(projectRoot), `${phase}.json`);
-  if (!existsSync(gateFile)) {
-    return null;
-  }
-  const gate = readGateFile(gateFile);
-  return gate ? { ...gate, gate_file: gateFile } : null;
-}
-
 export function ackPendingGate(projectRoot = process.cwd(), phase, options = {}) {
   const gateFile = resolve(resolvePendingGatesDir(projectRoot), `${phase}.json`);
   if (!existsSync(gateFile)) {

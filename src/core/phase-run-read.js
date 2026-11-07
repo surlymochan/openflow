@@ -1,5 +1,3 @@
-import { listPhaseRunSessions } from './mission-state.js';
-
 function ensureArray(value) {
   return Array.isArray(value) ? value : [];
 }
@@ -20,8 +18,4 @@ export function getLatestPhaseEntry(phaseRun, phase) {
   }
   const entries = ensureArray(phaseRun.phases).filter((entry) => entry.phase === phase);
   return entries.sort((left, right) => String(right.updated_at || '').localeCompare(String(left.updated_at || '')))[0] || null;
-}
-
-export function getLatestMissionSession(state, missionId) {
-  return listPhaseRunSessions(state, missionId)[0] || null;
 }

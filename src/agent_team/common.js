@@ -271,32 +271,6 @@ export async function synthesizePhaseArtifact(input = {}, context = {}, options 
   };
 }
 
-export function buildPlanCommands(projectRoot) {
-  const packageJsonPath = resolve(projectRoot, 'package.json');
-  const packageJson = readJsonFile(packageJsonPath, null);
-  if (packageJson?.scripts?.test) {
-    return ['npm test'];
-  }
-  return ['echo "no test script configured"'];
-}
-
-export function writePlanMarkdown(projectRoot, changeId, phase = 'plan') {
-  const commands = buildPlanCommands(projectRoot);
-  const mdPath = resolveChangePath(projectRoot, changeId, `${phase}.md`);
-  const lines = [
-    '# Plan',
-    '',
-    '## Verification',
-    '',
-    '```bash',
-    ...commands,
-    '```',
-    '',
-  ];
-  writeTextFile(mdPath, lines.join('\n'));
-  return mdPath;
-}
-
 export function writeReviewArtifact(projectRoot, changeId, summary, findings = []) {
   const outputPath = resolveChangePath(projectRoot, changeId, 'review.json');
   writeJsonFile(outputPath, {
