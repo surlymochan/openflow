@@ -1,5 +1,15 @@
 # Release Notes
 
+## 0.5.3 - Bench planner stops timing out and stops wandering
+
+Patch release. Two bench-harness fixes from the MiniMax pilot, both pinned by tests rather than by a live run.
+
+**Openswarm planner timeout 300s → 600s (#41).** The 300s cap was calibrated on DeepSeek, whose planner finished in 87–244s on the 6 pilot instances. With MiniMax M3.1-Flash-Preview at high thinking the planner exceeds 300s on all 6 pilot2 cells: killed mid-work (rc 143) before writing the task file, so the executor never ran and all 6 cells recorded false negatives (wall ~301s). 600s keeps planner + executor inside the CAP_S 1200s cell budget; the executor budget is derived from the remaining time.
+
+**Openswarm planner prompt tightened to read-only planning (#42).** The 600s validation cell (pylint-8898) showed the planner spending 13 turns / 23 tools exploring (openswarm lane serve/assign probes, full-disk find for pylint wheels) and getting killed (rc 143) before writing the task file — raising the budget alone cannot fix that. The planner now reads only the skill text and the task, runs no shell command, does not reproduce / explore / list / search, launches no other program, writes the task file + verify command, then stops. The 600s planner timeout from #41 is unchanged. Test evidence (from the PR): new `bench/swebench/test_planner_prompt.py` (7 tests, stdlib-only via ast so CI can run it without pandas/swebench) + node wrapper `test/bench-planner-prompt.test.js`; bench Python suite 35/35, full `npm test` green.
+
+Acceptance debt, stated plainly: the bench-number acceptance for P1-2, P1-3, P2-1 and P2-3 — the wall-clock/token/resolved lines from issue #5 — still awaits the MiniMax full-matrix batch (15 instances × 4 arms × reps 3), which is running. No bench numbers are claimed in this release.
+
 ## 0.5.2 - Bench grades stop silently zeroing; the 15-instance set is validated
 
 Patch release. One bench-harness fix that removes a silent false-negative from grading, plus the P2-2 validation close-out from the issue #5 backlog. Both are pinned by tests and by a validation log, not by a live run.
