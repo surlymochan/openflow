@@ -228,10 +228,13 @@ def arm_openflow(inst, repo, venv, events, tid):
     return [run_pi(tid, repo, prompt, events, CAP_S, env)]
 
 
-PLANNER = """You are the planner in an openswarm workflow. Read the skill and the engineering task.
-Write one self-contained task file for an executor that has none of this conversation.
+PLANNER = """You are the planner in an openswarm workflow. Your only job is to write two files and stop.
+Read only the skill text and the engineering task below. Do not run any shell command: do not reproduce
+the issue, do not explore the repository, do not list files, do not search the filesystem, and do not
+launch openswarm or any other program. Exploration is the executor's job, not yours — a planner that
+explores never converges to writing the task file.
 
-Write that file, and only that file, to:
+Write one self-contained task file for an executor that has none of this conversation, and only that file, to:
 {task_file}
 
 The file must include the goal, the files or areas to change, constraints, and acceptance criteria.
@@ -240,6 +243,7 @@ relevant existing test file, run from the repository root with {python}) to:
 {verify_file}
 
 The repository is {repo}. Do not modify any file inside the repository. Do not commit. The executor starts from a clean worktree.
+Write both files, then stop — no further work is needed from you.
 
 ## openswarm skill
 
@@ -268,6 +272,10 @@ def arm_openswarm(inst, repo, venv, events, tid):
     # so the executor never ran and all 6 cells recorded false negatives.
     # 600s keeps planner + executor inside the CAP_S 1200s cell budget
     # (executor budget is derived from the remaining time, see below).
+    # The PLANNER prompt additionally bans exploration (no commands, no
+    # reproduction, no filesystem search): the 600s validation cell showed
+    # the planner spending 13 turns / 23 tools exploring instead of
+    # converging to the task file, so the budget alone cannot fix it.
     calls = [run_pi(tid + "-plan", rundir, plan, events, 600, path_env(venv), label="planner")]
     if task_file.exists():
         shutil.copy(task_file, events / "executor-task.md")
