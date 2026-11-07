@@ -5,6 +5,13 @@ All notable changes to this project are documented here. Detailed notes live in
 
 ## [Unreleased]
 
+## [0.5.4] - 2026-11-07
+
+### Fixed
+- **Phase-cost drift test stops flaking under load (#44, issue #5 P1-1)**: the two `within_tolerance` integration tests used 2 x 400 ms sleeps, so the 5% drift budget was 40 ms against tens of ms of fixed executor overhead outside phases (run setup plus `phase_completed` log / state writes). On main this tripped at 5.7% drift while the MiniMax batch was running, then the same file went 7/7 green on a quiet re-run — a load-dependent flake at a marginal threshold, not an accounting bug (the accounting correctly flagged the drift). The sleeps are now 2 x 1500 ms, putting the same overhead at ~2% of the phase sum with headroom under load. Production tolerance and accounting unchanged. Test evidence: `node test/phase-cost.test.js` 7/7 green; full `npm run verify` exit 0 (43 files, 361 tests, 360 pass, 1 skipped pre-existing, 0 fail).
+
+Acceptance debt, stated plainly: the bench-number acceptance for P1-2 / P1-3 / P2-1 / P2-3 still awaits the MiniMax full-matrix batch (15 instances × 4 arms × reps 3), which is running — no bench numbers are claimed in this release.
+
 ## [0.5.3] - 2026-11-07
 
 ### Fixed
