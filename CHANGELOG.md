@@ -5,6 +5,9 @@ All notable changes to this project are documented here. Detailed notes live in
 
 ## [Unreleased]
 
+### Changed
+- **js-yaml 4.1.1 → 5.5.0 (major)**: dependency upgraded; the repo's only production use is `yaml.load` in `src/core/workflow-loader.js` (default schema) plus test-only loads of the two shipped workflows. Migration verified item by item before upgrading (2026-11-07, v4 vs v5 parsers run side by side): both `workflows/yolo.yaml` and `workflows/corps.yaml` parse deep-equal; scalar resolution is unchanged (`on`/`yes` stay strings, `017` stays decimal 17, `0o17` stays octal 15, `1:30` stays a string, anchors/aliases still resolve, duplicate keys still throw); empty input now throws `expected a document, but the input is empty` instead of returning `undefined` (the loader threw either way, the message is better). One real break, handled explicitly: v5's default CORE_SCHEMA no longer resolves the `<<` merge key — a merge key now survives as a literal `"<<"` property, and the loader rejects it with an actionable error ("Inline the merged mapping instead") instead of a confusing schema-validation failure. Pinning `YAML11_SCHEMA` was considered and rejected: it restores additive merging but flips scalars (`on`/`yes` → `true`, `017` → 15, `1:30` → 90) and throws on merge-with-override. The import form also changed with v5 (flat named exports, no default export): the four `import yaml from 'js-yaml'` sites now use `import * as yaml from 'js-yaml'`, call sites unchanged. Pinned by `test/workflow-loader-yaml5.test.js` (7 tests). No bench numbers are involved; the bench-number acceptance for P1-2 / P1-3 / P2-1 / P2-3 still awaits the MiniMax full-matrix batch.
+
 ## [0.5.5] - 2026-11-07
 
 ### Fixed
