@@ -1,5 +1,13 @@
 # Release Notes
 
+## 0.5.4 - Phase-cost drift test stops flaking under load
+
+Patch release. One test-only fix: `npm run verify` was red on main because the phase-cost drift test tripped its 5% bound at 5.7% while the MiniMax batch was running, then went 7/7 green on a quiet re-run of the same file.
+
+**Longer sleeps in the drift tests (#44, issue #5 P1-1).** The two `within_tolerance` integration tests used 2 x 400 ms sleeps, so the 5% budget was 40 ms against tens of ms of fixed executor overhead that structurally sits outside phases (run setup plus the `phase_completed` log / state writes between phases). The sleeps are now 2 x 1500 ms, putting the same overhead at ~2% of the phase sum with headroom under load. The production tolerance (`PHASE_COST_TOLERANCE_PCT = 5`) and the accounting in `src/core/phase-cost.js` / `workflow-executor.js` are unchanged — the accounting behaved correctly by flagging real overhead. Test evidence (from the PR): `node test/phase-cost.test.js` 7/7 green; full `npm run verify` exit 0 (43 files, 361 tests, 360 pass, 1 skipped pre-existing, 0 fail).
+
+Acceptance debt, stated plainly: the bench-number acceptance for P1-2, P1-3, P2-1 and P2-3 — the wall-clock/token/resolved lines from issue #5 — still awaits the MiniMax full-matrix batch (15 instances × 4 arms × reps 3), which is running. No bench numbers are claimed in this release.
+
 ## 0.5.3 - Bench planner stops timing out and stops wandering
 
 Patch release. Two bench-harness fixes from the MiniMax pilot, both pinned by tests rather than by a live run.
