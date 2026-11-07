@@ -1,5 +1,15 @@
 # Release Notes
 
+## 0.5.5 - Package entry restored; dead code removed
+
+Patch release. Two small fixes since 0.5.4, both verified by the full test suite (`npm run verify` exit 0 on the merged tree).
+
+**Missing package main entry (#46).** The published package had no main entry file, so importing the package by name could not resolve. `src/index.js` is now present as the package entry and is pinned by `test/package-entry.test.js`.
+
+**Dead code removed (#47).** Four exported functions with zero callers are deleted (51 lines, 0 added): `writePlanMarkdown` (plus `buildPlanCommands`, which only it called), `readPendingGate`, `getLatestMissionSession`, and `resolveAtom`. Each was verified dead by repo-wide grep across src, bin, test, docs, and scripts, including string-form references — only the definition site remained in every case. None of the four was exported from the public `src/index.js` surface, so this is not a public API change. The modules themselves stay: their other exports (`load` / `dryRun`, `listPendingGates` / `ackPendingGate`, `getLatestPhaseRun`, `writeReviewArtifact`) are still used.
+
+Acceptance debt, stated plainly: the bench-number acceptance for P1-2, P1-3, P2-1 and P2-3 — the wall-clock/token/resolved lines from issue #5 — still awaits the MiniMax full-matrix batch (15 instances × 4 arms × reps 3), which is running. No bench numbers are claimed in this release.
+
 ## 0.5.4 - Phase-cost drift test stops flaking under load
 
 Patch release. One test-only fix: `npm run verify` was red on main because the phase-cost drift test tripped its 5% bound at 5.7% while the MiniMax batch was running, then went 7/7 green on a quiet re-run of the same file.

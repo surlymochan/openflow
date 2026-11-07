@@ -5,6 +5,16 @@ All notable changes to this project are documented here. Detailed notes live in
 
 ## [Unreleased]
 
+## [0.5.5] - 2026-11-07
+
+### Fixed
+- **Missing package main entry `src/index.js` (#46)**: the published package had no main entry file, so `import '@surlymochan/evalid'` / `require('@surlymochan/evalid')` could not resolve. The entry module is added and pinned by `test/package-entry.test.js`.
+
+### Changed
+- **Dead code removed (#47)**: `writePlanMarkdown` (+ its only caller `buildPlanCommands`), `readPendingGate`, `getLatestMissionSession`, and `resolveAtom` — 51 lines deleted, 0 added. Each was verified dead by repo-wide grep (src, bin, test, docs, scripts, including string-form references): only the definition site remained, with no documentation references. None of the four was part of the public `src/index.js` export surface. Test evidence: full `npm run verify` exit 0 on the merged tree.
+
+Acceptance debt, stated plainly: the bench-number acceptance for P1-2 / P1-3 / P2-1 / P2-3 still awaits the MiniMax full-matrix batch (15 instances × 4 arms × reps 3), which is running — no bench numbers are claimed in this release.
+
 ## [0.5.4] - 2026-11-07
 
 ### Fixed
