@@ -16,7 +16,7 @@
 import { readFileSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 import Ajv from 'ajv';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -53,6 +53,13 @@ export function load(workflowPath, { skipRuntimeChecks = false } = {}) {
 
   const raw = readFileSync(absPath, 'utf8');
   const workflow = yaml.load(raw);
+
+  // js-yaml 5 loads with CORE_SCHEMA, which no longer resolves the `<<`
+  // merge key: a merge key now survives parsing as a literal "<<" property
+  // instead of merging. The schema below (additionalProperties: false)
+  // would reject it with a confusing validation error, so fail here with
+  // an actionable one. Anchors/aliases still work; only `<<` is affected.
+  assertNoMergeKeys(workflow, absPath);
 
   // 1. Schema validation
   const schema = loadSchema();
@@ -107,6 +114,29 @@ export function load(workflowPath, { skipRuntimeChecks = false } = {}) {
 }
 
 // ─── Runtime checks ──────────────────────────────────────────────────────────
+
+/**
+ * Reject literal `<<` keys left behind by js-yaml 5's CORE_SCHEMA default,
+ * which no longer resolves YAML merge keys. A workflow that relied on
+ * merging must inline the merged mapping instead. Walks the whole parsed
+ * document so the error names the exact location.
+ */
+function assertNoMergeKeys(value, workflowPath, trail = '$') {
+  if (Array.isArray(value)) {
+    value.forEach((item, i) => assertNoMergeKeys(item, workflowPath, `${trail}[${i}]`));
+    return;
+  }
+  if (value && typeof value === 'object') {
+    for (const [key, child] of Object.entries(value)) {
+      if (key === '<<') {
+        throw new Error(
+          `Workflow uses a YAML merge key ("<<") at ${trail} in ${workflowPath}, which js-yaml 5 no longer resolves. Inline the merged mapping instead.`
+        );
+      }
+      assertNoMergeKeys(child, workflowPath, `${trail}.${key}`);
+    }
+  }
+}
 
 import { spawnSync } from 'child_process';
 

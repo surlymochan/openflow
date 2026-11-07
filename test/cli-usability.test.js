@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, wri
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 import registry from '../atoms/registry.json' with { type: 'json' };
 import { appendExecutionLogSync } from '../src/core/execution-log.js';
 import { buildWorkflowManifest } from '../src/core/workflow-integrity.js';
