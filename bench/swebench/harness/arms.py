@@ -261,7 +261,14 @@ def arm_openswarm(inst, repo, venv, events, tid):
     t0 = time.time()
     plan = PLANNER.format(task_file=task_file, verify_file=verify_file, python=f"{venv}/bin/python", repo=repo,
                           skill=(OPENSWARM_DIR / "SKILL.md").read_text(), task=base_prompt(inst, repo, venv))
-    calls = [run_pi(tid + "-plan", rundir, plan, events, 300, path_env(venv), label="planner")]
+    # Planner budget 600s (was 300s): the 300s cap was calibrated on DeepSeek,
+    # whose planner finished in 87-244s on these 6 instances. With MiniMax
+    # M3.1-Flash-Preview at high thinking the planner exceeds 300s on all 6
+    # pilot2 cells — killed mid-work (rc 143) before writing the task file,
+    # so the executor never ran and all 6 cells recorded false negatives.
+    # 600s keeps planner + executor inside the CAP_S 1200s cell budget
+    # (executor budget is derived from the remaining time, see below).
+    calls = [run_pi(tid + "-plan", rundir, plan, events, 600, path_env(venv), label="planner")]
     if task_file.exists():
         shutil.copy(task_file, events / "executor-task.md")
     if verify_file.exists():
