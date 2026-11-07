@@ -54,6 +54,15 @@ describe('phase cost report (pure accounting)', () => {
 });
 
 describe('phase cost accounting (small workflow integration)', () => {
+  // The two within_tolerance tests below use 1500 ms sleeps on purpose. The
+  // executor's fixed overhead outside phases (run setup plus the
+  // phase_completed log / state writes between phases) is tens of ms, and
+  // the 5% tolerance is a share of the phase sum: with 2 x 400 ms sleeps
+  // the budget is 40 ms, so a loaded machine trips it (observed 5.7%
+  // drift on main, then 7/7 green on a quiet re-run of the same file).
+  // At 2 x 1500 ms the same overhead is ~2% of the phase sum, with
+  // headroom under load. The production tolerance and the accounting
+  // itself are unchanged — the accounting correctly flagged the drift.
   test('a two-phase run writes a cost report whose phases sum to the wall clock', async () => {
     const projectRoot = mkdtempSync(join(tmpdir(), 'openflow-cost-'));
     try {
@@ -61,7 +70,7 @@ describe('phase cost accounting (small workflow integration)', () => {
       const modulePath = resolve(projectRoot, 'sleepy.mjs');
       writeFileSync(modulePath, `
         export default async function run() {
-          await new Promise((done) => setTimeout(done, 400));
+          await new Promise((done) => setTimeout(done, 1500));
           return { ok: true, usage: { input_tokens: 100, output_tokens: 50 } };
         }
       `, 'utf8');
@@ -90,7 +99,7 @@ describe('phase cost accounting (small workflow integration)', () => {
       assert.ok(cost, 'workflow_completed carries a cost report');
       assert.deepEqual(cost.phases.map((phase) => phase.phase_id), ['red', 'green']);
       for (const phase of cost.phases) {
-        assert.ok(phase.duration_ms >= 350, `phase ${phase.phase_id} duration reflects the sleep, got ${phase.duration_ms}`);
+        assert.ok(phase.duration_ms >= 1350, `phase ${phase.phase_id} duration reflects the sleep, got ${phase.duration_ms}`);
       }
       const summed = cost.phases.reduce((sum, phase) => sum + phase.duration_ms, 0);
       assert.equal(cost.total_phase_ms, summed);
@@ -112,7 +121,7 @@ describe('phase cost accounting (small workflow integration)', () => {
       const modulePath = resolve(projectRoot, 'sleepy.mjs');
       writeFileSync(modulePath, `
         export default async function run() {
-          await new Promise((done) => setTimeout(done, 400));
+          await new Promise((done) => setTimeout(done, 1500));
           return { ok: true, usage: { input_tokens: 40, output_tokens: 10 } };
         }
       `, 'utf8');
