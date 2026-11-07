@@ -7,8 +7,8 @@ on:
 
 jobs:
   verify:
-    # Pinned: ubuntu-latest now resolves to Ubuntu 26.04, which Playwright
-    # 1.59.1 does not support for chromium. 24.04 LTS is supported.
+    # Pinned: ubuntu-latest now resolves to Ubuntu 26.04; Playwright 1.65.0
+    # support for that image is unverified. 24.04 LTS is supported.
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
