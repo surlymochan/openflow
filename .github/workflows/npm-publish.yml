@@ -20,8 +20,8 @@ concurrency:
 
 jobs:
   publish:
-    # Pinned for the same reason as ci.yml: Playwright 1.59.1 does not
-    # support the Ubuntu 26.04 image behind ubuntu-latest.
+    # Pinned for the same reason as ci.yml: Playwright 1.65.0 support for
+    # the Ubuntu 26.04 image behind ubuntu-latest is unverified.
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
